@@ -4,44 +4,58 @@
 
 #include <Wire.h>
 
+
+struct uhes_i2c_msg {
+  byte type;
+  byte cmd;
+  byte crc;
+};
+
+int salveaddress = 0x05;
+
 void setup() {
   Wire.begin(); // join I2C bus as the master
-  
+
   // put your setup code here, to run once:
   pinMode(13, OUTPUT);      // set LED pin as output
   digitalWrite(13, LOW);    // switch off LED pin
+
+  
   Serial.begin(9600);
   while (!Serial)
   Serial.write("test uart\n");
 }
 
-void loop() {
-  delay(500);
-  /*while(Serial.available()) {
-      char data_rcvd = Serial.read();
-      if(data_rcvd == '1'){
-        digitalWrite(13, HIGH);  // switch LED On
-        Serial.write("  switch LED On");
-        Serial.write("1\n");  
-        break;
-      }
-      
-      if(data_rcvd == '0') {
-        digitalWrite(13, LOW);   // switch LED Off
-        Serial.write("  switch LED Off");
-        Serial.write("0\n");
-        break;
-      }
-  }*/
+int getSerialNumber(){
+  Serial.println("getSerialNumber::start\n");
+  byte type = 4;
+  byte cmd = 4;
+  byte  crc = type^cmd;
+       
+  Wire.beginTransmission(salveaddress);
+  Wire.write(type);              
+  Wire.write(cmd);              
+  Wire.write(crc);              
+  Wire.endTransmission();
+ delay(500);   
+ Serial.println("SerialNumber=[");      
+ Wire.requestFrom(salveaddress,10);  
+ while(Wire.available()>=1) { 
+    char c = Wire.read(); 
+    Serial.print(c);
+ } 
+  Serial.println("]\n");
+ Serial.println("getSerialNumber::Done\n");
+ delay(100);   
+}
 
-    //delay(500);
-    Serial.println("Scanning...");
-    int  nDevices ;
+void detectI2CSlave(){
+  Serial.println("detectI2CSlave::start\n");
+  int  nDevices ;
     byte error, address;
     nDevices = 0;
     for(address = 1; address < 127; address++ )
     {
-       
       // The i2c_scanner uses the return value of
       // the Write.endTransmisstion to see if
       // a device did acknowledge to the address.
@@ -66,13 +80,33 @@ void loop() {
       }    
     }
     
-      if (nDevices == 0){
-         Serial.println("No I2C devices found\n");
-      }
-      else{
-        Serial.println("done\n");
-      }
+    if (nDevices == 0){
+       Serial.println("No I2C devices found\n");
+    } else{
+      Serial.println("done\n");
+    }
 
-       delay(1000);  
-    
+    Serial.println("detectI2CSlave::Done\n");
+}
+
+void loop() {
+  String strUart;
+  while(Serial.available()) {
+      //char data_rcvd = Serial.read();
+      strUart= Serial.readString();
+      Serial.println(strUart);
+      if( strUart.indexOf("on")>=0){
+        digitalWrite(13, HIGH);  // switch LED On
+        Serial.write("switch LED On=1\n");
+      }  else  if(strUart.indexOf("off")>=0) {
+        digitalWrite(13, LOW);   // switch LED Off
+        Serial.write("switch LED Off = 0\n");
+      } else if( strUart.indexOf("i2c-detect")>=0){
+          detectI2CSlave();
+       }else if(strUart.indexOf("getSerialNumber")>=0){
+          getSerialNumber();
+       } else {
+          Serial.println("Hepler\n on\n off\n i2c-detect\n getSerialNumber\n");
+       }
+  }
 }
