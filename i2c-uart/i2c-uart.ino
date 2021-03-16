@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 
-
+#include <CommandParser.h>
 
 #include <Wire.h>
 
@@ -27,7 +27,7 @@ void setup() {
 }
 
 int getSerialNumber(){
-  Serial.println("getSerialNumber::start\n");
+  Serial.println("getSerialNumber::start");
   byte type = 4;
   byte cmd = 4;
   byte  crc = type^cmd;
@@ -38,15 +38,54 @@ int getSerialNumber(){
   Wire.write(crc);              
   Wire.endTransmission();
  delay(500);   
- Serial.println("SerialNumber=[");      
+ Serial.print("SerialNumber=[");      
  Wire.requestFrom(salveaddress,10);  
  while(Wire.available()>=1) { 
     char c = Wire.read(); 
     Serial.print(c);
  } 
   Serial.println("]\n");
- Serial.println("getSerialNumber::Done\n");
+ Serial.println("getSerialNumber::Done");
  delay(100);   
+}
+
+
+void parseCML(String  input){
+  String  firstVal = input;
+  String  secondVal;
+  bool isGetInfo = true;
+  for (int i = 0; i < input.length(); i++) {
+    if (input.substring(i, i+1) == " ") {
+        firstVal = input.substring(0, i) ;
+        secondVal = input.substring(i+1);
+        secondVal.replace(" ", "");
+        isGetInfo = false;
+        break;
+    }
+  }
+
+  if(isGetInfo == true){
+      if( firstVal.indexOf("on")>=0){
+        digitalWrite(13, HIGH);  // switch LED On
+        Serial.write("switch LED On=1\n");
+      }  else  if(firstVal.indexOf("off")>=0) {
+        digitalWrite(13, LOW);   // switch LED Off
+        Serial.write("switch LED Off = 0\n");
+      } else if( firstVal.indexOf("i2c-detect")>=0){
+          detectI2CSlave();
+       }else if(firstVal.indexOf("getSerialNumber")>=0){
+          getSerialNumber();
+       } else {
+          Serial.print("Hepler\n");
+          Serial.print(" on\n");
+          Serial.print(" off\n");
+          Serial.print(" i2c-detect\n");
+          Serial.print(" getSerialNumber\n");
+       } 
+  }else{
+    Serial.println(firstVal);
+    Serial.println(secondVal);
+  }
 }
 
 void detectI2CSlave(){
@@ -90,23 +129,11 @@ void detectI2CSlave(){
 }
 
 void loop() {
-  String strUart;
   while(Serial.available()) {
-      //char data_rcvd = Serial.read();
-      strUart= Serial.readString();
-      Serial.println(strUart);
-      if( strUart.indexOf("on")>=0){
-        digitalWrite(13, HIGH);  // switch LED On
-        Serial.write("switch LED On=1\n");
-      }  else  if(strUart.indexOf("off")>=0) {
-        digitalWrite(13, LOW);   // switch LED Off
-        Serial.write("switch LED Off = 0\n");
-      } else if( strUart.indexOf("i2c-detect")>=0){
-          detectI2CSlave();
-       }else if(strUart.indexOf("getSerialNumber")>=0){
-          getSerialNumber();
-       } else {
-          Serial.println("Hepler\n on\n off\n i2c-detect\n getSerialNumber\n");
-       }
+      char line[128];
+      size_t lineLength = Serial.readBytesUntil('\n', line, 127);
+      line[lineLength] = '\0';
+      Serial.println(line);
+      parseCML( String(line));
   }
 }
