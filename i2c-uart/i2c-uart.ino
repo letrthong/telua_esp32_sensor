@@ -50,6 +50,11 @@ int getSerialNumber(){
 }
 
 
+void setSerialNumber(String serialNumber){
+   Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
+   Serial.println("setSerialNumber::Done");
+}
+
 void parseCML(String  input){
   String  firstVal = input;
   String  secondVal;
@@ -83,8 +88,12 @@ void parseCML(String  input){
           Serial.print(" getSerialNumber\n");
        } 
   }else{
-    Serial.println(firstVal);
-    Serial.println(secondVal);
+     if( firstVal.indexOf("setSerialNumber")>=0){
+         setSerialNumber(secondVal);
+      }else {
+          Serial.println("key=" + firstVal);
+          Serial.println("Value=" + secondVal);
+      }   
   }
 }
 
