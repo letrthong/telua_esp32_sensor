@@ -1,6 +1,3 @@
-#include <EEPROM.h>
-
-#include <CommandParser.h>
 
 #include <Wire.h>
 
@@ -51,8 +48,28 @@ int getSerialNumber(){
 
 
 void setSerialNumber(String serialNumber){
-   Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
-   Serial.println("setSerialNumber::Done");
+  Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
+  int len = serialNumber.length();
+  // Serial.println( len);
+  if( len == 11){
+    byte type = 3;
+    byte cmd = 4;
+    byte  crc = type^cmd;
+     
+    Wire.beginTransmission(salveaddress);
+    Wire.write(type);              
+    Wire.write(cmd);              
+    Wire.write(crc);              
+    Wire.endTransmission();
+    delay(100);   
+    Wire.beginTransmission(salveaddress);
+    Wire.write(serialNumber.c_str(), 10);                         
+    Wire.endTransmission();
+    delay(100);  
+  }else{
+    Serial.println("setSerialNumber::invalid format");
+  }
+  Serial.println("setSerialNumber::Done");
 }
 
 void parseCML(String  input){
@@ -91,50 +108,51 @@ void parseCML(String  input){
      if( firstVal.indexOf("setSerialNumber")>=0){
          setSerialNumber(secondVal);
       }else {
-          Serial.println("key=" + firstVal);
-          Serial.println("Value=" + secondVal);
+          //Serial.println("key=" + firstVal);
+          //Serial.println("Value=" + secondVal);
+          Serial.print("setSerialNumber 12345678AB\n");
       }   
   }
 }
 
 void detectI2CSlave(){
-  Serial.println("detectI2CSlave::start\n");
+  Serial.println("detectI2CSlave::start");
   int  nDevices ;
-    byte error, address;
-    nDevices = 0;
-    for(address = 1; address < 127; address++ )
-    {
-      // The i2c_scanner uses the return value of
-      // the Write.endTransmisstion to see if
-      // a device did acknowledge to the address.
-      Wire.beginTransmission(address);
-      error = Wire.endTransmission();
-   
-      if (error == 0) {
-        Serial.print("I2C device found at address 0x");
-        if (address<16){
-            Serial.print("0");
-        }
-        Serial.print(address,HEX);
-        Serial.println("  !");
-   
-        nDevices++;
-      }else if (error==4){
-        Serial.print("Unknown error at address 0x");
-        if (address<16){
-           Serial.print("0");
-        }
-        Serial.println(address,HEX);
-      }    
-    }
-    
-    if (nDevices == 0){
-       Serial.println("No I2C devices found\n");
-    } else{
-      Serial.println("done\n");
-    }
+  byte error, address;
+  nDevices = 0;
+  for(address = 1; address < 127; address++ )
+  {
+    // The i2c_scanner uses the return value of
+    // the Write.endTransmisstion to see if
+    // a device did acknowledge to the address.
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+ 
+    if (error == 0) {
+      Serial.print("I2C device found at address 0x");
+      if (address<16){
+          Serial.print("0");
+      }
+      Serial.print(address,HEX);
+      Serial.println("  !");
+ 
+      nDevices++;
+    }else if (error==4){
+      Serial.print("Unknown error at address 0x");
+      if (address<16){
+         Serial.print("0");
+      }
+      Serial.println(address,HEX);
+    }    
+  }
+  
+  if (nDevices == 0){
+     Serial.println("No I2C devices found");
+  } else{
+    Serial.println("done");
+  }
 
-    Serial.println("detectI2CSlave::Done\n");
+  Serial.println("detectI2CSlave::Done");
 }
 
 void loop() {
@@ -142,7 +160,8 @@ void loop() {
       char line[128];
       size_t lineLength = Serial.readBytesUntil('\n', line, 127);
       line[lineLength] = '\0';
-      Serial.println(line);
+      Serial.println("Arduino received=" + String(line));
+       delay(100);   
       parseCML( String(line));
   }
 }
