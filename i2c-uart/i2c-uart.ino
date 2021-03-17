@@ -30,19 +30,18 @@ int getSerialNumber(){
   Wire.write(cmd);              
   Wire.write(crc);              
   Wire.endTransmission();
-  delay(500);   
+  delay(200);     
   Serial.print("SerialNumber=[");      
   Wire.requestFrom(salveaddress,10);  
-  while(Wire.available()>=1) { 
+  while(Wire.available()) { 
     char c = Wire.read(); 
     Serial.print(c);
   } 
   Serial.println("]");
   Serial.println("getSerialNumber::Done");
-  delay(100);   
+  delay(1000);   
 }
-
-
+ 
 void setSerialNumber(String serialNumber){
   Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
   int len = serialNumber.length();
@@ -61,11 +60,63 @@ void setSerialNumber(String serialNumber){
     Wire.beginTransmission(salveaddress);
     Wire.write(serialNumber.c_str(), 10);                         
     Wire.endTransmission();
-    delay(100);  
+    delay(1000);    
   }else{
     Serial.println("setSerialNumber::invalid format");
   }
   Serial.println("setSerialNumber::Done");
+}
+
+int getFactoryID(){
+  Serial.println("getFactoryID::start");
+  byte type = 4;
+  byte cmd = 1;
+  byte  crc = type^cmd;
+     
+  Wire.beginTransmission(salveaddress);
+  Wire.write(type);              
+  Wire.write(cmd);              
+  Wire.write(crc);              
+  Wire.endTransmission();
+   delay(100);   
+  Serial.print("getFactoryID=[");      
+  Wire.requestFrom(salveaddress,32, 0);  
+  while(Wire.available() ) { 
+    char c = Wire.read(); 
+    Serial.print(c);
+  } 
+  delay(200);   
+  Wire.requestFrom(salveaddress,32 );  
+  while(Wire.available() ) { 
+    char c = Wire.read(); 
+    Serial.print(c);
+  } 
+  Serial.println("]");
+  Serial.println("getFactoryID::Done");
+  delay(1000);     
+}
+
+int getManuID(){
+  Serial.println("getManuID::start");
+  byte type = 4;
+  byte cmd = 0;
+  byte  crc = type^cmd;
+     
+  Wire.beginTransmission(salveaddress);
+  Wire.write(type);              
+  Wire.write(cmd);              
+  Wire.write(crc);              
+  Wire.endTransmission();
+  delay(200);   
+  Serial.print("getManuID=[");      
+  Wire.requestFrom(salveaddress,32);  
+  while(Wire.available() ) { 
+    char c = Wire.read(); 
+    Serial.print(c);
+  } 
+  Serial.println("]");
+  Serial.println("getManuID::Done");
+  delay(1000);     
 }
 
 void parseCLI(String  input){
@@ -93,13 +144,19 @@ void parseCLI(String  input){
           detectI2CSlave();
       }else if(firstVal.indexOf("getSerialNumber")>=0){
           getSerialNumber();
+      }else if(firstVal.indexOf("getFactoryID")>=0){
+          getFactoryID();
+      }else if(firstVal.indexOf("getManuID")>=0){
+          getManuID();
       }else {
           Serial.print("Hepler\n");
           Serial.print(" on\n");
           Serial.print(" off\n");
           Serial.print(" i2c-detect\n");
           Serial.print(" getSerialNumber\n");
-      } 
+          Serial.print(" getFactoryID\n");
+          Serial.print(" getManuID\n");
+      }  
   }else{
     if( firstVal.indexOf("setSerialNumber")>=0){
         setSerialNumber(secondVal);
