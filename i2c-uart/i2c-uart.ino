@@ -51,7 +51,7 @@ void setSerialNumber(String serialNumber){
   Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
   int len = serialNumber.length();
   // Serial.println( len);
-  if( len == 11){
+  if( len >= 10){
     byte type = 3;
     byte cmd = 4;
     byte  crc = type^cmd;
@@ -90,14 +90,14 @@ void parseCML(String  input){
       if( firstVal.indexOf("on")>=0){
         digitalWrite(13, HIGH);  // switch LED On
         Serial.write("switch LED On=1\n");
-      }  else  if(firstVal.indexOf("off")>=0) {
+      }else  if(firstVal.indexOf("off")>=0) {
         digitalWrite(13, LOW);   // switch LED Off
         Serial.write("switch LED Off = 0\n");
-      } else if( firstVal.indexOf("i2c-detect")>=0){
+      }else if( firstVal.indexOf("i2c-detect")>=0){
           detectI2CSlave();
        }else if(firstVal.indexOf("getSerialNumber")>=0){
           getSerialNumber();
-       } else {
+       }else {
           Serial.print("Hepler\n");
           Serial.print(" on\n");
           Serial.print(" off\n");
@@ -161,7 +161,7 @@ void loop() {
       size_t lineLength = Serial.readBytesUntil('\n', line, 127);
       line[lineLength] = '\0';
       Serial.println("Arduino received=" + String(line));
-       delay(100);   
+      delay(100);   
       parseCML( String(line));
   }
 }
