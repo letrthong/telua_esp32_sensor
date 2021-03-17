@@ -1,6 +1,4 @@
-
 #include <Wire.h>
-
 
 struct uhes_i2c_msg {
   byte type;
@@ -16,8 +14,6 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(13, OUTPUT);      // set LED pin as output
   digitalWrite(13, LOW);    // switch off LED pin
-
-  
   Serial.begin(9600);
   while (!Serial)
   Serial.write("test uart\n");
@@ -28,22 +24,22 @@ int getSerialNumber(){
   byte type = 4;
   byte cmd = 4;
   byte  crc = type^cmd;
-       
+     
   Wire.beginTransmission(salveaddress);
   Wire.write(type);              
   Wire.write(cmd);              
   Wire.write(crc);              
   Wire.endTransmission();
- delay(500);   
- Serial.print("SerialNumber=[");      
- Wire.requestFrom(salveaddress,10);  
- while(Wire.available()>=1) { 
+  delay(500);   
+  Serial.print("SerialNumber=[");      
+  Wire.requestFrom(salveaddress,10);  
+  while(Wire.available()>=1) { 
     char c = Wire.read(); 
     Serial.print(c);
- } 
-  Serial.println("]\n");
- Serial.println("getSerialNumber::Done");
- delay(100);   
+  } 
+  Serial.println("]");
+  Serial.println("getSerialNumber::Done");
+  delay(100);   
 }
 
 
@@ -72,7 +68,7 @@ void setSerialNumber(String serialNumber){
   Serial.println("setSerialNumber::Done");
 }
 
-void parseCML(String  input){
+void parseCLI(String  input){
   String  firstVal = input;
   String  secondVal;
   bool isGetInfo = true;
@@ -95,23 +91,21 @@ void parseCML(String  input){
         Serial.write("switch LED Off = 0\n");
       }else if( firstVal.indexOf("i2c-detect")>=0){
           detectI2CSlave();
-       }else if(firstVal.indexOf("getSerialNumber")>=0){
+      }else if(firstVal.indexOf("getSerialNumber")>=0){
           getSerialNumber();
-       }else {
+      }else {
           Serial.print("Hepler\n");
           Serial.print(" on\n");
           Serial.print(" off\n");
           Serial.print(" i2c-detect\n");
           Serial.print(" getSerialNumber\n");
-       } 
+      } 
   }else{
-     if( firstVal.indexOf("setSerialNumber")>=0){
-         setSerialNumber(secondVal);
-      }else {
-          //Serial.println("key=" + firstVal);
-          //Serial.println("Value=" + secondVal);
-          Serial.print("setSerialNumber 12345678AB\n");
-      }   
+    if( firstVal.indexOf("setSerialNumber")>=0){
+        setSerialNumber(secondVal);
+     }else {
+        Serial.print("setSerialNumber 12345678AB\n");
+     }   
   }
 }
 
@@ -120,8 +114,7 @@ void detectI2CSlave(){
   int  nDevices ;
   byte error, address;
   nDevices = 0;
-  for(address = 1; address < 127; address++ )
-  {
+  for(address = 1; address < 127; address++){
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
@@ -148,10 +141,7 @@ void detectI2CSlave(){
   
   if (nDevices == 0){
      Serial.println("No I2C devices found");
-  } else{
-    Serial.println("done");
   }
-
   Serial.println("detectI2CSlave::Done");
 }
 
@@ -162,6 +152,6 @@ void loop() {
       line[lineLength] = '\0';
       Serial.println("Arduino received=" + String(line));
       delay(100);   
-      parseCML( String(line));
+      parseCLI( String(line));
   }
 }
