@@ -19,6 +19,11 @@ void setup() {
   Serial.write("test uart\n");
 }
 
+byte _crc8_ccitt_update(byte inCrc, byte inData) {
+    uint8_t data = inCrc ^ inData;
+    return data;
+}
+
 int getSerialNumber(){
   Serial.println("getSerialNumber::start");
   byte type = 4;
@@ -31,13 +36,32 @@ int getSerialNumber(){
   Wire.write(crc);              
   Wire.endTransmission();
   delay(200);     
-  Serial.print("SerialNumber=[");      
-  Wire.requestFrom(salveaddress,10);  
-  while(Wire.available()) { 
-    char c = Wire.read(); 
-    Serial.print(c);
-  } 
-  Serial.println("]");
+  Wire.requestFrom(salveaddress,10 +1); 
+  byte checksum =0x00;
+  byte crc_out = 0x00;
+  byte buffer[10];
+  for(int i = 0; i <11; i++){
+       while(Wire.available()) { 
+        char c = Wire.read(); 
+        if(i == 10){
+          checksum = c;
+        }else{
+          buffer[i] = c;
+          crc_out = _crc8_ccitt_update(crc_out, c);
+        }   
+    } 
+  }
+
+  if(checksum == crc_out){
+    Serial.print("SerialNumber=["); 
+    for (int i = 0; i < 10; i++){
+        Serial.print(buffer[i] );
+    }
+    Serial.println("]"); 
+  }else{
+     Serial.println("crc error");
+  }
+ 
   Serial.println("getSerialNumber::Done");
   delay(1000);   
 }
