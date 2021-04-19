@@ -70,11 +70,17 @@ void setSerialNumber(String serialNumber){
   Serial.println("setSerialNumber::start serialNumber=" + serialNumber);
   int len = serialNumber.length();
   // Serial.println( len);
-  if( len >= 10){
+  if( len == 10){
     byte type = 3;
     byte cmd = 4;
     byte  crc = type^cmd;
-     
+
+    byte checksum = 0x00;
+
+    for (int i = 0; i < len; i++){
+       checksum = _crc8_ccitt_update(checksum, serialNumber[i]);
+    }
+    
     Wire.beginTransmission(salveaddress);
     Wire.write(type);              
     Wire.write(cmd);              
@@ -82,7 +88,8 @@ void setSerialNumber(String serialNumber){
     Wire.endTransmission();
     delay(100);   
     Wire.beginTransmission(salveaddress);
-    Wire.write(serialNumber.c_str(), 10);                         
+    Wire.write(serialNumber.c_str(), 10);   
+    Wire.write(checksum);                         
     Wire.endTransmission();
     delay(1000);    
   }else{
