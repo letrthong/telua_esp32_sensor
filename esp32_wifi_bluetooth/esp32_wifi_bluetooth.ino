@@ -9,7 +9,7 @@
 
 #define EEPROM_SIZE 64
 
-const char * deviceID = "12334332343443ADVED";
+const char* deviceID = "12334332343443ADVED";
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
  
 
