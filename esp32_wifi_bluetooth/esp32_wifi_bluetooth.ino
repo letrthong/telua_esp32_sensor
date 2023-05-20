@@ -2,7 +2,6 @@
 #include <EEPROM.h>
 
 #include <HTTPClient.h>
-
 #include <ArduinoJson.h>
 
 #include "Adafruit_SHT4x.h"
