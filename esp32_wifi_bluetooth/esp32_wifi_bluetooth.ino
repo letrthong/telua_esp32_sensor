@@ -90,7 +90,7 @@ void setup() {
 }
 
 void loop() {
-   Serial.println("Hello from Telua ESP-WROOM-32");
+  // Serial.println("Hello from Telua ESP-WROOM-32");
    delay(1000);
     unsigned long currentMillis = millis();
   /*if condition to check wifi reconnection*/
