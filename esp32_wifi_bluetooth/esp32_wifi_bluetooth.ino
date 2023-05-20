@@ -11,13 +11,12 @@
 
 #define EEPROM_SIZE 64
 
-String default_ssid = "telua"; /*SSID of network to connect*/
-String default_password = "12345678"; /*password for SSID*/
+ 
 
 const char * deviceID = "12334332343443ADVED";
 
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
-String url_ssid = "http://34.111.197.130:80/service/v1/esp32/ssid-info";
+ 
 
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
@@ -26,8 +25,6 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 
 bool hasRouter = false;
-bool hasDefaultRouter = false;
-bool isConnectingDefaultRouter = false;
 int total_rettry = 0;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -42,8 +39,7 @@ void initWiFi() {
   unsigned int lastStringLength = current_ssid.length();
 
   hasRouter = false;
-  hasDefaultRouter = false;
-  isConnectingDefaultRouter = false;
+   
 
   int n = WiFi.scanNetworks();
   Serial.println("Scan done");
@@ -61,10 +57,7 @@ void initWiFi() {
           hasRouter = true;
         }
       }
-
-      if (default_ssid.equals(SSID)) {
-        hasDefaultRouter = true;
-      }
+ 
     }
   }
   WiFi.scanDelete();
@@ -84,24 +77,38 @@ void initWiFi() {
 
   }
 
-  if (WiFi.status() != WL_CONNECTED) {
-    if (hasDefaultRouter == true) {
-      Serial.print("Connecting to default WiFi  ..");
-      WiFi.disconnect();
-      WiFi.begin(default_ssid, default_password);
-      delay(1000);
-      WiFi.reconnect();
-      isConnectingDefaultRouter = true;
-      int count = 0;
-      while (WiFi.status() != WL_CONNECTED) {
-        Serial.print('.');
-        delay(1000);
-        count = count + 1;
-        if (count > 10) {
-          break;
+  if (WiFi.status() == WL_CONNECTED) {
+        WiFi.mode(WIFI_AP_STA);
+        WiFi.beginSmartConfig();
+        while (!WiFi.smartConfigDone()) {
+          delay(500);
+          Serial.print(".");
         }
+
+        Serial.println("");
+        Serial.println("SmartConfig received.");
+
+        while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
       }
-    }
+
+      String ssid = WiFi.SSID(); 
+      String pass = WiFi.psk();
+      
+      if (ssid.length() > 1 && pass.length() >= 8) {
+         Serial.print("SmartConfig readString ssid=");
+         Serial.println(ssid);
+
+         Serial.print("SmartConfig readString pass=");
+         Serial.println(pass);
+  
+        EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+        EEPROM.commit();
+        
+        EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
+        EEPROM.commit();
+      }
   }
 
   Serial.println(WiFi.localIP());
@@ -218,46 +225,8 @@ void loop() {
     WiFi.reconnect();
     previousMillis = currentMillis;
   } else if ((currentMillis - previousMillis >= interval)) {
-    total_rettry = 0;
-    if (isConnectingDefaultRouter == true) {
-      String serverPath = url_ssid + "?deviceID=" + deviceID;
-      HTTPClient http;
-      http.begin(serverPath.c_str());
-      int httpResponseCode = http.GET();
-      if (httpResponseCode > 0) {
-        if (httpResponseCode == 200) {
-          String payload = http.getString();
-          DynamicJsonDocument doc(1024);
-
-          DeserializationError error = deserializeJson(doc, payload);
-          if (error) {
-            Serial.println("deserializeJson() failed");
-
-          } else {
-            Serial.println("deserializeJson");
-            String ssid = doc["ssid"];
-            String pass = doc["pass"];
-
-            if (ssid.length() > 1 && pass.length() >= 8) {
-              EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-              EEPROM.commit();
-
-              EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
-              EEPROM.commit();
-
-              http.end();
-              delay(1000);
-              ESP.restart();
-            }
-          }
-        }
-
-      }
-
-      http.end();
-
-    } else {
-      String temperature = "0";
+     total_rettry = 0;
+     String temperature = "0";
       String relative_humidity ="0";
       if(hasSensor == true){
          sensors_event_t humidity, temp;
@@ -313,7 +282,6 @@ void loop() {
       // Free resources
       http.end();
       previousMillis = currentMillis;
-
-    }
+     
   }
 }

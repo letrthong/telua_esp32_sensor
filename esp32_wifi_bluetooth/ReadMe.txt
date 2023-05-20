@@ -1,0 +1,1 @@
+https://openlabpro.com/guide/wi-fi-smart-configuration-on-esp32-controller/
