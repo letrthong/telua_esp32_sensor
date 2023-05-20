@@ -3,7 +3,7 @@
 
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-
+#include "time.h"
 #include "Adafruit_SHT4x.h"
 
 
@@ -22,8 +22,15 @@ int EEPROM_ADDRESS_PASS = 32;
 bool hasRouter = false;
 int total_rettry = 0;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+const char* ntpServer = "pool.ntp.org";
+long  gmtOffset_sec = 3600 * 1;
+const int   daylightOffset_sec = 3600 * 0;
+
 bool hasSensor = false;
+
+
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+
 
 void initWiFi() {
   WiFi.mode(WIFI_STA);
@@ -114,7 +121,7 @@ void initWiFi() {
         EEPROM.commit();
       }
   }
-
+ 
   Serial.println(WiFi.localIP());
 }
 
@@ -217,17 +224,17 @@ void loop() {
   unsigned long currentMillis = millis();
   /*if condition to check wifi reconnection*/
   if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
-    total_rettry = total_rettry + 1;
-    if (total_rettry > 10) {
-      ESP.restart();
-    }
-
-    Serial.print(millis());
-    Serial.println("  Reconnecting to WiFi...");
-    WiFi.disconnect();
-    delay(1000);
-    WiFi.reconnect();
-    previousMillis = currentMillis;
+      total_rettry = total_rettry + 1;
+      if (total_rettry > 10) {
+        ESP.restart();
+      }
+  
+      Serial.print(millis());
+      Serial.println("  Reconnecting to WiFi...");
+      WiFi.disconnect();
+      delay(1000);
+      WiFi.reconnect();
+      previousMillis = currentMillis;
   } else if ((currentMillis - previousMillis >= interval)) {
      total_rettry = 0;
      String temperature = "0";
@@ -277,6 +284,13 @@ void loop() {
           if(intervalTime>= 30000){
               interval = intervalTime;
           }
+           long      gmtOffset   = doc ["timezone"];
+           if(gmtOffset > 0){
+                if(gmtOffset_sec != (3600 * gmtOffset)){
+                     gmtOffset_sec = 3600 * gmtOffset;
+                    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+                }
+           }
         }
 
       } else {
@@ -286,6 +300,12 @@ void loop() {
       // Free resources
       http.end();
       previousMillis = currentMillis;
+
+      struct tm timeinfo;
+      if (!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain time");
+      }
+      Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
      
   }
 }
