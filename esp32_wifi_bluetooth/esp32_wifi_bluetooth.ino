@@ -32,6 +32,8 @@ int total_rettry = 0;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
+bool hasSensor = false;
+
 void initWiFi() {
   WiFi.mode(WIFI_STA);
 
@@ -110,6 +112,7 @@ void initSht4x() {
   if (!sht4.begin()) {
     Serial.println("Couldn't find SHT4x");
   } else {
+    hasSensor = true;
     Serial.println("Found SHT4x sensor");
     Serial.print("Serial number 0x");
     Serial.println(sht4.readSerial(), HEX);
@@ -254,20 +257,25 @@ void loop() {
       http.end();
 
     } else {
-      sensors_event_t humidity, temp;
-
-      uint32_t timestamp = millis();
-      sht4.getEvent( & humidity, & temp);
-
-      //      Serial.print("Temperature: ");
-      //      Serial.print(temp.temperature);
-      //      Serial.println(" degrees C");
-      //      Serial.print("Humidity: "); 
-      //      Serial.print(humidity.relative_humidity);
-      //      Serial.println("% rH");
-
-      String temperature = String(temp.temperature, 2);
-      String relative_humidity = String(humidity.relative_humidity, 2);
+      String temperature = 0;
+      String relative_humidity = 0;
+      if(hasSensor == true){
+         sensors_event_t humidity, temp;
+        
+        uint32_t timestamp = millis();
+        sht4.getEvent( & humidity, & temp);
+        
+        //      Serial.print("Temperature: ");
+        //      Serial.print(temp.temperature);
+        //      Serial.println(" degrees C");
+        //      Serial.print("Humidity: "); 
+        //      Serial.print(humidity.relative_humidity);
+        //      Serial.println("% rH");
+        
+        temperature = String(temp.temperature, 2);
+        relative_humidity = String(humidity.relative_humidity, 2);
+      }
+     
 
       HTTPClient http;
       String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID;
