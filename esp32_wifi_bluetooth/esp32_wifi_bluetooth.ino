@@ -5,7 +5,7 @@
 
 const char* ssid = "TP-Link_2878";   /*SSID of network to connect*/
 const char* password = "51521264";   /*password for SSID*/
-const char email = "letrthong@gmail.com";
+const char* email = "letrthong@gmail.com";
 
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
 
