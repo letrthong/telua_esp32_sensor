@@ -3,7 +3,7 @@
 
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-
+ 
 #include "Adafruit_SHT4x.h"
 
 
@@ -29,11 +29,9 @@ unsigned long interval = 30000;
 int  EEPROM_ADDRESS_SSID =  0;
 int  EEPROM_ADDRESS_PASS =  32;
 
-
+ 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-
-
-
+ 
 void initWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -204,13 +202,17 @@ void loop() {
 //        Serial.println(httpResponseCode);
         String payload = http.getString();
 //      Serial.println(payload);
-        JsonObject& root = jsonBuffer.parseObject(payload);
-        if(!root.success()) {
-          Serial.println("parseObject() failed");
+
+        //https://arduinojson.org/v6/doc/upgrade/
+        DynamicJsonDocument doc(1024);
+        
+        DeserializationError error = deserializeJson(doc, payload);
+        if(error) {
+          Serial.println("deserializeJson() failed");
            
         } else {
-           Serial.println("parseObject");
-            //long time = root["time"];
+           Serial.println("deserializeJson");
+            //long time = doc ["time"];
         }
         
       } else {
