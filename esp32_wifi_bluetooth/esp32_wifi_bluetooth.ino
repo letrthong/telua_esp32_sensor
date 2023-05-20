@@ -93,7 +93,7 @@ void initWiFi() {
         Serial.println("");
         Serial.println("SmartConfig received.");
 
-        count  = 0
+        count  = 0;
         while (WiFi.status() != WL_CONNECTED) {
           delay(500);
           Serial.print(".");
