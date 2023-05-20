@@ -290,8 +290,12 @@ void loop() {
           Serial.println("deserializeJson() failed");
 
         } else {
-          Serial.println("deserializeJson");
-          //long time = doc ["time"];
+          Serial.print("deserializeJson intervalTime=");
+          int  intervalTime = doc ["intervalTime"];
+           Serial.println(intervalTime);
+          if(intervalTime>= 30000){
+              interval = intervalTime;
+          }
         }
 
       } else {
