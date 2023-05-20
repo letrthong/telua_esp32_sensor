@@ -3,8 +3,15 @@
 
 #include <HTTPClient.h>
 
-const char* ssid = "TP-Link_2878";   /*SSID of network to connect*/
-const char* password = "51521264";   /*password for SSID*/
+const char* ssid1 = "TP-Link_2878";   /*SSID of network to connect*/
+const char* password1 = "51521264";   /*password for SSID*/
+
+
+const char* ssid = "hcmus";   /*SSID of network to connect*/
+const char* password = "fetelxxx";   /*password for SSID*/
+
+
+
 const char* email = "letrthong@gmail.com";
 
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
@@ -21,11 +28,32 @@ void initWiFi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi ..");
+  int count = 0;
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print('.');
     delay(1000);
-    break;
+    count = count +1;
+    if(count > 10){
+      break;
+    }
   }
+
+  if(WiFi.status() != WL_CONNECTED){
+      WiFi.disconnect();
+      WiFi.begin(ssid, password);
+      delay(1000);
+      WiFi.reconnect();
+      count = 0;
+      while (WiFi.status() != WL_CONNECTED) {
+        Serial.print('.');
+        delay(1000);
+        count = count +1;
+        if(count > 10){
+          break;
+        }
+      }
+  }
+
   Serial.println(WiFi.localIP());
 }
   
