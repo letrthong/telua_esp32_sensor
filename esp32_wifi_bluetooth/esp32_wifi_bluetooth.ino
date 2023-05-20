@@ -107,30 +107,31 @@ void loop() {
       uint32_t timestamp = millis();
       sht4.getEvent(&humidity, &temp);
 
-      Serial.print("Temperature: ");
-      Serial.print(temp.temperature);
-      Serial.println(" degrees C");
-      Serial.print("Humidity: "); 
-      Serial.print(humidity.relative_humidity);
-      Serial.println("% rH");
+//      Serial.print("Temperature: ");
+//      Serial.print(temp.temperature);
+//      Serial.println(" degrees C");
+//      Serial.print("Humidity: "); 
+//      Serial.print(humidity.relative_humidity);
+//      Serial.println("% rH");
 
       String temperature =  String(temp.temperature, 2);
+       String relative_humidity =  String(humidity.relative_humidity, 2);
       
       HTTPClient http; 
-      String serverPath = serverName + "?temperature=" + temperature;
+      String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity ;
       http.begin(serverPath.c_str());
       
       // Send HTTP GET request
       int httpResponseCode = http.GET();
       
       if (httpResponseCode>0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
+//        Serial.print("HTTP Response code: ");
+//        Serial.println(httpResponseCode);
         String payload = http.getString();
-        Serial.println(payload);
+//        Serial.println(payload);
       } else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
+//        Serial.print("Error code: ");
+//        Serial.println(httpResponseCode);
       }
       // Free resources
       http.end();
