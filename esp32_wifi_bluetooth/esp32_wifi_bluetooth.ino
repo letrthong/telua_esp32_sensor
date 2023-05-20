@@ -257,8 +257,8 @@ void loop() {
       http.end();
 
     } else {
-      String temperature = 0;
-      String relative_humidity = 0;
+      String temperature = "0";
+      String relative_humidity ="0";
       if(hasSensor == true){
          sensors_event_t humidity, temp;
         
