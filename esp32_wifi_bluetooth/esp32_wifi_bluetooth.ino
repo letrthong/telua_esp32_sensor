@@ -11,10 +11,7 @@
 
 #define EEPROM_SIZE 64
 
- 
-
 const char * deviceID = "12334332343443ADVED";
-
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
  
 
@@ -28,7 +25,6 @@ bool hasRouter = false;
 int total_rettry = 0;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-
 bool hasSensor = false;
 
 void initWiFi() {
@@ -180,7 +176,7 @@ void initEEPROM() {
   //   String myStr = EEPROM.readString(EEPROM_ADDRESS_SSID);
   //   unsigned int lastStringLength = myStr.length();
   //   if(lastStringLength <1){
-  //      myStr = "hcmus";
+  //      myStr = "xyz";
   //      EEPROM.writeString(EEPROM_ADDRESS_SSID, myStr);
   //      EEPROM.commit();
   //      Serial.println("initEEPROM writeString");
@@ -192,7 +188,7 @@ void initEEPROM() {
   //   myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
   //   lastStringLength = myStr.length();
   //   if(lastStringLength <1){
-  //      myStr = "fetelxxx";
+  //      myStr = "xyz";
   //      EEPROM.writeString(EEPROM_ADDRESS_PASS, myStr);
   //      EEPROM.commit();
   //      Serial.println("initEEPROM writeString");
