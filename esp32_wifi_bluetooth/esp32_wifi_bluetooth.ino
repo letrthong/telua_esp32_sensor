@@ -204,7 +204,7 @@ void loop() {
   /*if condition to check wifi reconnection*/
   if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
     total_rettry = total_rettry + 1;
-    if (total_rettry > 30) {
+    if (total_rettry > 10) {
       ESP.restart();
     }
 
