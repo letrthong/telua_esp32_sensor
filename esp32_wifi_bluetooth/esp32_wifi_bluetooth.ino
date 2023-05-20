@@ -1,8 +1,11 @@
 #include <WiFi.h>
 #include <EEPROM.h>
 
-#include "Adafruit_SHT4x.h"
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
+
+#include "Adafruit_SHT4x.h"
+
 
 #define EEPROM_SIZE  64
 
@@ -16,7 +19,7 @@ const char* password1 = "51521264";   /*password for SSID*/
 
 
 
-const char* email = "letrthong@gmail.com";
+const char* deviceID = "12334332343443ADVED";
 
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
 
@@ -24,7 +27,7 @@ unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
 int  EEPROM_ADDRESS_SSID =  0;
-int  EEPROM_ADDRESS_PASS =  16;
+int  EEPROM_ADDRESS_PASS =  32;
 
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -129,6 +132,18 @@ void initEEPROM(){
      Serial.print("initEEPROM readString myStr=");
      Serial.println(myStr);
    }
+
+   myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
+   lastStringLength = myStr.length();
+   if(lastStringLength <1){
+      myStr = "fetelxxx";
+      EEPROM.writeString(EEPROM_ADDRESS_PASS, myStr);
+      EEPROM.commit();
+      Serial.println("initEEPROM writeString");
+   }else{
+     Serial.print("initEEPROM readString myStr=");
+     Serial.println(myStr);
+   }
   
   // myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
 }
@@ -178,7 +193,7 @@ void loop() {
        String relative_humidity =  String(humidity.relative_humidity, 2);
       
       HTTPClient http; 
-      String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity ;
+      String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity +"&deviceID=" + deviceID ;
       http.begin(serverPath.c_str());
       
       // Send HTTP GET request
@@ -188,7 +203,16 @@ void loop() {
 //        Serial.print("HTTP Response code: ");
 //        Serial.println(httpResponseCode);
         String payload = http.getString();
-//        Serial.println(payload);
+//      Serial.println(payload);
+        JsonObject& root = jsonBuffer.parseObject(payload);
+        if(!root.success()) {
+          Serial.println("parseObject() failed");
+           
+        } else {
+           Serial.println("parseObject");
+            //long time = root["time"];
+        }
+        
       } else {
 //        Serial.print("Error code: ");
 //        Serial.println(httpResponseCode);
