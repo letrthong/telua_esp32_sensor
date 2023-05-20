@@ -1,7 +1,10 @@
 #include <WiFi.h>
-#include "Adafruit_SHT4x.h"
+#include <EEPROM.h>
 
+#include "Adafruit_SHT4x.h"
 #include <HTTPClient.h>
+
+#define EEPROM_SIZE  64
 
 
 
@@ -19,6 +22,9 @@ String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
 
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
+
+int  EEPROM_ADDRESS_SSID =  0;
+int  EEPROM_ADDRESS_PASS =  16;
 
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -106,11 +112,35 @@ void initSht4x(){
     }
   }
 }
- 
-void setup() {
-  // put your setup code here, to run once:
+
+
+void initEEPROM(){
+  // Allocate The Memory Size Needed
+   EEPROM.begin(EEPROM_SIZE);
+
+   String myStr = EEPROM.readString(EEPROM_ADDRESS_SSID);
+   unsigned int lastStringLength = myStr.length();
+   if(lastStringLength <1){
+      myStr = "hcmus";
+      EEPROM.writeString(EEPROM_ADDRESS_SSID, myStr);
+      EEPROM.commit();
+      Serial.println("initEEPROM writeString");
+   }else{
+     Serial.print("initEEPROM readString myStr=");
+     Serial.println(myStr);
+   }
+  
+  // myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
+}
+
+
+void setup() {  
   Serial.begin(115200);
 
+  
+  initEEPROM();
+
+   
   initWiFi();
   Serial.print("RSSI (WiFi strength): ");
   Serial.println(WiFi.RSSI());
