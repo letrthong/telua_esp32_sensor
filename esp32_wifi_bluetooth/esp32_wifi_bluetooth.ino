@@ -3,12 +3,13 @@
 
 #include <HTTPClient.h>
 
-const char* ssid1 = "TP-Link_2878";   /*SSID of network to connect*/
-const char* password1 = "51521264";   /*password for SSID*/
 
 
 const char* ssid = "hcmus";   /*SSID of network to connect*/
 const char* password = "fetelxxx";   /*password for SSID*/
+
+const char* ssid1 = "TP-Link_2878";   /*SSID of network to connect*/
+const char* password1 = "51521264";   /*password for SSID*/
 
 
 
@@ -39,8 +40,9 @@ void initWiFi() {
   }
 
   if(WiFi.status() != WL_CONNECTED){
+      Serial.print("Connecting to WiFix ..");
       WiFi.disconnect();
-      WiFi.begin(ssid, password);
+      WiFi.begin(ssid1, password1);
       delay(1000);
       WiFi.reconnect();
       count = 0;
