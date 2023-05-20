@@ -55,9 +55,9 @@ void initWiFi() {
       if (lastStringLength > 0) {
         if (current_ssid.equals(SSID)) {
           hasRouter = true;
+          break;
         }
       }
- 
     }
   }
   WiFi.scanDelete();
@@ -77,21 +77,31 @@ void initWiFi() {
 
   }
 
-  if (WiFi.status() == WL_CONNECTED) {
+  int count = 0;
+  if (WiFi.status() != WL_CONNECTED) {
         WiFi.mode(WIFI_AP_STA);
         WiFi.beginSmartConfig();
         while (!WiFi.smartConfigDone()) {
           delay(500);
           Serial.print(".");
+          count  = count + 1;
+          if(count >  360){
+             ESP.restart();
+          }
         }
 
         Serial.println("");
         Serial.println("SmartConfig received.");
 
+        count  = 0
         while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-      }
+          delay(500);
+          Serial.print(".");
+          count  = count + 1;
+          if(count >  360){
+             ESP.restart();
+          }
+        }
 
       String ssid = WiFi.SSID(); 
       String pass = WiFi.psk();
