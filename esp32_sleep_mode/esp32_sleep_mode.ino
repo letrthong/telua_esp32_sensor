@@ -252,7 +252,7 @@ void sendReport(){
          Serial.println(intervalTime);
         if(intervalTime>= 30 ){
              
-            if( time_to_sleep_mode != seconds  && intervalTime < 600){
+            if( time_to_sleep_mode != intervalTime  && intervalTime < 600){
                 time_to_sleep_mode = intervalTime;
                 EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);  
                 EEPROM.commit();   
