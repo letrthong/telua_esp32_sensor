@@ -232,7 +232,7 @@
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-   http.begin( * client, serverPath.c_str());
+   http.begin( *client, serverPath.c_str());
 
    // Send HTTP GET request
    int httpResponseCode = http.GET();
