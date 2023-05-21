@@ -186,7 +186,7 @@ void initEEPROM() {
   EEPROM.begin(EEPROM_SIZE);
 
   int seconds = EEPROM.readUInt(EEPROM_ADDRESS_TIME_TO_SLEEP);
-   if(seconds > 5){
+   if(seconds > TIME_TO_SLEEP){
        time_to_sleep_mode  = seconds;
    }
    
