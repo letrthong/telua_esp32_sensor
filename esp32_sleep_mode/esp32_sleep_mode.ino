@@ -260,7 +260,7 @@ void sendReport(){
         }
 
        
-        if(deviceID.length() < 32){
+        if(deviceID.length() != 32){
              String id =doc["deviceID"];  
               Serial.print("deserializeJson deviceID=");
               Serial.println(id);
