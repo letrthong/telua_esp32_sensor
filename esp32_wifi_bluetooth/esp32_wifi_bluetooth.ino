@@ -1,311 +1,311 @@
-#include <WiFi.h>
-#include <EEPROM.h>
+ #include <WiFi.h>
 
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-#include "time.h"
-#include "Adafruit_SHT4x.h"
+ #include <EEPROM.h>
+
+ #include <WiFiClientSecure.h>
+
+ #include <HTTPClient.h>
+
+ #include <ArduinoJson.h>
+
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 
 
-#define EEPROM_SIZE 64
+ #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
+ #define EEPROM_SIZE 256
+ #define TIME_TO_SLEEP 30
 
-const char* deviceID = "12334332343443ADVED";
-String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
+
+ RTC_DATA_ATTR int bootCount = 0;
+
+
+ String deviceID = "";
+ String serialNumber = "";
+ String serverName = "https://telua.co/service/v1/esp32/update-sensor";
+
+ int EEPROM_ADDRESS_SSID = 0;
+ int EEPROM_ADDRESS_PASS = 32;
+ int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
+ int EEPROM_ADDRESS_DEVICE_ID = 128;
+ int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
+
+ bool hasRouter = false;
+ bool hasSensor = false;
+ int time_to_sleep_mode = TIME_TO_SLEEP;
  
+Adafruit_BME280 bme;
 
-unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+ void initWiFi() {
+   WiFi.mode(WIFI_STA);
 
-int EEPROM_ADDRESS_SSID = 0;
-int EEPROM_ADDRESS_PASS = 32;
+   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
+   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+   unsigned int lastStringLength = current_ssid.length();
 
-bool hasRouter = false;
-int total_rettry = 0;
+   hasRouter = false;
 
-const char* ntpServer = "pool.ntp.org";
-long  gmtOffset_sec = 3600 * 1;
-const int   daylightOffset_sec = 3600 * 0;
+   int n = WiFi.scanNetworks();
+   Serial.println("Scan done");
+   if (n == 0) {
+     Serial.println("no networks found");
+   } else {
+     Serial.print(n);
+     Serial.println(" networks found");
+     for (int i = 0; i < n; ++i) {
+       String SSID = WiFi.SSID(i);
+       Serial.print("scanNetworks SSID=");
+       Serial.println(SSID);
+       if (lastStringLength > 0) {
+         if (current_ssid.equals(SSID)) {
+           hasRouter = true;
+           break;
+         }
+       }
+     }
+   }
+   WiFi.scanDelete();
 
-bool hasSensor = false;
+   if (hasRouter == true) {
+     WiFi.begin(current_ssid, current_pass);
+     Serial.print("Connecting to WiFi ..");
+     int count = 0;
+     while (WiFi.status() != WL_CONNECTED) {
+       Serial.print('.');
+       delay(1000);
+       count = count + 1;
+       if (count > 10) {
+         break;
+       }
+     }
+   }
 
+   int count = 0;
+   if (WiFi.status() != WL_CONNECTED) {
+     WiFi.mode(WIFI_AP_STA);
+     WiFi.beginSmartConfig();
+     while (!WiFi.smartConfigDone()) {
+       delay(500);
+       Serial.print(".");
+       count = count + 1;
+       if (count > 360) {
+         ESP.restart();
+       }
+     }
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+     Serial.println("");
+     Serial.println("SmartConfig received.");
 
+     count = 0;
+     while (WiFi.status() != WL_CONNECTED) {
+       delay(500);
+       Serial.print(".");
+       count = count + 1;
+       if (count > 360) {
+         ESP.restart();
+       }
+     }
 
-void initWiFi() {
-  WiFi.mode(WIFI_STA);
+     String ssid = WiFi.SSID();
+     String pass = WiFi.psk();
 
-  String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
-  String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-  unsigned int lastStringLength = current_ssid.length();
+     if (ssid.length() > 1 && pass.length() >= 8) {
+       Serial.print("SmartConfig readString ssid=");
+       Serial.println(ssid);
 
-  hasRouter = false;
+       Serial.print("SmartConfig readString pass=");
+       Serial.println(pass);
+
+       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+       EEPROM.commit();
+
+       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
+       EEPROM.commit();
+     }
+   }
+
+   Serial.println(WiFi.localIP());
+ }
+
+ void turnOffWiFi() {
+   WiFi.disconnect();
+ }
+
+ void initSht4x() {
+   Serial.println("Telua bme test");
+   if (!bme.begin(0x76)) {
+     Serial.println("Couldn't find bme");
+   } else {
+     hasSensor = true;
+     Serial.println("Found bme sensor");
+   }
+ }
+
+ void initEEPROM() {
+   // Allocate The Memory Size Needed
+   EEPROM.begin(EEPROM_SIZE);
+
+   int seconds = EEPROM.readUInt(EEPROM_ADDRESS_TIME_TO_SLEEP);
+   if (seconds > TIME_TO_SLEEP) {
+     time_to_sleep_mode = seconds;
+   }
+
+   Serial.print("initEEPROM time_to_sleep_mode=");
+   Serial.println(time_to_sleep_mode);
+
+   deviceID = EEPROM.readString(EEPROM_ADDRESS_DEVICE_ID);
+   Serial.print("initEEPROM deviceID=");
+   Serial.println(deviceID);
+
+   serialNumber = EEPROM.readString(EEPROM_ADDRESS_SERIAL_NUMBER);
+   Serial.print("initEEPROM serialNumber=");
+   Serial.println(serialNumber);
+ }
+
+ void sendReport() {
+   if (WiFi.status() != WL_CONNECTED) {
+     return;
+   }
+   //https://lastminuteengineers.com/bme280-arduino-tutorial/
+   String temperature = "0";
+   String relative_humidity = "0";
+   if (hasSensor == true) {
+     temperature = String(bme.readTemperature(), 2);
+     relative_humidity = String(bme.readHumidity(), 2);
+   }
    
+   WiFiClientSecure * client = new WiFiClientSecure;
+   if (!client) {
+     return;
+   }
 
-  int n = WiFi.scanNetworks();
-  Serial.println("Scan done");
-  if (n == 0) {
-    Serial.println("no networks found");
-  } else {
-    Serial.print(n);
-    Serial.println(" networks found");
-    for (int i = 0; i < n; ++i) {
-      String SSID = WiFi.SSID(i);
-      Serial.print("scanNetworks SSID=");
-      Serial.println(SSID);
-      if (lastStringLength > 0) {
-        if (current_ssid.equals(SSID)) {
-          hasRouter = true;
-          break;
-        }
-      }
-    }
-  }
-  WiFi.scanDelete();
+   client -> setInsecure();
+   HTTPClient http;
+   String serverPath = serverName + "?sensorName=BME280&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-  if (hasRouter == true) {
-    WiFi.begin(current_ssid, current_pass);
-    Serial.print("Connecting to WiFi ..");
-    int count = 0;
-    while (WiFi.status() != WL_CONNECTED) {
-      Serial.print('.');
-      delay(1000);
-      count = count + 1;
-      if (count > 10) {
-        break;
-      }
-    }
+   http.begin( *client, serverPath.c_str());
 
-  }
+   // Send HTTP GET request
+   int httpResponseCode = http.GET();
 
-  int count = 0;
-  if (WiFi.status() != WL_CONNECTED) {
-        WiFi.mode(WIFI_AP_STA);
-        WiFi.beginSmartConfig();
-        while (!WiFi.smartConfigDone()) {
-          delay(500);
-          Serial.print(".");
-          count  = count + 1;
-          if(count >  360){
-             ESP.restart();
-          }
-        }
+   if (httpResponseCode == 200) {
+     //        Serial.print("HTTP Response code: ");
+     //        Serial.println(httpResponseCode);
+     String payload = http.getString();
+     //      Serial.println(payload);
 
-        Serial.println("");
-        Serial.println("SmartConfig received.");
+     //https://arduinojson.org/v6/doc/upgrade/
+     DynamicJsonDocument doc(1024);
 
-        count  = 0;
-        while (WiFi.status() != WL_CONNECTED) {
-          delay(500);
-          Serial.print(".");
-          count  = count + 1;
-          if(count >  360){
-             ESP.restart();
-          }
-        }
+     DeserializationError error = deserializeJson(doc, payload);
+     if (error) {
+       Serial.println("deserializeJson() failed");
 
-      String ssid = WiFi.SSID(); 
-      String pass = WiFi.psk();
-      
-      if (ssid.length() > 1 && pass.length() >= 8) {
-         Serial.print("SmartConfig readString ssid=");
-         Serial.println(ssid);
+     } else {
 
-         Serial.print("SmartConfig readString pass=");
-         Serial.println(pass);
-  
-        EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-        EEPROM.commit();
-        
-        EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
-        EEPROM.commit();
-      }
-  }
- 
-  Serial.println(WiFi.localIP());
-}
+       int intervalTime = doc["intervalTime"];
+       Serial.print("deserializeJson intervalTime=");
+       Serial.println(intervalTime);
+       if (intervalTime >= 30) {
 
-void initSht4x() {
-  Serial.println("Adafruit SHT4x test");
-  if (!sht4.begin()) {
-    Serial.println("Couldn't find SHT4x");
-  } else {
-    hasSensor = true;
-    Serial.println("Found SHT4x sensor");
-    Serial.print("Serial number 0x");
-    Serial.println(sht4.readSerial(), HEX);
+         if (time_to_sleep_mode != intervalTime && intervalTime < 600) {
+           time_to_sleep_mode = intervalTime;
+           EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+           EEPROM.commit();
+         }
+       }
 
-    // You can have 3 different precisions, higher precision takes longer
-    sht4.setPrecision(SHT4X_HIGH_PRECISION);
-    switch (sht4.getPrecision()) {
-    case SHT4X_HIGH_PRECISION:
-      Serial.println("High precision");
-      break;
-    case SHT4X_MED_PRECISION:
-      Serial.println("Med precision");
-      break;
-    case SHT4X_LOW_PRECISION:
-      Serial.println("Low precision");
-      break;
-    }
-    switch (sht4.getHeater()) {
-    case SHT4X_NO_HEATER:
-      Serial.println("No heater");
-      break;
-    case SHT4X_HIGH_HEATER_1S:
-      Serial.println("High heat for 1 second");
-      break;
-    case SHT4X_HIGH_HEATER_100MS:
-      Serial.println("High heat for 0.1 second");
-      break;
-    case SHT4X_MED_HEATER_1S:
-      Serial.println("Medium heat for 1 second");
-      break;
-    case SHT4X_MED_HEATER_100MS:
-      Serial.println("Medium heat for 0.1 second");
-      break;
-    case SHT4X_LOW_HEATER_1S:
-      Serial.println("Low heat for 1 second");
-      break;
-    case SHT4X_LOW_HEATER_100MS:
-      Serial.println("Low heat for 0.1 second");
-      break;
-    }
-  }
-}
+       if (deviceID.length() != 32) {
+         String id = doc["deviceID"];
+         Serial.print("deserializeJson deviceID=");
+         Serial.println(id);
+         if (id.length() > 1 && id.length() < 64) {
+           EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
+           EEPROM.commit();
+         }
 
-void initEEPROM() {
-  // Allocate The Memory Size Needed
-  EEPROM.begin(EEPROM_SIZE);
+         String serial_number = doc["serialNumber"];
+         if (serial_number.length() > 1 && serial_number.length() < 64) {
+           EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
+           EEPROM.commit();
+         }
+       }
+     }
 
-  //   String myStr = EEPROM.readString(EEPROM_ADDRESS_SSID);
-  //   unsigned int lastStringLength = myStr.length();
-  //   if(lastStringLength <1){
-  //      myStr = "xyz";
-  //      EEPROM.writeString(EEPROM_ADDRESS_SSID, myStr);
-  //      EEPROM.commit();
-  //      Serial.println("initEEPROM writeString");
-  //   }else{
-  //     Serial.print("initEEPROM readString myStr=");
-  //     Serial.println(myStr);
-  //   }
-  //
-  //   myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
-  //   lastStringLength = myStr.length();
-  //   if(lastStringLength <1){
-  //      myStr = "xyz";
-  //      EEPROM.writeString(EEPROM_ADDRESS_PASS, myStr);
-  //      EEPROM.commit();
-  //      Serial.println("initEEPROM writeString");
-  //   }else{
-  //     Serial.print("initEEPROM readString myStr=");
-  //     Serial.println(myStr);
-  //   }
+   } else {
+     //        Serial.print("Error code: ");
+     //        Serial.println(httpResponseCode);
+   }
+   // Free resources
+   http.end();
+   delete client;
+ }
+ /*
+ Method to print the reason by which ESP32
+ has been awaken from sleep
+ */
+ void print_wakeup_reason() {
+   esp_sleep_wakeup_cause_t wakeup_reason;
 
-  // myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
-}
+   wakeup_reason = esp_sleep_get_wakeup_cause();
 
-void setup() {
-  Serial.begin(115200);
+   switch (wakeup_reason) {
+   case ESP_SLEEP_WAKEUP_EXT0:
+     Serial.println("Wakeup caused by external signal using RTC_IO");
+     break;
+   case ESP_SLEEP_WAKEUP_EXT1:
+     Serial.println("Wakeup caused by external signal using RTC_CNTL");
+     break;
+   case ESP_SLEEP_WAKEUP_TIMER:
+     Serial.println("Wakeup caused by timer");
+     break;
+   case ESP_SLEEP_WAKEUP_TOUCHPAD:
+     Serial.println("Wakeup caused by touchpad");
+     break;
+   case ESP_SLEEP_WAKEUP_ULP:
+     Serial.println("Wakeup caused by ULP program");
+     break;
+   default:
+     Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
+     break;
+   }
+ }
 
-  initEEPROM();
+ void setup() {
+   Serial.begin(115200);
+   delay(1000); //Take some time to open up the Serial Monitor
 
-  initWiFi();
-  Serial.print("RSSI (WiFi strength): ");
-  Serial.println(WiFi.RSSI());
+   //Increment boot number and print it every reboot
+   ++bootCount;
+   Serial.println("Boot number: " + String(bootCount));
 
-  initSht4x();
+   initEEPROM();
 
-}
+   initWiFi();
 
-void loop() {
-  // Serial.println("Hello from Telua ESP-WROOM-32");
-  delay(1000);
-  unsigned long currentMillis = millis();
-  /*if condition to check wifi reconnection*/
-  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
-      total_rettry = total_rettry + 1;
-      if (total_rettry > 10) {
-        ESP.restart();
-      }
-  
-      Serial.print(millis());
-      Serial.println("  Reconnecting to WiFi...");
-      WiFi.disconnect();
-      delay(1000);
-      WiFi.reconnect();
-      previousMillis = currentMillis;
-  } else if ((currentMillis - previousMillis >= interval)) {
-     total_rettry = 0;
-     String temperature = "0";
-      String relative_humidity ="0";
-      if(hasSensor == true){
-         sensors_event_t humidity, temp;
-        
-        uint32_t timestamp = millis();
-        sht4.getEvent( & humidity, & temp);
-        
-        //      Serial.print("Temperature: ");
-        //      Serial.print(temp.temperature);
-        //      Serial.println(" degrees C");
-        //      Serial.print("Humidity: "); 
-        //      Serial.print(humidity.relative_humidity);
-        //      Serial.println("% rH");
-        
-        temperature = String(temp.temperature, 2);
-        relative_humidity = String(humidity.relative_humidity, 2);
-      }
-     
+   initSht4x();
 
-      HTTPClient http;
-      String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID;
-      http.begin(serverPath.c_str());
+   sendReport();
 
-      // Send HTTP GET request
-      int httpResponseCode = http.GET();
+   turnOffWiFi();
 
-      if (httpResponseCode > 0) {
-        //        Serial.print("HTTP Response code: ");
-        //        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        //      Serial.println(payload);
+   //Print the wakeup reason for ESP32
+   print_wakeup_reason();
 
-        //https://arduinojson.org/v6/doc/upgrade/
-        DynamicJsonDocument doc(1024);
+   /*
+   First we configure the wake up source
+   We set our ESP32 to wake up every 5 seconds
+   */
+   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
 
-        DeserializationError error = deserializeJson(doc, payload);
-        if (error) {
-          Serial.println("deserializeJson() failed");
+   Serial.println("Going to sleep now");
+   Serial.flush();
+   esp_deep_sleep_start();
+   Serial.println("This will never be printed");
+ }
 
-        } else {
-          Serial.print("deserializeJson intervalTime=");
-          int  intervalTime = doc ["intervalTime"];
-           Serial.println(intervalTime);
-          if(intervalTime>= 30000){
-              interval = intervalTime;
-          }
-           long      gmtOffset   = doc ["timezone"];
-           if(gmtOffset > 0){
-                if(gmtOffset_sec != (3600 * gmtOffset)){
-                     gmtOffset_sec = 3600 * gmtOffset;
-                    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-                }
-           }
-        }
-
-      } else {
-        //        Serial.print("Error code: ");
-        //        Serial.println(httpResponseCode);
-      }
-      // Free resources
-      http.end();
-      previousMillis = currentMillis;
-
-      struct tm timeinfo;
-      if (!getLocalTime(&timeinfo)) {
-        Serial.println("Failed to obtain time");
-      }
-      Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-     
-  }
-}
+ void loop() {
+   //This is not going to be called
+ }
