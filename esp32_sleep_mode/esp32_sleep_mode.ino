@@ -217,7 +217,7 @@ void sendReport(){
     // Send HTTP GET request
     int httpResponseCode = http.GET();
 
-    if (httpResponseCode > 0) {
+    if (httpResponseCode == 200) {
       //        Serial.print("HTTP Response code: ");
       //        Serial.println(httpResponseCode);
       String payload = http.getString();
@@ -236,7 +236,7 @@ void sendReport(){
          Serial.println(intervalTime);
         if(intervalTime>= 30000){
             int seconds =  intervalTime/1000;
-            if( time_to_sleep_mode != seconds  & seconds < 600){
+            if( time_to_sleep_mode != seconds  && seconds < 600){
                 time_to_sleep_mode = seconds;
                 EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, seconds);  
                 EEPROM.commit();   
