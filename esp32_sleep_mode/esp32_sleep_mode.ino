@@ -11,7 +11,7 @@
  #include "Adafruit_SHT4x.h"
 
 
- #define uS_TO_S_FACTOR 1000000 ULL /* Conversion factor for micro seconds to seconds */
+ #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 
  RTC_DATA_ATTR int bootCount = 0;
 
