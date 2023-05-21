@@ -8,27 +8,26 @@
  
 
 #define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  5        /* Time ESP32 will go to sleep (in seconds) */
+
 
 RTC_DATA_ATTR   int bootCount = 0;
 
 
 
 #define EEPROM_SIZE 64
+#define TIME_TO_SLEEP  5     
 
 const char* deviceID = "12334332343443ADVED";
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
  
 
-unsigned long previousMillis = 0;
-unsigned long interval = 30000;
-
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
 
 bool hasRouter = false;
 bool hasSensor = false;
-
+int  time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
@@ -181,7 +180,11 @@ void initSht4x() {
 void initEEPROM() {
   // Allocate The Memory Size Needed
   EEPROM.begin(EEPROM_SIZE);
- 
+
+  int seconds = EEPROM.readUInt(EEPROM_ADDRESS_TIME_TO_SLEEP);
+   if(seconds > 5){
+       time_to_sleep_mode  = seconds;
+   }
 }
 
 void sendReport(){
@@ -232,7 +235,12 @@ void sendReport(){
         int  intervalTime = doc ["intervalTime"];
          Serial.println(intervalTime);
         if(intervalTime>= 30000){
-            interval = intervalTime;
+            int seconds =  intervalTime/1000;
+            if( time_to_sleep_mode != seconds  & seconds < 600){
+                time_to_sleep_mode = seconds;
+                EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, seconds);  
+                EEPROM.commit();   
+            }
         }
           
       }
@@ -290,8 +298,8 @@ void setup() {
   First we configure the wake up source
   We set our ESP32 to wake up every 5 seconds
   */
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) + " Seconds");
+  esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
 
   
   Serial.println("Going to sleep now");
