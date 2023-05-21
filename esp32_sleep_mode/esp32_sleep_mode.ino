@@ -18,7 +18,7 @@ RTC_DATA_ATTR   int bootCount = 0;
 #define TIME_TO_SLEEP  10    
 
 String deviceID = "";
-String SerialNumber = "";
+String serialNumber = "";
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
  
 
@@ -197,9 +197,9 @@ void initEEPROM() {
   Serial.print("initEEPROM deviceID=");
   Serial.println(deviceID);
 
-  SerialNumber = EEPROM.readString(EEPROM_ADDRESS_SERIAL_NUMBER);
-  Serial.print("initEEPROM SerialNumber=");
-  Serial.println(SerialNumber);
+  serialNumber = EEPROM.readString(EEPROM_ADDRESS_SERIAL_NUMBER);
+  Serial.print("initEEPROM serialNumber=");
+  Serial.println(serialNumber);
 }
 
 void sendReport(){
@@ -226,7 +226,7 @@ void sendReport(){
    
 
     HTTPClient http;
-    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID;
+    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
     http.begin(serverPath.c_str());
 
     // Send HTTP GET request
