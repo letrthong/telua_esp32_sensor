@@ -15,7 +15,7 @@ RTC_DATA_ATTR   int bootCount = 0;
 
 
 #define EEPROM_SIZE 256
-#define TIME_TO_SLEEP  5     
+#define TIME_TO_SLEEP  10    
 
 String deviceID = "";
 String SerialNumber = "";
