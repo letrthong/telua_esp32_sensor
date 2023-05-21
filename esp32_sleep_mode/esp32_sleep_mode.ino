@@ -1,6 +1,7 @@
  #include <WiFi.h>
 #include <EEPROM.h>
 
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
@@ -19,7 +20,7 @@ RTC_DATA_ATTR   int bootCount = 0;
 
 String deviceID = "";
 String serialNumber = "";
-String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
+String serverName = "https://telua.co/service/v1/esp32/update-sensor";
  
 
 int EEPROM_ADDRESS_SSID = 0;
@@ -34,6 +35,7 @@ bool hasSensor = false;
 int  time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+
 
 void initWiFi() {
   WiFi.mode(WIFI_STA);
@@ -133,7 +135,7 @@ void turnOffWiFi(){
 }
 
 void initSht4x() {
-  Serial.println("Adafruit SHT4x test");
+  Serial.println("Telua SHT4x test");
   if (!sht4.begin()) {
     Serial.println("Couldn't find SHT4x");
   } else {
@@ -141,42 +143,43 @@ void initSht4x() {
     Serial.println("Found SHT4x sensor");
     Serial.print("Serial number 0x");
     Serial.println(sht4.readSerial(), HEX);
-
-    // You can have 3 different precisions, higher precision takes longer
-    sht4.setPrecision(SHT4X_HIGH_PRECISION);
-    switch (sht4.getPrecision()) {
-    case SHT4X_HIGH_PRECISION:
-      Serial.println("High precision");
-      break;
-    case SHT4X_MED_PRECISION:
-      Serial.println("Med precision");
-      break;
-    case SHT4X_LOW_PRECISION:
-      Serial.println("Low precision");
-      break;
-    }
-    switch (sht4.getHeater()) {
-    case SHT4X_NO_HEATER:
-      Serial.println("No heater");
-      break;
-    case SHT4X_HIGH_HEATER_1S:
-      Serial.println("High heat for 1 second");
-      break;
-    case SHT4X_HIGH_HEATER_100MS:
-      Serial.println("High heat for 0.1 second");
-      break;
-    case SHT4X_MED_HEATER_1S:
-      Serial.println("Medium heat for 1 second");
-      break;
-    case SHT4X_MED_HEATER_100MS:
-      Serial.println("Medium heat for 0.1 second");
-      break;
-    case SHT4X_LOW_HEATER_1S:
-      Serial.println("Low heat for 1 second");
-      break;
-    case SHT4X_LOW_HEATER_100MS:
-      Serial.println("Low heat for 0.1 second");
-      break;
+    if(bootCount <2){
+         // You can have 3 different precisions, higher precision takes longer
+        sht4.setPrecision(SHT4X_HIGH_PRECISION);
+        switch (sht4.getPrecision()) {
+        case SHT4X_HIGH_PRECISION:
+          Serial.println("High precision");
+          break;
+        case SHT4X_MED_PRECISION:
+          Serial.println("Med precision");
+          break;
+        case SHT4X_LOW_PRECISION:
+          Serial.println("Low precision");
+          break;
+        }
+        switch (sht4.getHeater()) {
+        case SHT4X_NO_HEATER:
+          Serial.println("No heater");
+          break;
+        case SHT4X_HIGH_HEATER_1S:
+          Serial.println("High heat for 1 second");
+          break;
+        case SHT4X_HIGH_HEATER_100MS:
+          Serial.println("High heat for 0.1 second");
+          break;
+        case SHT4X_MED_HEATER_1S:
+          Serial.println("Medium heat for 1 second");
+          break;
+        case SHT4X_MED_HEATER_100MS:
+          Serial.println("Medium heat for 0.1 second");
+          break;
+        case SHT4X_LOW_HEATER_1S:
+          Serial.println("Low heat for 1 second");
+          break;
+        case SHT4X_LOW_HEATER_100MS:
+          Serial.println("Low heat for 0.1 second");
+          break;
+        }
     }
   }
 }
@@ -223,11 +226,17 @@ void sendReport(){
       temperature = String(temp.temperature, 2);
       relative_humidity = String(humidity.relative_humidity, 2);
     }
+    WiFiClientSecure *client = new WiFiClientSecure;
+    if(!client){
+        return;
+    }
+    
    
-
+    client->setInsecure();
     HTTPClient http;
     String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-    http.begin(serverPath.c_str());
+    
+    http.begin(*client, serverPath.c_str());
 
     // Send HTTP GET request
     int httpResponseCode = http.GET();
@@ -283,6 +292,7 @@ void sendReport(){
     }
     // Free resources
     http.end();
+    delete client;
 }
 /*
 Method to print the reason by which ESP32
