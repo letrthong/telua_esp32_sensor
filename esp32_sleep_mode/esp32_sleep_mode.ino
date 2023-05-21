@@ -14,16 +14,20 @@ RTC_DATA_ATTR   int bootCount = 0;
 
 
 
-#define EEPROM_SIZE 64
+#define EEPROM_SIZE 256
 #define TIME_TO_SLEEP  5     
 
-const char* deviceID = "12334332343443ADVED";
+String deviceID = "";
+String SerialNumber = "";
 String serverName = "http://34.111.197.130:80/service/v1/esp32/update-sensor";
  
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
+int EEPROM_ADDRESS_DEVICE_ID= 128;
+int EEPROM_ADDRESS_SERIAL_NUMBER= 192;
+
 
 bool hasRouter = false;
 bool hasSensor = false;
@@ -185,6 +189,17 @@ void initEEPROM() {
    if(seconds > 5){
        time_to_sleep_mode  = seconds;
    }
+   
+   Serial.print("initEEPROM time_to_sleep_mode=");
+   Serial.println(time_to_sleep_mode);
+
+  deviceID = EEPROM.readString(EEPROM_ADDRESS_DEVICE_ID);
+  Serial.print("initEEPROM deviceID=");
+  Serial.println(deviceID);
+
+  SerialNumber = EEPROM.readString(EEPROM_ADDRESS_SERIAL_NUMBER);
+  Serial.print("initEEPROM SerialNumber=");
+  Serial.println(SerialNumber);
 }
 
 void sendReport(){
@@ -231,8 +246,9 @@ void sendReport(){
         Serial.println("deserializeJson() failed");
 
       } else {
+        
+        int  intervalTime = doc["intervalTime"];
         Serial.print("deserializeJson intervalTime=");
-        int  intervalTime = doc ["intervalTime"];
          Serial.println(intervalTime);
         if(intervalTime>= 30000){
             int seconds =  intervalTime/1000;
@@ -242,7 +258,23 @@ void sendReport(){
                 EEPROM.commit();   
             }
         }
-          
+
+       
+        if(deviceID.length() < 1){
+             String id =doc["deviceID"];  
+              Serial.print("deserializeJson deviceID=");
+              Serial.println(id);
+              if(id.length()> 1 && id.length() < 64){
+                  EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);  
+                  EEPROM.commit();
+              }
+
+               String serial_number  =doc["serialNumber"];
+               if(serial_number.length()> 1 && serial_number.length() < 64){
+                  EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, id);  
+                  EEPROM.commit();
+              }
+        }
       }
 
     } else {
