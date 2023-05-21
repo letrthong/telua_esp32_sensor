@@ -1,10 +1,17 @@
-#include <WiFi.h>
+ #include <WiFi.h>
 #include <EEPROM.h>
 
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include "time.h"
+
 #include "Adafruit_SHT4x.h"
+ 
+
+#define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  5        /* Time ESP32 will go to sleep (in seconds) */
+
+RTC_DATA_ATTR   int bootCount = 0;
+
 
 
 #define EEPROM_SIZE 64
@@ -20,17 +27,10 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 
 bool hasRouter = false;
-int total_rettry = 0;
-
-const char* ntpServer = "pool.ntp.org";
-long  gmtOffset_sec = 3600 * 1;
-const int   daylightOffset_sec = 3600 * 0;
-
 bool hasSensor = false;
 
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-
 
 void initWiFi() {
   WiFi.mode(WIFI_STA);
@@ -125,6 +125,10 @@ void initWiFi() {
   Serial.println(WiFi.localIP());
 }
 
+void turnOffWiFi(){
+  WiFi.disconnect();
+}
+
 void initSht4x() {
   Serial.println("Adafruit SHT4x test");
   if (!sht4.begin()) {
@@ -177,135 +181,125 @@ void initSht4x() {
 void initEEPROM() {
   // Allocate The Memory Size Needed
   EEPROM.begin(EEPROM_SIZE);
+ 
+}
 
-  //   String myStr = EEPROM.readString(EEPROM_ADDRESS_SSID);
-  //   unsigned int lastStringLength = myStr.length();
-  //   if(lastStringLength <1){
-  //      myStr = "xyz";
-  //      EEPROM.writeString(EEPROM_ADDRESS_SSID, myStr);
-  //      EEPROM.commit();
-  //      Serial.println("initEEPROM writeString");
-  //   }else{
-  //     Serial.print("initEEPROM readString myStr=");
-  //     Serial.println(myStr);
-  //   }
-  //
-  //   myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
-  //   lastStringLength = myStr.length();
-  //   if(lastStringLength <1){
-  //      myStr = "xyz";
-  //      EEPROM.writeString(EEPROM_ADDRESS_PASS, myStr);
-  //      EEPROM.commit();
-  //      Serial.println("initEEPROM writeString");
-  //   }else{
-  //     Serial.print("initEEPROM readString myStr=");
-  //     Serial.println(myStr);
-  //   }
+void sendReport(){
+  if(WiFi.status() != WL_CONNECTED){
+    return;
+  }
 
-  // myStr = EEPROM.readString(EEPROM_ADDRESS_PASS);
+   String temperature = "0";
+    String relative_humidity ="0";
+    if(hasSensor == true){
+       sensors_event_t humidity, temp;
+      sht4.getEvent( & humidity, & temp);
+      
+      //      Serial.print("Temperature: ");
+      //      Serial.print(temp.temperature);
+      //      Serial.println(" degrees C");
+      //      Serial.print("Humidity: "); 
+      //      Serial.print(humidity.relative_humidity);
+      //      Serial.println("% rH");
+      
+      temperature = String(temp.temperature, 2);
+      relative_humidity = String(humidity.relative_humidity, 2);
+    }
+   
+
+    HTTPClient http;
+    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID;
+    http.begin(serverPath.c_str());
+
+    // Send HTTP GET request
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+      //        Serial.print("HTTP Response code: ");
+      //        Serial.println(httpResponseCode);
+      String payload = http.getString();
+      //      Serial.println(payload);
+
+      //https://arduinojson.org/v6/doc/upgrade/
+      DynamicJsonDocument doc(1024);
+
+      DeserializationError error = deserializeJson(doc, payload);
+      if (error) {
+        Serial.println("deserializeJson() failed");
+
+      } else {
+        Serial.print("deserializeJson intervalTime=");
+        int  intervalTime = doc ["intervalTime"];
+         Serial.println(intervalTime);
+        if(intervalTime>= 30000){
+            interval = intervalTime;
+        }
+          
+      }
+
+    } else {
+      //        Serial.print("Error code: ");
+      //        Serial.println(httpResponseCode);
+    }
+    // Free resources
+    http.end();
+}
+/*
+Method to print the reason by which ESP32
+has been awaken from sleep
+*/
+void print_wakeup_reason(){
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
+  }
 }
 
 void setup() {
   Serial.begin(115200);
+  delay(1000); //Take some time to open up the Serial Monitor
 
+  //Increment boot number and print it every reboot
+  ++bootCount;
+  Serial.println("Boot number: " + String(bootCount));
+
+  
   initEEPROM();
 
   initWiFi();
-  Serial.print("RSSI (WiFi strength): ");
-  Serial.println(WiFi.RSSI());
-
+   
   initSht4x();
 
+  sendReport();
+  
+  turnOffWiFi();
+  
+  //Print the wakeup reason for ESP32
+  print_wakeup_reason();
+
+  /*
+  First we configure the wake up source
+  We set our ESP32 to wake up every 5 seconds
+  */
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) + " Seconds");
+
+  
+  Serial.println("Going to sleep now");
+  Serial.flush(); 
+  esp_deep_sleep_start();
+  Serial.println("This will never be printed");
 }
 
-void loop() {
-  // Serial.println("Hello from Telua ESP-WROOM-32");
-  delay(1000);
-  unsigned long currentMillis = millis();
-  /*if condition to check wifi reconnection*/
-  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
-      total_rettry = total_rettry + 1;
-      if (total_rettry > 10) {
-        ESP.restart();
-      }
-  
-      Serial.print(millis());
-      Serial.println("  Reconnecting to WiFi...");
-      WiFi.disconnect();
-      delay(1000);
-      WiFi.reconnect();
-      previousMillis = currentMillis;
-  } else if ((currentMillis - previousMillis >= interval)) {
-     total_rettry = 0;
-     String temperature = "0";
-      String relative_humidity ="0";
-      if(hasSensor == true){
-         sensors_event_t humidity, temp;
-        
-        uint32_t timestamp = millis();
-        sht4.getEvent( & humidity, & temp);
-        
-        //      Serial.print("Temperature: ");
-        //      Serial.print(temp.temperature);
-        //      Serial.println(" degrees C");
-        //      Serial.print("Humidity: "); 
-        //      Serial.print(humidity.relative_humidity);
-        //      Serial.println("% rH");
-        
-        temperature = String(temp.temperature, 2);
-        relative_humidity = String(humidity.relative_humidity, 2);
-      }
-     
-
-      HTTPClient http;
-      String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID;
-      http.begin(serverPath.c_str());
-
-      // Send HTTP GET request
-      int httpResponseCode = http.GET();
-
-      if (httpResponseCode > 0) {
-        //        Serial.print("HTTP Response code: ");
-        //        Serial.println(httpResponseCode);
-        String payload = http.getString();
-        //      Serial.println(payload);
-
-        //https://arduinojson.org/v6/doc/upgrade/
-        DynamicJsonDocument doc(1024);
-
-        DeserializationError error = deserializeJson(doc, payload);
-        if (error) {
-          Serial.println("deserializeJson() failed");
-
-        } else {
-          Serial.print("deserializeJson intervalTime=");
-          int  intervalTime = doc ["intervalTime"];
-           Serial.println(intervalTime);
-          if(intervalTime>= 30000){
-              interval = intervalTime;
-          }
-           long      gmtOffset   = doc ["timezone"];
-           if(gmtOffset > 0){
-                if(gmtOffset_sec != (3600 * gmtOffset)){
-                     gmtOffset_sec = 3600 * gmtOffset;
-                    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-                }
-           }
-        }
-
-      } else {
-        //        Serial.print("Error code: ");
-        //        Serial.println(httpResponseCode);
-      }
-      // Free resources
-      http.end();
-      previousMillis = currentMillis;
-
-      struct tm timeinfo;
-      if (!getLocalTime(&timeinfo)) {
-        Serial.println("Failed to obtain time");
-      }
-      Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-     
-  }
+void loop(){
+  //This is not going to be called
 }
