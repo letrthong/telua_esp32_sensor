@@ -158,35 +158,52 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
   scd4x.begin(Wire);
      
     // stop potentially previously started measurement
-    error = scd4x.stopPeriodicMeasurement();
-    if (error) {
-        Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
-        errorToString(error, errorMessage, 256);
-        Serial.println(errorMessage);
-    }
-
-    uint16_t serial0;
-    uint16_t serial1;
-    uint16_t serial2;
-    error = scd4x.getSerialNumber(serial0, serial1, serial2);
-    if (error) {
-        Serial.print("Error trying to execute getSerialNumber(): ");
-        errorToString(error, errorMessage, 256);
-        Serial.println(errorMessage);
-    } else {
-        printSerialNumber(serial0, serial1, serial2);
-    }
-
-    // Start Measurement
-    error = scd4x.startPeriodicMeasurement();
-    if (error) {
-        Serial.print("Error trying to execute startPeriodicMeasurement(): ");
-        errorToString(error, errorMessage, 256);
-        Serial.println(errorMessage);
+    if( bootCount < 2){
+         error = scd4x.stopPeriodicMeasurement();
+          if (error) {
+              Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
+              errorToString(error, errorMessage, 256);
+              Serial.println(errorMessage);
+          }
+      
+          uint16_t serial0;
+          uint16_t serial1;
+          uint16_t serial2;
+          error = scd4x.getSerialNumber(serial0, serial1, serial2);
+          if (error) {
+              Serial.print("Error trying to execute getSerialNumber(): ");
+              errorToString(error, errorMessage, 256);
+              Serial.println(errorMessage);
+          } else {
+              printSerialNumber(serial0, serial1, serial2);
+          }
+      
+          // Start Measurement
+          error = scd4x.startPeriodicMeasurement();
+          if (error) {
+              Serial.print("Error trying to execute startPeriodicMeasurement(): ");
+              errorToString(error, errorMessage, 256);
+              Serial.println(errorMessage);
+          }else{
+                hasSensor = true;
+                 delay(5000);
+          }
     }else{
+        uint16_t serial0;
+        uint16_t serial1;
+        uint16_t serial2;
+        error = scd4x.getSerialNumber(serial0, serial1, serial2);
+        if (error) {
+          Serial.print("Error trying to execute getSerialNumber(): ");
+          errorToString(error, errorMessage, 256);
+          Serial.println(errorMessage);
+          bootCount = 0;
+        } else {
+          printSerialNumber(serial0, serial1, serial2);
           hasSensor = true;
-           delay(5000);
+        }
     }
+   
 
     Serial.println("Waiting for first measurement... (5 sec)");
 
