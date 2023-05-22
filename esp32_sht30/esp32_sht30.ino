@@ -180,8 +180,16 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
    String relative_humidity = "0";
    if (hasSensor == true) {
     // https://github.com/adafruit/Adafruit_SHT31/blob/master/examples/SHT31test/SHT31test.ino
-     temperature = String(sht3x.readTemperature(), 2);
-     relative_humidity = String(sht3x.readHumidity(), 2);
+      float t = sht3x.readTemperature();
+      float h = sht3x.readHumidity();
+       if (! isnan(t)) { 
+           temperature = String(t, 2);
+       }
+
+       if (! isnan(h)) { 
+          relative_humidity = String(h, 2);
+       }
+    
    }
    
    WiFiClientSecure * client = new WiFiClientSecure;
