@@ -7,9 +7,10 @@
  #include <HTTPClient.h>
 
  #include <ArduinoJson.h>
-
- #include "Adafruit_SHT4x.h"
-#include "Adafruit_SGP40.h"
+ 
+ // https://github.com/Sensirion/arduino-i2c-scd4x
+#include <SensirionI2CScd4x.h>
+#include <Wire.h>
 
  #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
  #define EEPROM_SIZE 256
@@ -33,8 +34,24 @@
  bool hasSensor = false;
  int time_to_sleep_mode = TIME_TO_SLEEP;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-Adafruit_SGP40 sgp;
+ 
+SensirionI2CScd4x scd4x;
+
+
+void printUint16Hex(uint16_t value) {
+    Serial.print(value < 4096 ? "0" : "");
+    Serial.print(value < 256 ? "0" : "");
+    Serial.print(value < 16 ? "0" : "");
+    Serial.print(value, HEX);
+}
+
+void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
+    Serial.print("Serial: 0x");
+    printUint16Hex(serial0);
+    printUint16Hex(serial1);
+    printUint16Hex(serial2);
+    Serial.println();
+}
 
 
  void initWiFi() {
@@ -133,65 +150,45 @@ Adafruit_SGP40 sgp;
  }
 
  void initSht4x() {
-   Serial.println("Telua SHT4x test");
-    
-  if (! sgp.begin()){
-    Serial.println("SGP40 sensor not found :(");
-    return;
-  }else{ 
-        Serial.print("Found SGP40 serial #");
-        Serial.print(sgp.serialnumber[0], HEX);
-        Serial.print(sgp.serialnumber[1], HEX);
-        Serial.println(sgp.serialnumber[2], HEX);
-  }
+  Wire.begin();
+  
+  Serial.println("Telua SCD40 test");
+  uint16_t error;
+  char errorMessage[256];
+  scd4x.begin(Wire);
+     
+    // stop potentially previously started measurement
+    error = scd4x.stopPeriodicMeasurement();
+    if (error) {
+        Serial.print("Error trying to execute stopPeriodicMeasurement(): ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+    }
 
-   
-   if (!sht4.begin()) {
-     Serial.println("Couldn't find SHT4x");
-   } else {
-     hasSensor = true;
-     Serial.println("Found SHT4x sensor");
-     Serial.print("Serial number 0x");
-     Serial.println(sht4.readSerial(), HEX);
-     if (bootCount < 2) {
-       // You can have 3 different precisions, higher precision takes longer
-       sht4.setPrecision(SHT4X_HIGH_PRECISION);
-       switch (sht4.getPrecision()) {
-       case SHT4X_HIGH_PRECISION:
-         Serial.println("High precision");
-         break;
-       case SHT4X_MED_PRECISION:
-         Serial.println("Med precision");
-         break;
-       case SHT4X_LOW_PRECISION:
-         Serial.println("Low precision");
-         break;
-       }
-       switch (sht4.getHeater()) {
-       case SHT4X_NO_HEATER:
-         Serial.println("No heater");
-         break;
-       case SHT4X_HIGH_HEATER_1S:
-         Serial.println("High heat for 1 second");
-         break;
-       case SHT4X_HIGH_HEATER_100MS:
-         Serial.println("High heat for 0.1 second");
-         break;
-       case SHT4X_MED_HEATER_1S:
-         Serial.println("Medium heat for 1 second");
-         break;
-       case SHT4X_MED_HEATER_100MS:
-         Serial.println("Medium heat for 0.1 second");
-         break;
-       case SHT4X_LOW_HEATER_1S:
-         Serial.println("Low heat for 1 second");
-         break;
-       case SHT4X_LOW_HEATER_100MS:
-         Serial.println("Low heat for 0.1 second");
-         break;
-       }
-     }
-   }
+    uint16_t serial0;
+    uint16_t serial1;
+    uint16_t serial2;
+    error = scd4x.getSerialNumber(serial0, serial1, serial2);
+    if (error) {
+        Serial.print("Error trying to execute getSerialNumber(): ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+    } else {
+        printSerialNumber(serial0, serial1, serial2);
+    }
+
+    // Start Measurement
+    error = scd4x.startPeriodicMeasurement();
+    if (error) {
+        Serial.print("Error trying to execute startPeriodicMeasurement(): ");
+        errorToString(error, errorMessage, 256);
+        Serial.println(errorMessage);
+    }else{
+          hasSensor = true;
+    }
+
+    Serial.println("Waiting for first measurement... (5 sec)");
+
  }
 
  void initEEPROM() {
@@ -220,32 +217,60 @@ Adafruit_SGP40 sgp;
      return;
    }
 
-   String temperature = "0";
+   String str_temperature = "0";
    String relative_humidity = "0";
-   String  str_voc_index = "0";
+   String  str_co2 = "0";
    if (hasSensor == true) {
-     sensors_event_t humidity, temp;
-     sht4.getEvent( & humidity, & temp);
-    
+      while(true){
+           uint16_t error;
+            char errorMessage[256];
+            delay(100);
+        
+            // Read Measurement
+            uint16_t co2 = 0;
+            float temperature = 0.0f;
+            float humidity = 0.0f;
+            uint16_t isDataReady = false;
+            
+            error = scd4x.getDataReadyStatus(isDataReady);
+            if (error) {
+                Serial.print("Error trying to execute getDataReadyFlag(): ");
+                errorToString(error, errorMessage, 256);
+                Serial.println(errorMessage);
+                return;
+            }
+            
+            if (!isDataReady) {
+                return;
+            }
+            
+            error = scd4x.readMeasurement(co2, temperature, humidity);
+            if (error) {
+                Serial.print("Error trying to execute readMeasurement(): ");
+                errorToString(error, errorMessage, 256);
+                Serial.println(errorMessage);
+            } else
+            if (co2 == 0) {
+                Serial.println("Invalid sample detected, skipping.");
+            } else {
+                Serial.print("Co2:");
+                Serial.print(co2);
+                Serial.print("\t");
+                Serial.print("Temperature:");
+                Serial.print(temperature);
+                Serial.print("\t");
+                Serial.print("Humidity:");
+                Serial.println(humidity);
+                str_temperature = String(temperature, 2);
+                relative_humidity = String(humidity, 2);
+                str_co2 = String(co2, 2);
+                break;
+            }
+      }
      
-
-     temperature = String(temp.temperature, 2);
-     relative_humidity = String(humidity.relative_humidity, 2);
-
-     // https://github.com/adafruit/Adafruit_SGP40
-      int32_t voc_index;
-      uint16_t sraw;
-
-      sraw = sgp.measureRaw(temp.temperature, humidity.relative_humidity);
-      Serial.print("Raw measurement: ");
-      Serial.println(sraw);
-      
-      voc_index = sgp.measureVocIndex( temp.temperature,  humidity.relative_humidity);
-      Serial.print("Voc Index: ");
-      Serial.println(voc_index);
-      str_voc_index = String(voc_index, 2);
-      
    }
+
+   
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
@@ -253,7 +278,7 @@ Adafruit_SGP40 sgp;
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40-SGP40&temperature=" + temperature + "&humidity=" + relative_humidity +"&voc_index=str_voc_index" +  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SCD40&temperature=" + str_temperature + "&humidity=" + relative_humidity +"&co2=" + str_co2 + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    http.begin( *client, serverPath.c_str());
 

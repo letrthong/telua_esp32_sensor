@@ -253,7 +253,7 @@ Adafruit_SGP40 sgp;
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40-SGP40&temperature=" + temperature + "&humidity=" + relative_humidity +"&voc_index=str_voc_index" +  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SHT40-SGP40&temperature=" + temperature + "&humidity=" + relative_humidity +"&voc_index="+ str_voc_index  +  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    http.begin( *client, serverPath.c_str());
 
