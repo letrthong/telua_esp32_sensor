@@ -185,6 +185,7 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
         Serial.println(errorMessage);
     }else{
           hasSensor = true;
+           delay(5000);
     }
 
     Serial.println("Waiting for first measurement... (5 sec)");
@@ -378,10 +379,10 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
 
    initEEPROM();
 
-   initWiFi();
-
+  
    initSht4x();
 
+   initWiFi();
    sendReport();
 
    turnOffWiFi();
