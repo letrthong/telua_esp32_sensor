@@ -272,7 +272,6 @@
    int httpResponseCode = http.GET();
 
    if (httpResponseCode == 200) {
-        hasError = false;
      //        Serial.print("HTTP Response code: ");
      //        Serial.println(httpResponseCode);
      String payload = http.getString();
