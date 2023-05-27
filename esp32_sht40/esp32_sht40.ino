@@ -14,7 +14,7 @@
  #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
  #define EEPROM_SIZE 256
  #define TIME_TO_SLEEP 30
-
+ 
 
  RTC_DATA_ATTR int bootCount = 0;
 
@@ -31,6 +31,8 @@
 
  bool hasRouter = false;
  bool hasSensor = false;
+ bool hasError = true;
+ 
  int time_to_sleep_mode = TIME_TO_SLEEP;
 
  Adafruit_SHT4x sht4 = Adafruit_SHT4x();
@@ -222,14 +224,13 @@
        temperature = String(temp.temperature, 2);
        relative_humidity = String(humidity.relative_humidity, 2);
        if(   humidity.relative_humidity > 0){
+             hasError = false;
              break;
        }
         delay(500);
     }
    }
-
-  
-   
+ 
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
@@ -245,6 +246,7 @@
    int httpResponseCode = http.GET();
 
    if (httpResponseCode == 200) {
+        hasError = false;
      //        Serial.print("HTTP Response code: ");
      //        Serial.println(httpResponseCode);
      String payload = http.getString();
@@ -287,7 +289,7 @@
          }
        }
      }
-
+    
    } else {
      //        Serial.print("Error code: ");
      //        Serial.println(httpResponseCode);
@@ -352,8 +354,13 @@
    First we configure the wake up source
    We set our ESP32 to wake up every 5 seconds
    */
-   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+   if(hasError == true){
+         time_to_sleep_mode  =TIME_TO_SLEEP 
+         esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+   }else {
+         esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+   }
+    Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
 
    Serial.println("Going to sleep now");
    Serial.flush();
