@@ -244,7 +244,7 @@
   }
 
     Serial.print("errorCount="); 
-    Serial.print(errorCount);
+    Serial.println(errorCount);
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
