@@ -242,7 +242,9 @@
       errorCount = errorCount + 1;
     }
   }
-   
+
+    Serial.print("errorCount="); 
+    Serial.print(errorCount);
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
@@ -253,13 +255,14 @@
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-   if(errorCount > 10){
+   if(errorCount > 3){
       errorCount = 0;
        serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       http.begin( *client, serverPath.c_str());
       http.GET();
       http.end();
       delete client;
+      hasError = false;
        return;
    }
     
