@@ -209,19 +209,27 @@
    String temperature = "0";
    String relative_humidity = "0";
    if (hasSensor == true) {
-     sensors_event_t humidity, temp;
-     sht4.getEvent( & humidity, & temp);
-
-     //      Serial.print("Temperature: ");
-     //      Serial.print(temp.temperature);
-     //      Serial.println(" degrees C");
-     //      Serial.print("Humidity: "); 
-     //      Serial.print(humidity.relative_humidity);
-     //      Serial.println("% rH");
-
-     temperature = String(temp.temperature, 2);
-     relative_humidity = String(humidity.relative_humidity, 2);
+    for( int i= 0; i < 3; i++){
+         sensors_event_t humidity, temp;
+       sht4.getEvent( & humidity, & temp);
+  
+       //      Serial.print("Temperature: ");
+       //      Serial.print(temp.temperature);
+       //      Serial.println(" degrees C");
+       //      Serial.print("Humidity: "); 
+       //      Serial.print(humidity.relative_humidity);
+       //      Serial.println("% rH");
+       temperature = String(temp.temperature, 2);
+       relative_humidity = String(humidity.relative_humidity, 2);
+       if(   humidity.relative_humidity > 0){
+             break;
+       }
+        delay(500);
+    }
    }
+
+  
+   
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
