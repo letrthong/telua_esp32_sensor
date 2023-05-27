@@ -255,7 +255,7 @@
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-   if(errorCount > 3){
+   if(errorCount > 10){
       errorCount = 0;
        serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       http.begin( *client, serverPath.c_str());
