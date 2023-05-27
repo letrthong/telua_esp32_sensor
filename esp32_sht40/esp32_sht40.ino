@@ -355,7 +355,7 @@
    We set our ESP32 to wake up every 5 seconds
    */
    if(hasError == true){
-         time_to_sleep_mode  =TIME_TO_SLEEP 
+         time_to_sleep_mode  =TIME_TO_SLEEP ;
          esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
    }else {
          esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
