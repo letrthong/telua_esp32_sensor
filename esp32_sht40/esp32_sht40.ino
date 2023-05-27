@@ -17,12 +17,13 @@
  
 
  RTC_DATA_ATTR int bootCount = 0;
-
+ RTC_DATA_ATTR int  errorCount = 0;
 
  String deviceID = "";
  String serialNumber = "";
  String serverName = "https://telua.co/service/v1/esp32/update-sensor";
-
+ String report_url  = "https://telua.co/service/v1/esp32/error-sensor";
+ 
  int EEPROM_ADDRESS_SSID = 0;
  int EEPROM_ADDRESS_PASS = 32;
  int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
@@ -136,6 +137,7 @@
    Serial.println("Telua SHT4x test");
    if (!sht4.begin()) {
      Serial.println("Couldn't find SHT4x");
+     errorCount = errorCount + 1;
    } else {
      hasSensor = true;
      Serial.println("Found SHT4x sensor");
@@ -210,6 +212,8 @@
 
    String temperature = "0";
    String relative_humidity = "0";
+   float  fHumidity = 0.0;
+   
    if (hasSensor == true) {
     for( int i= 0; i < 3; i++){
          sensors_event_t humidity, temp;
@@ -221,16 +225,22 @@
        //      Serial.print("Humidity: "); 
        //      Serial.print(humidity.relative_humidity);
        //      Serial.println("% rH");
+       fHumidity = humidity.relative_humidity;
        temperature = String(temp.temperature, 2);
-       relative_humidity = String(humidity.relative_humidity, 2);
-       if(   humidity.relative_humidity > 0){
+       relative_humidity = String(fHumidity, 2);
+       if(  fHumidity> 0){
              hasError = false;
+             errorCount = 0;
              break;
        }
         delay(500);
     }
    }
- 
+
+   if (fHumidity < 1){
+      errorCount = errorCount + 1;
+   }
+   
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
@@ -240,6 +250,16 @@
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
+   if(errorCount > 10){
+      errorCount = 0;
+       serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      http.begin( *client, serverPath.c_str());
+      http.GET();
+      http.end();
+      delete client;
+       return;
+   }
+    
    http.begin( *client, serverPath.c_str());
 
    // Send HTTP GET request
