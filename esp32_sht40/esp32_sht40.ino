@@ -318,6 +318,7 @@
    } else {
      //        Serial.print("Error code: ");
      //        Serial.println(httpResponseCode);
+      hasError = true;
    }
    // Free resources
    http.end();
