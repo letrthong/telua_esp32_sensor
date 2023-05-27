@@ -237,9 +237,12 @@
     }
    }
 
-   if (fHumidity < 1){
+  if( hasSensor == true){
+    if (fHumidity < 1){
       errorCount = errorCount + 1;
-   }
+    }
+  }
+   
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
