@@ -323,13 +323,13 @@
      strTriggerParameter ="No";
    }
 
-     if (hasSensor == true) {
-       if (fHumidity < 1) {
-         strTriggerParameter = "sensorError";
-       }
-     }else{
-         strTriggerParameter = "NoSensor";
-     }
+//     if (hasSensor == true) {
+//       if (fHumidity < 1) {
+//         strTriggerParameter = "sensorError";
+//       }
+//     }else{
+//         strTriggerParameter = "NoSensor";
+//     }
 
    
    Serial.print("strTriggerParameter=");
