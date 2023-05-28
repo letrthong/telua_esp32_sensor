@@ -336,7 +336,7 @@
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&Trigger=" + strTriggerParameter;
+   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&trigger=" + strTriggerParameter;
 
    if (errorCount > 10) {
      errorCount = 0;
