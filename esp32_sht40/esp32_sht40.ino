@@ -297,9 +297,6 @@
            currentProperty = fTemperature;
          } else if (property == "humidity") {
            currentProperty = fHumidity;
-           if(fHumidity < 1){
-              continue;
-           }
          }
 
          if (opera == "=") {
