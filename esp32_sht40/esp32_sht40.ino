@@ -331,8 +331,8 @@
      }
 
    
-   Serial.print("strTrigger=");
-   Serial.println(strTrigger);
+   Serial.print("strTriggerParameter=");
+   Serial.println(strTriggerParameter);
 
    client -> setInsecure();
    HTTPClient http;
