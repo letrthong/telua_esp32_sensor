@@ -243,6 +243,7 @@
      }
    }
 
+ 
    if (hasSensor == true) {
      if (fHumidity < 1) {
        errorCount = errorCount + 1;
