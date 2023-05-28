@@ -23,7 +23,8 @@
  String configTrigger = "";
  String serverName = "https://telua.co/service/v1/esp32/update-sensor";
  String report_url = "https://telua.co/service/v1/esp32/error-sensor";
-
+ String trigger_url = "https://telua.co/service/v1/esp32/trigger";
+ 
  int EEPROM_ADDRESS_SSID = 0;
  int EEPROM_ADDRESS_PASS = 32;
  int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
@@ -260,7 +261,7 @@
 
    String strTriggerParameter = "";
    //process trigger
-   if (configTrigger.length() > 1) {
+   if (configTrigger.length() > 1 && hasSensor == true) {
      StaticJsonDocument < 1024 > docTrigger;
 
      // parse a JSON array
@@ -336,8 +337,18 @@
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&trigger=" + strTriggerParameter;
+   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
+  if(strTriggerParameter.length() > 0){
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter; 
+     http.begin( * client, serverPath.c_str());
+     http.GET();
+     http.end();
+     delete client;
+     hasError = false;
+     return;
+  }
+    
    if (errorCount > 10) {
      errorCount = 0;
      serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
@@ -348,6 +359,9 @@
      hasError = false;
      return;
    }
+
+
+   
 
    http.begin( * client, serverPath.c_str());
 
