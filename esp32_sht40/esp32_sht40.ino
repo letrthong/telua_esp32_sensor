@@ -16,8 +16,7 @@
  #define TIME_TO_SLEEP 30
 
  RTC_DATA_ATTR int bootCount = 0;
- RTC_DATA_ATTR int errorCount = 0;
-
+ 
  String deviceID = "";
  String serialNumber = "";
  String configTrigger = "";
@@ -139,7 +138,6 @@
    Serial.println("Telua SHT4x test");
    if (!sht4.begin()) {
      Serial.println("Couldn't find SHT4x");
-     errorCount = errorCount + 1;
    } else {
      hasSensor = true;
      Serial.println("Found SHT4x sensor");
@@ -237,19 +235,13 @@
        relative_humidity = String(fHumidity, 2);
        if (fHumidity > 0) {
          hasError = false;
-         errorCount = 0;
          break;
        }
        delay(500);
      }
    }
 
- 
-   if (hasSensor == true) {
-     if (fHumidity < 1) {
-       errorCount = errorCount + 1;
-     }
-   }
+  
 
    Serial.print("errorCount=");
    Serial.println(errorCount);
@@ -329,10 +321,8 @@
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
   }
     
-   if (errorCount > 10) {
-     errorCount = 0;
+   if (hasError == true) {
      serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-     hasError = false; 
    }
 
  
@@ -357,7 +347,6 @@
      } else {
 
        bool hasIntervalTime = doc.containsKey("intervalTime");
-
        if (hasIntervalTime == true) {
          int intervalTime = doc["intervalTime"];
          Serial.print("deserializeJson intervalTime=");
