@@ -21,7 +21,7 @@
  String serialNumber = "";
  String configTrigger = "";
  String serverName = "https://telua.co/service/v1/esp32/update-sensor";
- String report_url = "https://telua.co/service/v1/esp32/error-sensor";
+ String error_url = "https://telua.co/service/v1/esp32/error-sensor";
  String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
  
  int EEPROM_ADDRESS_SSID = 0;
@@ -322,7 +322,7 @@
   }
     
    if (hasError == true) {
-     serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
 
  
