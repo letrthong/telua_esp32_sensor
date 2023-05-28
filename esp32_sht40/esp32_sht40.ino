@@ -326,29 +326,16 @@
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(strTriggerParameter.length() > 0){
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter; 
-     http.begin( * client, serverPath.c_str());
-     http.GET();
-     http.end();
-     delete client;
-     hasError = false;
-     return;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
   }
     
    if (errorCount > 10) {
      errorCount = 0;
      serverPath = report_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-     http.begin( * client, serverPath.c_str());
-     http.GET();
-     http.end();
-     delete client;
-     hasError = false;
-     return;
+     hasError = false; 
    }
 
-
-   
-
+ 
    http.begin( * client, serverPath.c_str());
 
    // Send HTTP GET request
