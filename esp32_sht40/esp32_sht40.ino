@@ -321,6 +321,9 @@
      strTrigger ="No";
    }
 
+   Serial.print("strTrigger=");
+   Serial.println(strTrigger);
+
    client -> setInsecure();
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&Trigger=" + strTrigger;
