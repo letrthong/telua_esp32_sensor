@@ -313,7 +313,7 @@
          }
 
          if(hasTrigger == true){
-             strTriggerParameterer = strTriggerParameter + action + "-";
+             strTriggerParameter = strTriggerParameter + action + "-";
              //@Turn on off led
          }
        }
