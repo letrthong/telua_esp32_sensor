@@ -322,6 +322,15 @@
      strTrigger ="No";
    }
 
+     if (hasSensor == true) {
+       if (fHumidity < 1) {
+         strTrigger = "sensorError";
+       }
+     }else{
+         strTrigger = "NoSensor";
+     }
+
+   
    Serial.print("strTrigger=");
    Serial.println(strTrigger);
 
