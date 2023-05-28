@@ -258,7 +258,7 @@
      return;
    }
 
-   String strTrigger = "";
+   String strTriggerParameter = "";
    //process trigger
    if (configTrigger.length() > 1) {
      StaticJsonDocument < 1024 > docTrigger;
@@ -268,7 +268,7 @@
 
      if (errorTrigger) {
        Serial.println("deserializeJson() failed");
-       strTrigger ="ConfigError";
+       strTriggerParameter ="ConfigError";
      } else {
        // extract the values
        JsonArray triggerList = docTrigger.as < JsonArray > ();
@@ -313,21 +313,21 @@
          }
 
          if(hasTrigger == true){
-             strTrigger = strTrigger + action + "-";
+             strTriggerParameterer = strTriggerParameter + action + "-";
              //@Turn on off led
          }
        }
      }
    } else{
-     strTrigger ="No";
+     strTriggerParameter ="No";
    }
 
      if (hasSensor == true) {
        if (fHumidity < 1) {
-         strTrigger = "sensorError";
+         strTriggerParameter = "sensorError";
        }
      }else{
-         strTrigger = "NoSensor";
+         strTriggerParameter = "NoSensor";
      }
 
    
@@ -336,7 +336,7 @@
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&Trigger=" + strTrigger;
+   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&Trigger=" + strTriggerParameter;
 
    if (errorCount > 10) {
      errorCount = 0;
