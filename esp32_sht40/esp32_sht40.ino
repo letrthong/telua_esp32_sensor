@@ -319,8 +319,12 @@
          }
        }
      }
+     
    } else{
      strTriggerParameter ="No";
+     if (hasSensor == false) {
+         strTriggerParameter = "NoSensor";
+       }
    }
 
 //     if (hasSensor == true) {
