@@ -23,7 +23,7 @@
  String configTrigger = "";
  String serverName = "https://telua.co/service/v1/esp32/update-sensor";
  String report_url = "https://telua.co/service/v1/esp32/error-sensor";
- String trigger_url = "https://telua.co/service/v1/esp32/trigger";
+ String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
  
  int EEPROM_ADDRESS_SSID = 0;
  int EEPROM_ADDRESS_PASS = 32;
