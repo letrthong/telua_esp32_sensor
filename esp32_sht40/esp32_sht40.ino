@@ -1,3 +1,5 @@
+#include <Keyboard.h>
+
  #include <WiFi.h>
 
  #include <EEPROM.h>
@@ -86,8 +88,11 @@
 
    int count = 0;
    if (WiFi.status() != WL_CONNECTED) {
+     Serial.println("beginSmartConfig");
+     
      WiFi.mode(WIFI_AP_STA);
      WiFi.beginSmartConfig();
+     
      while (!WiFi.smartConfigDone()) {
        delay(500);
        Serial.print(".");
