@@ -1,6 +1,4 @@
-#include <Keyboard.h>
-
- #include <WiFi.h>
+#include <WiFi.h>
 
  #include <EEPROM.h>
 
