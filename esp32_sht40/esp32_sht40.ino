@@ -75,9 +75,10 @@
      int count = 0;
      while (WiFi.status() != WL_CONNECTED) {
        Serial.print('.');
-       delay(1000);
+       delay(500);
+        // 15 seconds
        count = count + 1;
-       if (count > 10) {
+       if (count > 30  ) {
          break;
        }
      }
@@ -90,6 +91,7 @@
      while (!WiFi.smartConfigDone()) {
        delay(500);
        Serial.print(".");
+        // 180seconds = 3 minutes 
        count = count + 1;
        if (count > 360) {
          ESP.restart();
@@ -104,6 +106,7 @@
        delay(500);
        Serial.print(".");
        count = count + 1;
+       // 180seconds = 3 minutes 
        if (count > 360) {
          ESP.restart();
        }
