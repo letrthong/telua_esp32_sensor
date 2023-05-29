@@ -203,6 +203,7 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
          if (! isnan(h)) { 
             if(h> 0){
                relative_humidity = String(h, 2);
+               hasError = false;
                break;
             }
          }
