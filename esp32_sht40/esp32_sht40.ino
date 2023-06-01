@@ -293,16 +293,28 @@
            currentValue = fHumidity;
          }
 
-         if (opera == "=") {
+          if (opera == "=") {
            if (currentValue == value) {
               hasTrigger = true;
            }
          } else if (opera == "<") {
-           if (currentValue > value) {
+           if (currentValue  < value ) {
               hasTrigger = true;
            }
          } else if (opera == ">") {
-           if (currentValue < value) {
+           if (currentValue > value) {
+              hasTrigger = true;
+           }
+         }else if (opera == ">=") {
+           if (currentValue >= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "<=") {
+           if (currentValue <= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "!=") {
+           if (currentValue != value) {
               hasTrigger = true;
            }
          }

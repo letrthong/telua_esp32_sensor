@@ -262,11 +262,23 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
               hasTrigger = true;
            }
          } else if (opera == "<") {
-           if (currentValue < value) {
+           if (currentValue  < value ) {
               hasTrigger = true;
            }
          } else if (opera == ">") {
-           if (currentValue < value) {
+           if (currentValue > value) {
+              hasTrigger = true;
+           }
+         }else if (opera == ">=") {
+           if (currentValue >= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "<=") {
+           if (currentValue <= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "!=") {
+           if (currentValue != value) {
               hasTrigger = true;
            }
          }
