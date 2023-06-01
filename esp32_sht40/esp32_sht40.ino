@@ -286,23 +286,23 @@
          Serial.println(action);
 
          hasTrigger = false;
-         float currentProperty = 0;
+         float currentValue = 0;
          if (property == "temperature") {
-           currentProperty = fTemperature;
+           currentValue = fTemperature;
          } else if (property == "humidity") {
-           currentProperty = fHumidity;
+           currentValue = fHumidity;
          }
 
          if (opera == "=") {
-           if (currentProperty == value) {
+           if (currentValue == value) {
               hasTrigger = true;
            }
          } else if (opera == "<") {
-           if (currentProperty < value) {
+           if (currentValue > value) {
               hasTrigger = true;
            }
          } else if (opera == ">") {
-           if (currentProperty > value) {
+           if (currentValue < value) {
               hasTrigger = true;
            }
          }
