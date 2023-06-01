@@ -252,9 +252,9 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
          hasTrigger = false;
          float currentValue = 0;
          if (property == "temperature") {
-           currentProperty = fTemperature;
+           currentValue = fTemperature;
          } else if (property == "humidity") {
-           currentProperty = fHumidity;
+           currentValue = fHumidity;
          }
 
          if (opera == "=") {
