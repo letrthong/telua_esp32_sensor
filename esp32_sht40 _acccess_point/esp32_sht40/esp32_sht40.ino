@@ -131,7 +131,7 @@ void startLocalWeb(){
                   client.println("<input type=\"submit\" value=\"Xac Nhan\">");
                   client.println("</form>");
                   if( hasWrongFormat == true){
-                     client.println("<p>Xin kiem tra lai SSID va Mat Khau của Wi-Fi</p>");
+                     client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
                   }
                   client.println("</body></html>");
                   
