@@ -303,10 +303,10 @@ void turnOnLed(){
          if(hasTrigger == true){
              strTriggerParameter = strTriggerParameter + action + "-";
              //@Turn on off led
-             if( action == "btnOn01"){
+             if( action == "btn01On"){
                   hasGpio = true;
                   turnOnLed();
-             } else  if( action == "btnOff01"){
+             } else  if( action == "btn01Of"){
                   turnOffLed();
              } 
          }
