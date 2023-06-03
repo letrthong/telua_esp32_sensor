@@ -128,7 +128,7 @@ void startLocalWeb(){
                   client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
                    client.println(" <label for=\"password\">Mat Khau Cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"password\" name=\"password\" value=\"\"><br>");
-                  client.println("<input type=\"submit\" value=\"Xác Nhận\">");
+                  client.println("<input type=\"submit\" value=\"Xac Nhan\">");
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau của Wi-Fi</p>");
