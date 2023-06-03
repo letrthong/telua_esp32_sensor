@@ -122,7 +122,7 @@ void startLocalWeb(){
                   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
                   client.println("<link rel=\"icon\" href=\"data:,\">");   
                   // Web Page Heading
-                  client.println("<body><h4>Telua IoT platformr</h4>");
+                  client.println("<body><h4>Telua IoT platform -  Telua nen tang cho IoT</h4>");
                   client.println("<form action=\"/router_info\"  method=\"get\">");
                   client.println(" <label for=\"ssid\">SSID Cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
