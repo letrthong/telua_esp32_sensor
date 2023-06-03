@@ -68,6 +68,14 @@ void startLocalWeb(){
     String header;
     while(1){
        WiFiClient client = server.available(); 
+       unsigned long currentMillis = millis();
+       if(currentMillis - previousMillis >=interval){
+           previousMillis = currentMillis;
+            Serial.println("waiting connection");
+       }
+
+
+       
        if (client) {                             // If a new client connects,
           Serial.println("New Client.");          // print a message out in the serial port
           String currentLine = "";                // make a String to hold incoming data from the client
