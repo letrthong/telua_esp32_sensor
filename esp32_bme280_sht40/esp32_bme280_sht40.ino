@@ -1,4 +1,4 @@
- #include <WiFi.h>
+#include <WiFi.h>
 
  #include <EEPROM.h>
 
@@ -9,32 +9,36 @@
  #include <ArduinoJson.h>
 
  #include "Adafruit_SHT4x.h"
-#include "Adafruit_SGP40.h"
+#include <Adafruit_BME280.h>
 
  #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
- #define EEPROM_SIZE 256
+ #define EEPROM_SIZE 512
  #define TIME_TO_SLEEP 30
 
-
  RTC_DATA_ATTR int bootCount = 0;
-
-
+ 
  String deviceID = "";
  String serialNumber = "";
+ String configTrigger = "";
  String serverName = "https://telua.co/service/v1/esp32/update-sensor";
-
+ String error_url = "https://telua.co/service/v1/esp32/error-sensor";
+ String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
+ 
  int EEPROM_ADDRESS_SSID = 0;
  int EEPROM_ADDRESS_PASS = 32;
  int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
  int EEPROM_ADDRESS_DEVICE_ID = 128;
  int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
+ int EEPROM_ADDRESS_TRIGGER = 256;
 
  bool hasRouter = false;
  bool hasSensor = false;
+ bool hasError = true;
+
  int time_to_sleep_mode = TIME_TO_SLEEP;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-Adafruit_SGP40 sgp;
+ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+Adafruit_BME280 bme;
 
 
  void initWiFi() {
@@ -73,9 +77,10 @@ Adafruit_SGP40 sgp;
      int count = 0;
      while (WiFi.status() != WL_CONNECTED) {
        Serial.print('.');
-       delay(1000);
+       delay(500);
+        // 15 seconds
        count = count + 1;
-       if (count > 10) {
+       if (count > 30  ) {
          break;
        }
      }
@@ -83,11 +88,15 @@ Adafruit_SGP40 sgp;
 
    int count = 0;
    if (WiFi.status() != WL_CONNECTED) {
+     Serial.println("beginSmartConfig");
+     
      WiFi.mode(WIFI_AP_STA);
      WiFi.beginSmartConfig();
+     
      while (!WiFi.smartConfigDone()) {
        delay(500);
        Serial.print(".");
+        // 180seconds = 3 minutes 
        count = count + 1;
        if (count > 360) {
          ESP.restart();
@@ -102,6 +111,7 @@ Adafruit_SGP40 sgp;
        delay(500);
        Serial.print(".");
        count = count + 1;
+       // 180seconds = 3 minutes 
        if (count > 360) {
          ESP.restart();
        }
@@ -133,19 +143,14 @@ Adafruit_SGP40 sgp;
  }
 
  void initSht4x() {
-   Serial.println("Telua SHT4x test");
+     if (!bme.begin(0x76)) {
+     Serial.println("Couldn't find bme");
+   } else {
+     hasSensor = true;
+     Serial.println("Found bme sensor");
+   }
     
-  if (! sgp.begin()){
-    Serial.println("SGP40 sensor not found :(");
-    return;
-  }else{ 
-        Serial.print("Found SGP40 serial #");
-        Serial.print(sgp.serialnumber[0], HEX);
-        Serial.print(sgp.serialnumber[1], HEX);
-        Serial.println(sgp.serialnumber[2], HEX);
-  }
-
-   
+   Serial.println("Telua SHT4x test");
    if (!sht4.begin()) {
      Serial.println("Couldn't find SHT4x");
    } else {
@@ -213,6 +218,10 @@ Adafruit_SGP40 sgp;
    serialNumber = EEPROM.readString(EEPROM_ADDRESS_SERIAL_NUMBER);
    Serial.print("initEEPROM serialNumber=");
    Serial.println(serialNumber);
+
+   configTrigger = EEPROM.readString(EEPROM_ADDRESS_TRIGGER);
+   Serial.print("initEEPROM configTrigger=");
+   Serial.println(configTrigger);
  }
 
  void sendReport() {
@@ -222,40 +231,141 @@ Adafruit_SGP40 sgp;
 
    String temperature = "0";
    String relative_humidity = "0";
-   String  str_voc_index = "0";
+   float fHumidity = 0.0;
+   float fTemperature = 0.0;
    if (hasSensor == true) {
-     sensors_event_t humidity, temp;
-     sht4.getEvent( & humidity, & temp);
-    
-     
+     for (int i = 0; i < 3; i++) {
+       sensors_event_t humidity, temp;
+       sht4.getEvent( & humidity, & temp);
 
-     temperature = String(temp.temperature, 2);
-     relative_humidity = String(humidity.relative_humidity, 2);
-
-     // https://github.com/adafruit/Adafruit_SGP40
-      int32_t voc_index;
-      uint16_t sraw;
-
-      sraw = sgp.measureRaw(temp.temperature, humidity.relative_humidity);
-      Serial.print("Raw measurement: ");
-      Serial.println(sraw);
-      
-      voc_index = sgp.measureVocIndex( temp.temperature,  humidity.relative_humidity);
-      Serial.print("Voc Index: ");
-      Serial.println(voc_index);
-      str_voc_index = String(voc_index, 2);
-      
+       //      Serial.print("Temperature: ");
+       //      Serial.print(temp.temperature);
+       //      Serial.println(" degrees C");
+       //      Serial.print("Humidity: "); 
+       //      Serial.print(humidity.relative_humidity);
+       //      Serial.println("% rH");
+       fHumidity = humidity.relative_humidity;
+       fTemperature = temp.temperature;
+       temperature = String(fTemperature, 2);
+       relative_humidity = String(fHumidity, 2);
+       if (fHumidity > 0) {
+         hasError = false;
+         break;
+       }
+       delay(500);
+     }
    }
+
+   String bme_280_temperature = "0";
+   String bme_280_relative_humidity = "0";
+   if (hasSensor == true) {
+     bme_280_temperature = String(bme.readTemperature(), 2);
+     bme_280_relative_humidity = String(bme.readHumidity(), 2);
+
+    Serial.print("bme_280_temperature: ");
+    Serial.print(bme_280_temperature);
+    Serial.println(" degrees C");
+    Serial.print("bme_280_relative_humidity: "); 
+    Serial.print(bme_280_relative_humidity);
+    Serial.println("% rH");
+   }
+   
+ 
+
+
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
    }
 
+   String strTriggerParameter = "";
+   //process trigger
+   if (configTrigger.length() > 1 && hasSensor == true) {
+     StaticJsonDocument < 1024 > docTrigger;
+
+     // parse a JSON array
+     DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
+
+     if (errorTrigger) {
+       Serial.println("deserializeJson() failed");
+       strTriggerParameter ="ConfigError";
+     } else {
+       // extract the values
+       JsonArray triggerList = docTrigger.as < JsonArray > ();
+       bool hasTrigger = false;
+       for (JsonObject v: triggerList) {
+         String property = v["property"];
+         Serial.print("property=");
+         Serial.println(property);
+
+         String opera = v["operator"];
+         Serial.print("operator=");
+         Serial.println(opera);
+
+         float value = v["value"];
+         Serial.print("value=");
+         Serial.println(value);
+
+         String action = v["action"];
+         Serial.print("action=");
+         Serial.println(action);
+
+         hasTrigger = false;
+         float currentValue = 0;
+         if (property == "temperature") {
+           currentValue = fTemperature;
+         } else if (property == "humidity") {
+           currentValue = fHumidity;
+         }
+
+          if (opera == "=") {
+           if (currentValue == value) {
+              hasTrigger = true;
+           }
+         } else if (opera == "<") {
+           if (currentValue  < value ) {
+              hasTrigger = true;
+           }
+         } else if (opera == ">") {
+           if (currentValue > value) {
+              hasTrigger = true;
+           }
+         }else if (opera == ">=") {
+           if (currentValue >= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "<=") {
+           if (currentValue <= value) {
+              hasTrigger = true;
+           }
+         }else if (opera == "!=") {
+           if (currentValue != value) {
+              hasTrigger = true;
+           }
+         }
+
+         if(hasTrigger == true){
+             strTriggerParameter = strTriggerParameter + action + "-";
+             //@Turn on off led
+         }
+       }
+     }
+   } 
+
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40-SGP40&temperature=" + temperature + "&humidity=" + relative_humidity +"&voc_index="+ str_voc_index  +  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-   http.begin( *client, serverPath.c_str());
+  if(strTriggerParameter.length() > 0){
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
+  }
+    
+   if (hasError == true) {
+     serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   }
+
+ 
+   http.begin( * client, serverPath.c_str());
 
    // Send HTTP GET request
    int httpResponseCode = http.GET();
@@ -275,30 +385,68 @@ Adafruit_SGP40 sgp;
 
      } else {
 
-       int intervalTime = doc["intervalTime"];
-       Serial.print("deserializeJson intervalTime=");
-       Serial.println(intervalTime);
-       if (intervalTime >= 30) {
+       bool hasIntervalTime = doc.containsKey("intervalTime");
+       if (hasIntervalTime == true) {
+         int intervalTime = doc["intervalTime"];
+         Serial.print("deserializeJson intervalTime=");
+         Serial.println(intervalTime);
+         if (intervalTime >= 30) {
 
-         if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
-           time_to_sleep_mode = intervalTime;
-           EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
-           EEPROM.commit();
+           if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
+             time_to_sleep_mode = intervalTime;
+             EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+             EEPROM.commit();
+           }
          }
        }
 
        if (deviceID.length() != 32) {
-         String id = doc["deviceID"];
-         Serial.print("deserializeJson deviceID=");
-         Serial.println(id);
-         if (id.length() > 1 && id.length() < 64) {
-           EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
-           EEPROM.commit();
+         bool hasDeviceID = doc.containsKey("deviceID");
+         if (hasDeviceID == true) {
+           String id = doc["deviceID"];
+           Serial.print("deserializeJson deviceID=");
+           Serial.println(id);
+           if (id.length() > 1 && id.length() < 64) {
+             EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
+             EEPROM.commit();
+           }
          }
 
-         String serial_number = doc["serialNumber"];
-         if (serial_number.length() > 1 && serial_number.length() < 64) {
-           EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
+         bool hasSerialNumber = doc.containsKey("serialNumber");
+         if (hasSerialNumber == true) {
+           String serial_number = doc["serialNumber"];
+           if (serial_number.length() > 1 && serial_number.length() < 64) {
+             EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
+             EEPROM.commit();
+           }
+         }
+       }
+
+       //Process Trigger
+       bool hasTriggers = doc.containsKey("triggers");
+       if (hasTriggers == true) {
+         JsonArray triggerList = doc["triggers"];
+         //            for(JsonObject v : triggerList) {
+         //                String property = v["property"];
+         //                 Serial.print("property=");
+         //                 Serial.println(property);
+         //            }
+
+         String strTrigger = "";
+         serializeJson(triggerList, strTrigger);
+         Serial.print("strTrigger=");
+         Serial.println(strTrigger);
+         if (configTrigger != strTrigger) {
+           configTrigger = strTrigger;
+           if (configTrigger.length() < 256) {
+             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
+             EEPROM.commit();
+           }
+         }
+       } else {
+         if (configTrigger.length() > 1) {
+           configTrigger = "";
+           EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
            EEPROM.commit();
          }
        }
@@ -307,6 +455,7 @@ Adafruit_SGP40 sgp;
    } else {
      //        Serial.print("Error code: ");
      //        Serial.println(httpResponseCode);
+     time_to_sleep_mode = TIME_TO_SLEEP;
    }
    // Free resources
    http.end();
