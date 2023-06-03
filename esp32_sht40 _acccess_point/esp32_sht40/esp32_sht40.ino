@@ -108,7 +108,7 @@ void startLocalWeb(){
                          Serial.print(passowrd);
                          Serial.print("]");
   
-                        if(ssid.length()>0 && passowrd >= 8){
+                        if(ssid.length()>0 && passowrd.length() >= 8){
                           
                         }else{
                           hasWrongFormat = true;
