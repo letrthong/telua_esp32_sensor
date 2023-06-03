@@ -31,13 +31,37 @@
  int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
  int EEPROM_ADDRESS_TRIGGER = 256;
 
+unsigned long previousMillis = 0;
+unsigned long interval = 30000;
+
+
  bool hasRouter = false;
  bool hasSensor = false;
  bool hasError = true;
 
+ bool hasGpio = false;
+
  int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT31 sht3x = Adafruit_SHT31();
+
+// the LED is connected to GPIO 5
+const int ledPin =  5; 
+
+void intGpio(){
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+}
+
+void turnOffLed(){
+     digitalWrite(ledPin, LOW);
+}
+
+
+void turnOnLed(){
+   digitalWrite(ledPin, HIGH);
+}
+
 
  void initWiFi() {
    WiFi.mode(WIFI_STA);
@@ -183,10 +207,6 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
  }
 
  void sendReport() {
-   if (WiFi.status() != WL_CONNECTED) {
-     return;
-   }
-
    String temperature = "0";
    String relative_humidity = "0";
    float fHumidity = 0.0;
@@ -212,10 +232,7 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
    }
 
    
-   WiFiClientSecure * client = new WiFiClientSecure;
-   if (!client) {
-     return;
-   }
+   
 
    String strTriggerParameter = "";
    //process trigger
@@ -286,21 +303,35 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
          if(hasTrigger == true){
              strTriggerParameter = strTriggerParameter + action + "-";
              //@Turn on off led
+             if( action == "btnOn01"){
+                  hasGpio = true;
+                  turnOnLed();
+             } else  if( action == "btnOff01"){
+                  turnOffLed();
+             } 
          }
        }
      }
    } 
 
+  if (WiFi.status() != WL_CONNECTED) {
+     return;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+   if (!client) {
+     return;
+   }
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT30&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SHT30_GPIO&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(strTriggerParameter.length() > 0){
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
   }
     
    if (hasError == true) {
-     serverPath = error_url + "?sensorName=SHT30&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     serverPath = error_url + "?sensorName=SHT30_GPIO&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
 
  
@@ -441,30 +472,67 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
 
    initEEPROM();
 
+   intGpio();
+
    initWiFi();
 
    initSht4x();
 
    sendReport();
+   if( hasGpio == false){
+      turnOffWiFi();
 
-   turnOffWiFi();
-
-   //Print the wakeup reason for ESP32
-   print_wakeup_reason();
-
-   /*
-   First we configure the wake up source
-   We set our ESP32 to wake up every 5 seconds
-   */
-   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
-
-   Serial.println("Going to sleep now");
-   Serial.flush();
-   esp_deep_sleep_start();
-   Serial.println("This will never be printed");
+     //Print the wakeup reason for ESP32
+     print_wakeup_reason();
+  
+     /*
+     First we configure the wake up source
+     We set our ESP32 to wake up every 5 seconds
+     */
+     esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+     Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+  
+     Serial.println("Going to sleep now");
+     Serial.flush();
+     esp_deep_sleep_start();
+     Serial.println("This will never be printed");
+   }
+   
  }
 
  void loop() {
    //This is not going to be called
+   unsigned long currentMillis = millis();
+  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
+  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
+    Serial.print(millis());
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.reconnect();
+    previousMillis = currentMillis;
+  }
+
+
+   sendReport();
+   if( hasGpio == false){
+      turnOffWiFi();
+
+     //Print the wakeup reason for ESP32
+     print_wakeup_reason();
+  
+     /*
+     First we configure the wake up source
+     We set our ESP32 to wake up every 5 seconds
+     */
+     esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+     Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+  
+     Serial.println("Going to sleep now");
+     Serial.flush();
+     esp_deep_sleep_start();
+     Serial.println("This will never be printed");
+   }
+   for(int i =0; i< time_to_sleep_mode; i++){
+      delay(1000);
+   }
  }
