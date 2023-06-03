@@ -306,7 +306,7 @@ void turnOnLed(){
              if( action == "btn01On"){
                   hasGpio = true;
                   turnOnLed();
-             } else  if( action == "btn01Of"){
+             } else  if( action == "btn01Off"){
                   turnOffLed();
              } 
          }
