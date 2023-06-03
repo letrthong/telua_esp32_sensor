@@ -35,13 +35,15 @@
  bool hasSensor = false;
  bool hasError = true;
 
-const char* ssid     = "Telua_ESP32_sht40";
+const char* ssid     = "Telua_ESP32_sht40_";
 const char* password = "12345678";
  
 
  int time_to_sleep_mode = TIME_TO_SLEEP;
 
  Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+unsigned long previousMillis = 0;
+unsigned long interval = 30000;
 
 
 void startLocalWeb(){
@@ -52,8 +54,9 @@ void startLocalWeb(){
     IPAddress local_ip(192,168,0,1);
     IPAddress gateway(192,168,0,1);
     IPAddress subnet(255,255,255,0);
-     WiFi.softAPConfig(local_ip, gateway, subnet);
-    WiFi.softAP(ssid, password);
+    int randNumber = random(300);
+    WiFi.softAPConfig(local_ip, gateway, subnet);
+    WiFi.softAP(ssid + String(randNumber), password);
     
     
      
@@ -69,6 +72,7 @@ void startLocalWeb(){
           Serial.println("New Client.");          // print a message out in the serial port
           String currentLine = "";                // make a String to hold incoming data from the client
           bool hasWrongFormat = false;
+          String privateIpv4 = "";
           while (client.connected()) {            // loop while the client's connected
             if (client.available()) {             // if there's bytes to read from the client,
               char c = client.read();             // read a byte, then
@@ -109,7 +113,25 @@ void startLocalWeb(){
                          Serial.print("]");
   
                         if(ssid.length()>0 && passowrd.length() >= 8){
-                          
+                             WiFi.begin(ssid, passowrd);
+                             Serial.print("Connecting to WiFi ..");
+                             int count = 0;
+                             while (WiFi.status() != WL_CONNECTED) {
+                               Serial.print('.');
+                               delay(500);
+                                // 15 seconds
+                               count = count + 1;
+                               if (count > 30  ) {
+                                 break;
+                               }
+                             }  
+
+                             if(WiFi.status() == WL_CONNECTED){
+                                Serial.println(WiFi.localIP());
+                                privateIpv4  =  WiFi.localIP().toString().c_str();
+                             }else{
+                               hasWrongFormat = true;
+                             }
                         }else{
                           hasWrongFormat = true;
                         }
@@ -124,14 +146,19 @@ void startLocalWeb(){
                   // Web Page Heading
                   client.println("<body><h4>Telua IoT platform -  Telua nen tang cho IoT</h4>");
                   client.println("<form action=\"/router_info\"  method=\"get\">");
-                  client.println(" <label for=\"ssid\">SSID Cua WI-Fi</label><br>");
+                  client.println(" <label>SSID Cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
-                   client.println(" <label for=\"password\">Mat Khau Cua WI-Fi</label><br>");
+                   client.println(" <label>Mat Khau Cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"password\" name=\"password\" value=\"\"><br>");
                   client.println("<input type=\"submit\" value=\"Xac Nhan\">");
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
+                  }else{
+                      if(privateIpv4.length() >0){
+                         client.println("<p> IPv4=" + privateIpv4  + "</p>");
+                      }
+                      //hasWrongFormat = true;
                   }
                   client.println("</body></html>");
                   
