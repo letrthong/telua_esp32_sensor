@@ -337,6 +337,11 @@ void turnOnLed(){
                   turnOffBuzzer();
                   Serial.println("alarmOff");
              } 
+
+              int index  = header.indexOf("btn01On");
+              if(index == -1){
+                hasGpio = false;
+              }
          }
        }
      } 
