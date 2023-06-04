@@ -151,12 +151,16 @@ void startLocalWeb(){
                   client.println("<!DOCTYPE html><html>");
                   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
                   client.println("<link rel=\"icon\" href=\"data:,\">");   
-                  // Web Page Heading
-                  client.println("<body><h4>Telua IoT platform -  Telua nen tang cho IoT</h4>");
+                  // Web Page Heading 
+                  client.println("<body><h4>Telua IoT platform -  Telua Nen Tang cho IoT</h4>");
+                  if(serialNumber.length() >0){
+                       client.println("<p> serialNumber=" + serialNumber  + "</p>");
+                  }
+                  
                   client.println("<form action=\"/router_info\"  method=\"get\">");
-                  client.println(" <label>SSID Cua WI-Fi</label><br>");
+                  client.println(" <label>SSID cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
-                   client.println(" <label>Mat Khau Cua WI-Fi</label><br>");
+                   client.println(" <label>Mat Khau cua WI-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"password\" name=\"password\" value=\"\"><br>");
                   client.println("<input type=\"submit\" value=\"Xac Nhan\">");
                   client.println("</form>");
