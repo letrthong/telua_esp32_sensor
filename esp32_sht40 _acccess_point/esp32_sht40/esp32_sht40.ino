@@ -316,9 +316,9 @@ void startSmartConfig(){
 
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
-   } else{
-      startLocalWeb();
-   }
+  } else{
+//      startLocalWeb();
+    }
     
    Serial.println(WiFi.localIP());
  }
