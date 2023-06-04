@@ -129,13 +129,7 @@ void startLocalWeb(){
                          Serial.print("]");
   
                         if(ssid.length()>0 && passowrd.length() >= 8){
-                              EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-                              EEPROM.commit();
-                              
-                              EEPROM.writeString(EEPROM_ADDRESS_PASS, passowrd);
-                              EEPROM.commit();
-
-                            
+                    
                              WiFi.begin(ssid, passowrd);
                              Serial.print("Connecting to WiFi ..");
                              int count = 0;
@@ -153,8 +147,11 @@ void startLocalWeb(){
                                 Serial.println(WiFi.localIP());
                                 privateIpv4  =  WiFi.localIP().toString().c_str();
                                 hasConnection = true;
-
+                                 EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+                                 EEPROM.commit();
                                 
+                                 EEPROM.writeString(EEPROM_ADDRESS_PASS, passowrd);
+                                 EEPROM.commit();
                              }else{
                                hasWrongFormat = true;
                              }
