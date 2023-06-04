@@ -342,6 +342,11 @@ void turnOnLed(){
               if(index == -1){
                 hasGpio = false;
               }
+
+               index  = strTriggerParameter.indexOf("alarmOn");
+              if(index == -1){
+                  turnOffBuzzer();
+              }
          }
        }
      } 
