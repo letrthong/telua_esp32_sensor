@@ -188,6 +188,7 @@ void startLocalWeb(){
                   }else{
                       if(privateIpv4.length() >0){
                          client.println("<p> IPv4=" + privateIpv4  + "</p>");
+                         client.println("<a href=\"https://telua.co/aiot\">https://telua.co/aiot</a>");
                       }
                   }
                   client.println("</body></html>");
@@ -317,7 +318,7 @@ void startSmartConfig(){
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
   } else{
-//      startLocalWeb();
+       startLocalWeb();
     }
     
    Serial.println(WiFi.localIP());
