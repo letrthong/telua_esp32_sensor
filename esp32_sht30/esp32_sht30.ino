@@ -39,7 +39,7 @@
 
 Adafruit_SHT31 sht3x = Adafruit_SHT31();
 
-const char* ssid     = "Telua_Sht40_";
+const char* ssid     = "Telua_Sht30_";
 const char* password = "12345678";
 String g_ssid = "";
 String ssid_list = "";
