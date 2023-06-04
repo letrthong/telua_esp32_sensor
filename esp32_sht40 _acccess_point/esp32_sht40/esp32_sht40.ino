@@ -191,7 +191,7 @@ void startLocalWeb(){
                       }
                   }
                   client.println("<h4> </h4>");
-                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">Website: https://telua.co/aiot</a>");
+                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
                   client.println("</body></html>");
                   
                   // The HTTP response ends with another blank line
