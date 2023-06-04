@@ -364,24 +364,26 @@ Adafruit_SGP40 sgp;
 
    sendReport();
 
-   turnOffWiFi();
-
-   //Print the wakeup reason for ESP32
-   print_wakeup_reason();
-
-   /*
-   First we configure the wake up source
-   We set our ESP32 to wake up every 5 seconds
-   */
-   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
-
-   Serial.println("Going to sleep now");
-   Serial.flush();
-   esp_deep_sleep_start();
-   Serial.println("This will never be printed");
+//   turnOffWiFi();
+//
+//   //Print the wakeup reason for ESP32
+//   print_wakeup_reason();
+//
+//   /*
+//   First we configure the wake up source
+//   We set our ESP32 to wake up every 5 seconds
+//   */
+//   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+//   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+//
+//   Serial.println("Going to sleep now");
+//   Serial.flush();
+//   esp_deep_sleep_start();
+//   Serial.println("This will never be printed");
  }
 
  void loop() {
    //This is not going to be called
+    sendReport();
+    delay(1000);
  }
