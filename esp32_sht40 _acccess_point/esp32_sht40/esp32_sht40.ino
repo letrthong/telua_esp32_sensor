@@ -15,33 +15,33 @@
  #define EEPROM_SIZE 512
  #define TIME_TO_SLEEP 30
 
- RTC_DATA_ATTR int bootCount = 0;
+RTC_DATA_ATTR int bootCount = 0;
  
- String deviceID = "";
- String serialNumber = "";
- String configTrigger = "";
- String serverName = "https://telua.co/service/v1/esp32/update-sensor";
- String error_url = "https://telua.co/service/v1/esp32/error-sensor";
- String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
- 
- int EEPROM_ADDRESS_SSID = 0;
- int EEPROM_ADDRESS_PASS = 32;
- int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
- int EEPROM_ADDRESS_DEVICE_ID = 128;
- int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
- int EEPROM_ADDRESS_TRIGGER = 256;
+String deviceID = "";
+String serialNumber = "";
+String configTrigger = "";
+String serverName = "https://telua.co/service/v1/esp32/update-sensor";
+String error_url = "https://telua.co/service/v1/esp32/error-sensor";
+String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
- bool hasRouter = false;
- bool hasSensor = false;
- bool hasError = true;
+int EEPROM_ADDRESS_SSID = 0;
+int EEPROM_ADDRESS_PASS = 32;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
+int EEPROM_ADDRESS_DEVICE_ID = 128;
+int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
+int EEPROM_ADDRESS_TRIGGER = 256;
 
-const char* ssid     = "Telua_ESP32_sht40_";
+bool hasRouter = false;
+bool hasSensor = false;
+bool hasError = true;
+
+const char* ssid     = "Telua_Sht40_";
 const char* password = "12345678";
- 
 
- int time_to_sleep_mode = TIME_TO_SLEEP;
+String ssid_list = "";
+int time_to_sleep_mode = TIME_TO_SLEEP;
 
- Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
@@ -56,8 +56,8 @@ void startLocalWeb(){
     IPAddress subnet(255,255,255,0);
     int randNumber = random(300);
     WiFi.softAPConfig(local_ip, gateway, subnet);
-    WiFi.softAP(ssid + String(randNumber), password);
-    
+//    WiFi.softAP(ssid + String(randNumber), password);
+     WiFi.softAP(ssid + serialNumber, password);
     
      
     IPAddress IP = WiFi.softAPIP();
@@ -66,15 +66,23 @@ void startLocalWeb(){
     
     server.begin();
     String header;
+    bool hasConnection = false;
+    int count = 0;
     while(1){
        WiFiClient client = server.available(); 
        unsigned long currentMillis = millis();
        if(currentMillis - previousMillis >=interval){
            previousMillis = currentMillis;
             Serial.println("waiting connection");
+            count = count +1;
        }
 
-
+       if(hasConnection == true  || count > 10){
+           server.close();
+           WiFi.disconnect();
+           ESP.restart(); 
+           return;
+       }
        
        if (client) {                             // If a new client connects,
           Serial.println("New Client.");          // print a message out in the serial port
@@ -121,6 +129,13 @@ void startLocalWeb(){
                          Serial.print("]");
   
                         if(ssid.length()>0 && passowrd.length() >= 8){
+                              EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+                              EEPROM.commit();
+                              
+                              EEPROM.writeString(EEPROM_ADDRESS_PASS, passowrd);
+                              EEPROM.commit();
+
+                            
                              WiFi.begin(ssid, passowrd);
                              Serial.print("Connecting to WiFi ..");
                              int count = 0;
@@ -137,6 +152,9 @@ void startLocalWeb(){
                              if(WiFi.status() == WL_CONNECTED){
                                 Serial.println(WiFi.localIP());
                                 privateIpv4  =  WiFi.localIP().toString().c_str();
+                                hasConnection = true;
+
+                                
                              }else{
                                hasWrongFormat = true;
                              }
@@ -152,17 +170,21 @@ void startLocalWeb(){
                   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
                   client.println("<link rel=\"icon\" href=\"data:,\">");   
                   // Web Page Heading 
-                  client.println("<body><h4>Telua IoT platform -  Telua Nen Tang cho IoT</h4>");
+                  client.println("<body><h4>Telua IoT platform - Telua Nen Tang cho IoT</h4>");
                   if(serialNumber.length() >0){
-                       client.println("<p> serialNumber=" + serialNumber  + "</p>");
+                       client.println("<p>Serial Number=" + serialNumber  + "</p>");
                   }
-                  
+
+                  if(ssid_list.length() >0){
+                       client.println("<p> Danh sach SSID - SSID list = [" + ssid_list  + "]</p>");
+                  }
+
                   client.println("<form action=\"/router_info\"  method=\"get\">");
-                  client.println(" <label>SSID cua WI-Fi</label><br>");
+                  client.println("<label>SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
-                   client.println(" <label>Mat Khau cua WI-Fi</label><br>");
+                  client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
                   client.println("<input type=\"text\" id=\"password\" name=\"password\" value=\"\"><br>");
-                  client.println("<input type=\"submit\" value=\"Xac Nhan\">");
+                  client.println("<input type=\"submit\" value=\"Xac Nhan - Submit\">");
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
@@ -170,7 +192,6 @@ void startLocalWeb(){
                       if(privateIpv4.length() >0){
                          client.println("<p> IPv4=" + privateIpv4  + "</p>");
                       }
-                      //hasWrongFormat = true;
                   }
                   client.println("</body></html>");
                   
@@ -216,6 +237,7 @@ void startLocalWeb(){
        Serial.print("scanNetworks SSID=");
        Serial.println(SSID);
        if (lastStringLength > 0) {
+        ssid_list = ssid_list + SSID +  " ";
          if (current_ssid.equals(SSID)) {
            hasRouter = true;
            break;
@@ -240,54 +262,58 @@ void startLocalWeb(){
      }
    }
 
-   int count = 0;
-   if (WiFi.status() != WL_CONNECTED) {
-     Serial.println("beginSmartConfig");
-     
-     WiFi.mode(WIFI_AP_STA);
-     WiFi.beginSmartConfig();
-     
-     while (!WiFi.smartConfigDone()) {
-       delay(500);
-       Serial.print(".");
-        // 180seconds = 3 minutes 
-       count = count + 1;
-       if (count > 360) {
-         ESP.restart();
-       }
-     }
-
-     Serial.println("");
-     Serial.println("SmartConfig received.");
-
-     count = 0;
-     while (WiFi.status() != WL_CONNECTED) {
-       delay(500);
-       Serial.print(".");
-       count = count + 1;
-       // 180seconds = 3 minutes 
-       if (count > 360) {
-         ESP.restart();
-       }
-     }
-
-     String ssid = WiFi.SSID();
-     String pass = WiFi.psk();
-
-     if (ssid.length() > 1 && pass.length() >= 8) {
-       Serial.print("SmartConfig readString ssid=");
-       Serial.println(ssid);
-
-       Serial.print("SmartConfig readString pass=");
-       Serial.println(pass);
-
-       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-       EEPROM.commit();
-
-       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
-       EEPROM.commit();
-     }
-   }
+   if (WiFi.status() != WL_CONNECTED){
+      startLocalWeb();
+   } 
+    
+//   int count = 0;
+//   if (WiFi.status() != WL_CONNECTED) {
+//     Serial.println("beginSmartConfig");
+//     
+//     WiFi.mode(WIFI_AP_STA);
+//     WiFi.beginSmartConfig();
+//     
+//     while (!WiFi.smartConfigDone()) {
+//       delay(500);
+//       Serial.print(".");
+//        // 180seconds = 3 minutes 
+//       count = count + 1;
+//       if (count > 360) {
+//         ESP.restart();
+//       }
+//     }
+//
+//     Serial.println("");
+//     Serial.println("SmartConfig received.");
+//
+//     count = 0;
+//     while (WiFi.status() != WL_CONNECTED) {
+//       delay(500);
+//       Serial.print(".");
+//       count = count + 1;
+//       // 180seconds = 3 minutes 
+//       if (count > 360) {
+//         ESP.restart();
+//       }
+//     }
+//
+//     String ssid = WiFi.SSID();
+//     String pass = WiFi.psk();
+//
+//     if (ssid.length() > 1 && pass.length() >= 8) {
+//       Serial.print("SmartConfig readString ssid=");
+//       Serial.println(ssid);
+//
+//       Serial.print("SmartConfig readString pass=");
+//       Serial.println(pass);
+//
+//       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+//       EEPROM.commit();
+//
+//       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
+//       EEPROM.commit();
+//     }
+//   }
 
    Serial.println(WiFi.localIP());
  }
@@ -630,9 +656,7 @@ void startLocalWeb(){
    //Increment boot number and print it every reboot
    ++bootCount;
    Serial.println("Boot number: " + String(bootCount));
-
-   startLocalWeb();
-  
+ 
    initEEPROM();
 
    initWiFi();
