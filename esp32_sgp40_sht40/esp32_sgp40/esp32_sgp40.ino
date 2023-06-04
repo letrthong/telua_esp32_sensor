@@ -235,12 +235,17 @@ Adafruit_SGP40 sgp;
      // https://github.com/adafruit/Adafruit_SGP40
       int32_t voc_index;
       uint16_t sraw;
+      float t  = temp.temperature;
+       Serial.print("Temp *C = "); Serial.print(t); Serial.print("\t\t");
 
-      sraw = sgp.measureRaw(temp.temperature, humidity.relative_humidity);
+       float h = humidity.relative_humidity;
+       Serial.print("Hum. % = "); Serial.println(h);
+  
+      sraw = sgp.measureRaw(t,  h);
       Serial.print("Raw measurement: ");
       Serial.println(sraw);
       
-      voc_index = sgp.measureVocIndex( temp.temperature,  humidity.relative_humidity);
+      voc_index = sgp.measureVocIndex( t, h);
       Serial.print("Voc Index: ");
       Serial.println(voc_index);
       str_voc_index = String(voc_index, 2);
