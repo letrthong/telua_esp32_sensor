@@ -167,7 +167,7 @@ void startLocalWeb(){
                   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
                   client.println("<link rel=\"icon\" href=\"data:,\">");   
                   // Web Page Heading 
-                  client.println("<body><h4>Telua Nen Tang cho IoT- Telua IoT platform</h4>");
+                  client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform</h4>");
                   if(serialNumber.length() >0){
                        client.println("<p>Serial Number=" + serialNumber  + "</p>");
                   }
@@ -190,6 +190,7 @@ void startLocalWeb(){
                          client.println("<p> IPv4=" + privateIpv4  + "</p>");
                       }
                   }
+                  client.println("<h4> </h4>");
                   client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">Website: https://telua.co/aiot</a>");
                   client.println("</body></html>");
                   
