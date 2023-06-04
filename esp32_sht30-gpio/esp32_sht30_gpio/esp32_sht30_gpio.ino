@@ -47,20 +47,40 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
 
 // the LED is connected to GPIO 5
 const int ledPin =  5; 
+const int buzzerPin =  17; 
 
 void intGpio(){
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
+
+  pinMode(buzzerPin, OUTPUT);
+  digitalWrite(buzzerPin, LOW);
+  
 }
 
 void turnOffLed(){
-     digitalWrite(ledPin, LOW);
+    Serial.println("turnOffLed");
+    digitalWrite(ledPin, LOW);
+}
+
+
+void turnOnBuzzer(){
+  Serial.println("turnOnBuzzer");
+   digitalWrite(buzzerPin, HIGH);
+}
+
+
+void turnOffBuzzer(){
+    Serial.println("turnOffBuzzer");
+    digitalWrite(buzzerPin, LOW);
 }
 
 
 void turnOnLed(){
+  Serial.println("turnOnLed");
    digitalWrite(ledPin, HIGH);
 }
+
 
 
  void initWiFi() {
@@ -304,14 +324,22 @@ void turnOnLed(){
              strTriggerParameter = strTriggerParameter + action + "-";
              //@Turn on off led
              if( action == "btn01On"){
+                  Serial.println("btn01On");
                   hasGpio = true;
                   turnOnLed();
              } else  if( action == "btn01Off"){
                   turnOffLed();
+                  Serial.println("btn01Off");
+             } else  if( action == "alarmOn"){
+                  turnOnBuzzer();
+                  Serial.println("alarmOn");
+             } else  if( action == "alarmOff"){
+                  turnOffBuzzer();
+                  Serial.println("alarmOff");
              } 
          }
        }
-     }
+     } 
    } 
 
   if (WiFi.status() != WL_CONNECTED) {
