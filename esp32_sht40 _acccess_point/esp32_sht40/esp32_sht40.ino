@@ -215,6 +215,56 @@ void startLocalWeb(){
     }
 }
 
+void startSmartConfig(){
+     int count = 0;
+   if (WiFi.status() != WL_CONNECTED) {
+     Serial.println("beginSmartConfig");
+     
+     WiFi.mode(WIFI_AP_STA);
+     WiFi.beginSmartConfig();
+     
+     while (!WiFi.smartConfigDone()) {
+       delay(500);
+       Serial.print(".");
+        // 180seconds = 3 minutes 
+       count = count + 1;
+       if (count > 360) {
+         ESP.restart();
+       }
+     }
+
+     Serial.println("");
+     Serial.println("SmartConfig received.");
+
+     count = 0;
+     while (WiFi.status() != WL_CONNECTED) {
+       delay(500);
+       Serial.print(".");
+       count = count + 1;
+       // 180seconds = 3 minutes 
+       if (count > 360) {
+         ESP.restart();
+       }
+     }
+
+     String ssid = WiFi.SSID();
+     String pass = WiFi.psk();
+
+     if (ssid.length() > 1 && pass.length() >= 8) {
+       Serial.print("SmartConfig readString ssid=");
+       Serial.println(ssid);
+
+       Serial.print("SmartConfig readString pass=");
+       Serial.println(pass);
+
+       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+       EEPROM.commit();
+
+       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
+       EEPROM.commit();
+     }
+   }
+}
 
  void initWiFi() {
    WiFi.mode(WIFI_STA);
@@ -266,55 +316,6 @@ void startLocalWeb(){
       startLocalWeb();
    } 
     
-//   int count = 0;
-//   if (WiFi.status() != WL_CONNECTED) {
-//     Serial.println("beginSmartConfig");
-//     
-//     WiFi.mode(WIFI_AP_STA);
-//     WiFi.beginSmartConfig();
-//     
-//     while (!WiFi.smartConfigDone()) {
-//       delay(500);
-//       Serial.print(".");
-//        // 180seconds = 3 minutes 
-//       count = count + 1;
-//       if (count > 360) {
-//         ESP.restart();
-//       }
-//     }
-//
-//     Serial.println("");
-//     Serial.println("SmartConfig received.");
-//
-//     count = 0;
-//     while (WiFi.status() != WL_CONNECTED) {
-//       delay(500);
-//       Serial.print(".");
-//       count = count + 1;
-//       // 180seconds = 3 minutes 
-//       if (count > 360) {
-//         ESP.restart();
-//       }
-//     }
-//
-//     String ssid = WiFi.SSID();
-//     String pass = WiFi.psk();
-//
-//     if (ssid.length() > 1 && pass.length() >= 8) {
-//       Serial.print("SmartConfig readString ssid=");
-//       Serial.println(ssid);
-//
-//       Serial.print("SmartConfig readString pass=");
-//       Serial.println(pass);
-//
-//       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-//       EEPROM.commit();
-//
-//       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
-//       EEPROM.commit();
-//     }
-//   }
-
    Serial.println(WiFi.localIP());
  }
 
