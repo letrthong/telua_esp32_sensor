@@ -188,9 +188,9 @@ void startLocalWeb(){
                   }else{
                       if(privateIpv4.length() >0){
                          client.println("<p> IPv4=" + privateIpv4  + "</p>");
-                         client.println("<a href=\"https://telua.co/aiot\">https://telua.co/aiot</a>");
                       }
                   }
+                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\" style=\"margin-top:40px;\" >Phat trien boi https://telua.co/aiot</a>");
                   client.println("</body></html>");
                   
                   // The HTTP response ends with another blank line
