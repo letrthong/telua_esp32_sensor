@@ -167,7 +167,7 @@ void startLocalWeb(){
                   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
                   client.println("<link rel=\"icon\" href=\"data:,\">");   
                   // Web Page Heading 
-                  client.println("<body><h4>Telua IoT platform - Telua Nen Tang cho IoT</h4>");
+                  client.println("<body><h4>Telua Nen Tang cho IoT- Telua IoT platform</h4>");
                   if(serialNumber.length() >0){
                        client.println("<p>Serial Number=" + serialNumber  + "</p>");
                   }
@@ -177,11 +177,11 @@ void startLocalWeb(){
                   }
 
                   client.println("<form action=\"/router_info\"  method=\"get\">");
-                  client.println("<label>SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
-                  client.println("<input type=\"text\" id=\"ssid\" name=\"ssid\" value=\"\"><br>");
+                  client.println("<label style=\"color:blue;\">SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
+                  client.println("<input type=\"text\" style=\"height:20px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
                   client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
-                  client.println("<input type=\"text\" id=\"password\" name=\"password\" value=\"\"><br>");
-                  client.println("<input type=\"submit\" value=\"Xac Nhan - Submit\">");
+                  client.println("<input type=\"text\" style=\"height:20px;\" id=\"password\" name=\"password\" value=\"\"><br>");
+                  client.println("<input type=\"submit\" style=\"margin-top:20px, height:20px;\"  value=\"Xac Nhan - Submit\">");
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
@@ -291,6 +291,11 @@ void startSmartConfig(){
          }
        }
      }
+
+     int len = ssid_list.length();
+     if(len >1){
+        ssid_list = ssid_list.substring(0,len-1);
+     }
    }
    WiFi.scanDelete();
 
@@ -311,7 +316,9 @@ void startSmartConfig(){
 
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
-   } 
+   } else{
+      startLocalWeb();
+   }
     
    Serial.println(WiFi.localIP());
  }
