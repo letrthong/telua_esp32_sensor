@@ -37,7 +37,7 @@ bool hasError = true;
 
 const char* ssid     = "Telua_Sht40_";
 const char* password = "12345678";
-
+String g_ssid = ""
 String ssid_list = "";
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
@@ -172,6 +172,10 @@ void startLocalWeb(){
                        client.println("<p>Serial Number=" + serialNumber  + "</p>");
                   }
 
+                  if(g_ssid.length() >0){
+                       client.println("<p>SSID=" + g_ssid  + "</p>");
+                  }
+ 
                   if(ssid_list.length() >0){
                        client.println("<p> Danh sach SSID - SSID list = [" + ssid_list  + "]</p>");
                   }
@@ -271,7 +275,7 @@ void startSmartConfig(){
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
    unsigned int lastStringLength = current_ssid.length();
-
+   g_ssid = current_ssid;
    hasRouter = false;
 
    int n = WiFi.scanNetworks();
@@ -289,6 +293,7 @@ void startSmartConfig(){
         ssid_list = ssid_list + SSID +  ",";
          if (current_ssid.equals(SSID)) {
            hasRouter = true;
+            
            break;
          }
        }
