@@ -35,13 +35,15 @@ bool hasRouter = false;
 bool hasSensor = false;
 bool hasError = true;
 
+
+int time_to_sleep_mode = TIME_TO_SLEEP;
+
+Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+
 const char* ssid     = "Telua_Sht40_";
 const char* password = "12345678";
 String g_ssid = "";
 String ssid_list = "";
-int time_to_sleep_mode = TIME_TO_SLEEP;
-
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
