@@ -29,6 +29,9 @@
  int EEPROM_ADDRESS_DEVICE_ID = 128;
  int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 
+unsigned long previousMillis = 0;
+unsigned long interval = 30000;
+
  bool hasRouter = false;
  bool hasSensor = false;
  int time_to_sleep_mode = TIME_TO_SLEEP;
@@ -215,10 +218,8 @@ Adafruit_SGP40 sgp;
    Serial.println(serialNumber);
  }
 
- void sendReport() {
-   if (WiFi.status() != WL_CONNECTED) {
-     return;
-   }
+ void sendReport(bool hasReport) {
+  
 
    String temperature = "0";
    String relative_humidity = "0";
@@ -251,6 +252,11 @@ Adafruit_SGP40 sgp;
       str_voc_index = String(voc_index, 2);
       
    }
+
+   if (WiFi.status() != WL_CONNECTED || hasReport == false) {
+     return;
+   }
+   
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
      return;
@@ -321,33 +327,7 @@ Adafruit_SGP40 sgp;
  Method to print the reason by which ESP32
  has been awaken from sleep
  */
- void print_wakeup_reason() {
-   esp_sleep_wakeup_cause_t wakeup_reason;
-
-   wakeup_reason = esp_sleep_get_wakeup_cause();
-
-   switch (wakeup_reason) {
-   case ESP_SLEEP_WAKEUP_EXT0:
-     Serial.println("Wakeup caused by external signal using RTC_IO");
-     break;
-   case ESP_SLEEP_WAKEUP_EXT1:
-     Serial.println("Wakeup caused by external signal using RTC_CNTL");
-     break;
-   case ESP_SLEEP_WAKEUP_TIMER:
-     Serial.println("Wakeup caused by timer");
-     break;
-   case ESP_SLEEP_WAKEUP_TOUCHPAD:
-     Serial.println("Wakeup caused by touchpad");
-     break;
-   case ESP_SLEEP_WAKEUP_ULP:
-     Serial.println("Wakeup caused by ULP program");
-     break;
-   default:
-     Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
-     break;
-   }
- }
-
+ 
  void setup() {
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
@@ -362,28 +342,29 @@ Adafruit_SGP40 sgp;
 
    initSht4x();
 
-   sendReport();
+   sendReport(false);
 
-//   turnOffWiFi();
-//
-//   //Print the wakeup reason for ESP32
-//   print_wakeup_reason();
-//
-//   /*
-//   First we configure the wake up source
-//   We set our ESP32 to wake up every 5 seconds
-//   */
-//   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-//   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
-//
-//   Serial.println("Going to sleep now");
-//   Serial.flush();
-//   esp_deep_sleep_start();
-//   Serial.println("This will never be printed");
+    
  }
 
  void loop() {
+      unsigned long currentMillis = millis();
+  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
+  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
+      Serial.print(millis());
+      Serial.println("Reconnecting to WiFi...");
+      WiFi.disconnect();
+      WiFi.reconnect();
+      previousMillis = currentMillis;
+  }
+
+  
    //This is not going to be called
-    sendReport();
-    delay(1000);
+      for(int i= 0; i < time_to_sleep_mode ; i++){
+          sendReport(false);
+          delay(1000);
+      }
+
+      sendReport(true);
+      delay(1000);
  }
