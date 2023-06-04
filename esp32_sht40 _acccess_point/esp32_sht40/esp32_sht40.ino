@@ -37,7 +37,7 @@ bool hasError = true;
 
 const char* ssid     = "Telua_Sht40_";
 const char* password = "12345678";
-String g_ssid = ""
+String g_ssid = "";
 String ssid_list = "";
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
