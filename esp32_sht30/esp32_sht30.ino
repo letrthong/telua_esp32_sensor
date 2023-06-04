@@ -39,52 +39,188 @@
 
 Adafruit_SHT31 sht3x = Adafruit_SHT31();
 
- void initWiFi() {
-   WiFi.mode(WIFI_STA);
+const char* ssid     = "Telua_Sht40_";
+const char* password = "12345678";
+String g_ssid = "";
+String ssid_list = "";
+unsigned long previousMillis = 0;
+unsigned long interval = 30000;
 
-   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
-   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int lastStringLength = current_ssid.length();
 
-   hasRouter = false;
-
-   int n = WiFi.scanNetworks();
-   Serial.println("Scan done");
-   if (n == 0) {
-     Serial.println("no networks found");
-   } else {
-     Serial.print(n);
-     Serial.println(" networks found");
-     for (int i = 0; i < n; ++i) {
-       String SSID = WiFi.SSID(i);
-       Serial.print("scanNetworks SSID=");
-       Serial.println(SSID);
-       if (lastStringLength > 0) {
-         if (current_ssid.equals(SSID)) {
-           hasRouter = true;
-           break;
-         }
+void startLocalWeb(){
+    WiFi.mode(WIFI_AP_STA);
+    WiFiServer server(80);
+     Serial.print("Setting AP (Access Point)…");
+  // Remove the password parameter, if you want the AP (Access Point) to be open
+    IPAddress local_ip(192,168,0,1);
+    IPAddress gateway(192,168,0,1);
+    IPAddress subnet(255,255,255,0);
+    int randNumber = random(300);
+    WiFi.softAPConfig(local_ip, gateway, subnet);
+//    WiFi.softAP(ssid + String(randNumber), password);
+     WiFi.softAP(ssid + serialNumber, password);
+    
+     
+    IPAddress IP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(IP);
+    
+    server.begin();
+    String header;
+    bool hasConnection = false;
+    int count = 0;
+    while(1){
+       WiFiClient client = server.available(); 
+       unsigned long currentMillis = millis();
+       if(currentMillis - previousMillis >=interval){
+           previousMillis = currentMillis;
+            Serial.println("waiting connection");
+            count = count +1;
        }
-     }
-   }
-   WiFi.scanDelete();
 
-   if (hasRouter == true) {
-     WiFi.begin(current_ssid, current_pass);
-     Serial.print("Connecting to WiFi ..");
+       if(hasConnection == true  || count > 10){
+           server.close();
+           WiFi.disconnect();
+           ESP.restart(); 
+           return;
+       }
+       
+       if (client) {                             // If a new client connects,
+          Serial.println("New Client.");          // print a message out in the serial port
+          String currentLine = "";                // make a String to hold incoming data from the client
+          bool hasWrongFormat = false;
+          String privateIpv4 = "";
+          while (client.connected()) {            // loop while the client's connected
+            if (client.available()) {             // if there's bytes to read from the client,
+              char c = client.read();             // read a byte, then
+  //            Serial.write(c);                    // print it out the serial monitor
+              header += c;
+              if (c == '\n') {                    // if the byte is a newline character
+                // if the current line is blank, you got two newline characters in a row.
+                // that's the end of the client HTTP request, so send a response:
+                if (currentLine.length() == 0) {
+                  // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+                  // and a content-type so the client knows what's coming, then a blank line:
+                  client.println("HTTP/1.1 200 OK");
+                  client.println("Content-type:text/html");
+                  client.println("Connection: close");
+                  client.println();
+                  
+                  int index  = header.indexOf("/router_info?ssid=");
+                  if ( index>= 0) {
+                      String parameters =  header.substring(index + 18);
+                      index  = parameters.indexOf("HTTP");
+                      
+                      if(index > 0){
+                         String  info =  parameters.substring(0,index);
+                         Serial.println("/router_info");
+                         Serial.println(info);
+                         index = info.indexOf("&password="); 
+                          
+                         String ssid = info.substring(0,index);
+                         String passowrd= info.substring(index+10);
+                         passowrd.replace(" ",  "");
+                         
+                         Serial.print("ssid=[");
+                         Serial.print(ssid);
+                         Serial.print("]");
+                         
+                         Serial.print("passowrd=[");
+                         Serial.print(passowrd);
+                         Serial.print("]");
+  
+                        if(ssid.length()>0 && passowrd.length() >= 8){
+                    
+                             WiFi.begin(ssid, passowrd);
+                             Serial.print("Connecting to WiFi ..");
+                             int count = 0;
+                             while (WiFi.status() != WL_CONNECTED) {
+                               Serial.print('.');
+                               delay(500);
+                                // 15 seconds
+                               count = count + 1;
+                               if (count > 30  ) {
+                                 break;
+                               }
+                             }  
+
+                             if(WiFi.status() == WL_CONNECTED){
+                                Serial.println(WiFi.localIP());
+                                privateIpv4  =  WiFi.localIP().toString().c_str();
+                                hasConnection = true;
+                                 EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
+                                 EEPROM.commit();
+                                
+                                 EEPROM.writeString(EEPROM_ADDRESS_PASS, passowrd);
+                                 EEPROM.commit();
+                             }else{
+                               hasWrongFormat = true;
+                             }
+                        }else{
+                          hasWrongFormat = true;
+                        }
+                         
+                     }
+                  }  
+                  
+                  // Display the HTML web page
+                  client.println("<!DOCTYPE html><html>");
+                  client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+                  client.println("<link rel=\"icon\" href=\"data:,\">");   
+                  // Web Page Heading 
+                  client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform</h4>");
+                  if(serialNumber.length() >0){
+                       client.println("<p>Serial Number=" + serialNumber  + "</p>");
+                  }
+
+                  if(g_ssid.length() >0){
+                       client.println("<p>SSID=" + g_ssid  + "</p>");
+                  }
+ 
+                  if(ssid_list.length() >0){
+                       client.println("<p> Danh sach SSID - SSID list = [" + ssid_list  + "]</p>");
+                  }
+
+                  client.println("<form action=\"/router_info\"  method=\"get\">");
+                  client.println("<label style=\"color:blue;\">SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
+                  client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
+                  client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
+                  client.println("<input type=\"text\" style=\"height:25px;\" id=\"password\" name=\"password\" value=\"\"><br>");
+                  client.println("<input type=\"submit\" style=\"margin-top:20px; height:40px;\"  value=\"Xac Nhan - Submit\">");
+                  client.println("</form>");
+                  if( hasWrongFormat == true){
+                     client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
+                  }else{
+                      if(privateIpv4.length() >0){
+                         client.println("<p> IPv4=" + privateIpv4  + "</p>");
+                      }
+                  }
+                  client.println("<h4> </h4>");
+                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
+                  client.println("</body></html>");
+                  
+                  // The HTTP response ends with another blank line
+                  client.println();
+                  // Break out of the while loop
+                  break;
+                } else { // if you got a newline, then clear currentLine
+                  currentLine = "";
+                }
+              } else if (c != '\r') {  // if you got anything else but a carriage return character,
+                currentLine += c;      // add it to the end of the currentLine
+              }
+          }
+        }
+        // Clear the header variable
+        header = "";
+        // Close the connection
+        client.stop();
+       }
+    }
+}
+
+void startSmartConfig(){
      int count = 0;
-     while (WiFi.status() != WL_CONNECTED) {
-       Serial.print('.');
-       delay(500);
-        // 15 seconds
-       count = count + 1;
-       if (count > 30  ) {
-         break;
-       }
-     }
-   }
-
-   int count = 0;
    if (WiFi.status() != WL_CONNECTED) {
      Serial.println("beginSmartConfig");
      
@@ -132,8 +268,63 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
        EEPROM.commit();
      }
    }
+}
 
+ void initWiFi() {
+   WiFi.mode(WIFI_STA);
+
+   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
+   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+   unsigned int lastStringLength = current_ssid.length();
+
+   hasRouter = false;
+
+   int n = WiFi.scanNetworks();
+   Serial.println("Scan done");
+   if (n == 0) {
+     Serial.println("no networks found");
+   } else {
+     Serial.print(n);
+     Serial.println(" networks found");
+     for (int i = 0; i < n; ++i) {
+       String SSID = WiFi.SSID(i);
+       Serial.print("scanNetworks SSID=");
+       Serial.println(SSID);
+       if (lastStringLength > 0) {
+         if (current_ssid.equals(SSID)) {
+           hasRouter = true;
+           break;
+         }
+       }
+     }
+   }
+   WiFi.scanDelete();
+
+   if (hasRouter == true) {
+     WiFi.begin(current_ssid, current_pass);
+     Serial.print("Connecting to WiFi ..");
+     int count = 0;
+     while (WiFi.status() != WL_CONNECTED) {
+       Serial.print('.');
+       delay(500);
+        // 15 seconds
+       count = count + 1;
+       if (count > 30  ) {
+         break;
+       }
+     }
+   }
+
+   
+     if (WiFi.status() != WL_CONNECTED){
+      startLocalWeb();
+  } 
+//  else{
+//       startLocalWeb();
+//   }
+//    
    Serial.println(WiFi.localIP());
+ 
  }
 
  void turnOffWiFi() {
