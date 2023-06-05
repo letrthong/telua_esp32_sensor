@@ -39,6 +39,44 @@ unsigned long interval = 30000;
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 Adafruit_SGP40 sgp;
 
+// the LED is connected to GPIO 5
+const int ledPin =  5; 
+const int buzzerPin =  17; 
+
+
+void intGpio(){
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+
+  pinMode(buzzerPin, OUTPUT);
+  digitalWrite(buzzerPin, LOW);
+  
+}
+
+void turnOffLed(){
+    Serial.println("turnOffLed");
+    digitalWrite(ledPin, LOW);
+}
+
+
+void turnOnBuzzer(){
+  Serial.println("turnOnBuzzer");
+   digitalWrite(buzzerPin, HIGH);
+}
+
+
+void turnOffBuzzer(){
+    Serial.println("turnOffBuzzer");
+    digitalWrite(buzzerPin, LOW);
+}
+
+
+void turnOnLed(){
+  Serial.println("turnOnLed");
+   digitalWrite(ledPin, HIGH);
+}
+
+
 
  void initWiFi() {
    WiFi.mode(WIFI_STA);
@@ -219,8 +257,7 @@ Adafruit_SGP40 sgp;
  }
 
  void sendReport(bool hasReport) {
-  
-
+   
    String temperature = "0";
    String relative_humidity = "0";
    String  str_voc_index = "0";
@@ -252,7 +289,7 @@ Adafruit_SGP40 sgp;
       str_voc_index = String(voc_index, 2);
       
    }
-
+    
    if (WiFi.status() != WL_CONNECTED || hasReport == false) {
      return;
    }
@@ -338,6 +375,7 @@ Adafruit_SGP40 sgp;
 
    initEEPROM();
 
+   intGpio();
    initWiFi();
 
    initSht4x();
@@ -362,7 +400,14 @@ Adafruit_SGP40 sgp;
    //This is not going to be called
       for(int i= 0; i < time_to_sleep_mode ; i++){
           sendReport(false);
-          delay(1000);
+
+          for(int y= 0; y< 5; y++){
+            turnOnLed();
+             delay(50);
+            turnOffLed();
+             delay(150);
+          }
+           
       }
 
       sendReport(true);
