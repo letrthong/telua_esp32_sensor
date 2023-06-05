@@ -197,9 +197,11 @@ void startLocalWeb(){
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
+                     client.println("<p>Please recheck SSID and password of Wi-Fi</p>");
                   }else{
                       if(privateIpv4.length() >0){
-                         client.println("<p  style=\"color:red;\"> IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> Thiet Bi Co The Ket Noi Internet với IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> The device can conenct the inernet with IPv4=" + privateIpv4  + "</p>");
                       }
                   }
                   client.println("<h4> </h4>");
