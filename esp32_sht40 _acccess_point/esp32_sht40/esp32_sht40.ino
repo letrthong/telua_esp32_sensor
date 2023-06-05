@@ -70,6 +70,7 @@ void startLocalWeb(){
     String header;
     bool hasConnection = false;
     int count = 0;
+    bool hasRestart = false;
     while(1){
        WiFiClient client = server.available(); 
        unsigned long currentMillis = millis();
@@ -77,14 +78,19 @@ void startLocalWeb(){
            previousMillis = currentMillis;
             Serial.println("waiting connection");
             count = count +1;
+            if(hasConnection == true  ){
+              hasRestart = true;
+            }
        }
 
-       if(hasConnection == true  || count > 10){
+       if(  count > 10 || hasRestart == true){
            server.close();
            WiFi.disconnect();
+           delay(100);
            ESP.restart(); 
            return;
        }
+
        
        if (client) {                             // If a new client connects,
           Serial.println("New Client.");          // print a message out in the serial port
@@ -311,20 +317,20 @@ void startSmartConfig(){
    }
    WiFi.scanDelete();
 
-   if (hasRouter == true) {
-     WiFi.begin(current_ssid, current_pass);
-     Serial.print("Connecting to WiFi ..");
-     int count = 0;
-     while (WiFi.status() != WL_CONNECTED) {
-       Serial.print('.');
-       delay(500);
-        // 15 seconds
-       count = count + 1;
-       if (count > 30  ) {
-         break;
-       }
-     }
-   }
+//   if (hasRouter == true) {
+//     WiFi.begin(current_ssid, current_pass);
+//     Serial.print("Connecting to WiFi ..");
+//     int count = 0;
+//     while (WiFi.status() != WL_CONNECTED) {
+//       Serial.print('.');
+//       delay(500);
+//        // 15 seconds
+//       count = count + 1;
+//       if (count > 30  ) {
+//         break;
+//       }
+//     }
+//   }
 
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
