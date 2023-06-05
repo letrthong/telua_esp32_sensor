@@ -276,7 +276,7 @@ void startSmartConfig(){
 
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int lastStringLength = current_ssid.length();
+   unsigned int  Length_of_ssid  = current_ssid.length();
    g_ssid = current_ssid;
    hasRouter = false;
 
@@ -291,11 +291,11 @@ void startSmartConfig(){
        String SSID = WiFi.SSID(i);
        Serial.print("scanNetworks SSID=");
        Serial.println(SSID);
-       if (lastStringLength > 0) {
-        if( i < 5){
+       if( i < 5){
             ssid_list = ssid_list + SSID +  ",";
         }
-      
+        
+       if (Length_of_ssid > 0) {
          if (current_ssid.equals(SSID)) {
            hasRouter = true;
             
