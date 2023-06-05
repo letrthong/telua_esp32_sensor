@@ -413,9 +413,7 @@ void startSmartConfig(){
  }
 
  void sendReport() {
-   if (WiFi.status() != WL_CONNECTED) {
-     return;
-   }
+   
 
    String temperature = "0";
    String relative_humidity = "0";
@@ -443,7 +441,10 @@ void startSmartConfig(){
        delay(500);
      }
    }
-
+   
+   if (WiFi.status() != WL_CONNECTED) {
+     return;
+   }
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
