@@ -199,7 +199,7 @@ void startLocalWeb(){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
                   }else{
                       if(privateIpv4.length() >0){
-                         client.println("<p> IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> IPv4=" + privateIpv4  + "</p>");
                       }
                   }
                   client.println("<h4> </h4>");
