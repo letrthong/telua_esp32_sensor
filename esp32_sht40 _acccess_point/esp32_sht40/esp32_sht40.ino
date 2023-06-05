@@ -202,10 +202,12 @@ void startLocalWeb(){
                       if(privateIpv4.length() >0){
                          client.println("<p  style=\"color:red;\"> Thiet bi Co the ket Noi Internet voi IPv4=" + privateIpv4  + "</p>");
                          client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4  + "</p>");
+
+                          client.println("<h4> </h4>");
+                          client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
                       }
                   }
-                  client.println("<h4> </h4>");
-                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
+                 
                   client.println("</body></html>");
                   
                   // The HTTP response ends with another blank line
@@ -334,13 +336,10 @@ void startSmartConfig(){
      }
    }
 
-   if (WiFi.status() != WL_CONNECTED){
+   if (WiFi.status() == WL_CONNECTED){
       startLocalWeb();
   } 
-//  else{
-//       startLocalWeb();
-//   }
-//    
+ 
    Serial.println(WiFi.localIP());
  }
 
