@@ -15,27 +15,28 @@
  #define EEPROM_SIZE 512
  #define TIME_TO_SLEEP 30
 
- RTC_DATA_ATTR int bootCount = 0;
+RTC_DATA_ATTR int bootCount = 0;
  
- String deviceID = "";
- String serialNumber = "";
- String configTrigger = "";
- String serverName = "https://telua.co/service/v1/esp32/update-sensor";
- String error_url = "https://telua.co/service/v1/esp32/error-sensor";
- String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
- 
- int EEPROM_ADDRESS_SSID = 0;
- int EEPROM_ADDRESS_PASS = 32;
- int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
- int EEPROM_ADDRESS_DEVICE_ID = 128;
- int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
- int EEPROM_ADDRESS_TRIGGER = 256;
+String deviceID = "";
+String serialNumber = "";
+String configTrigger = "";
+String serverName = "https://telua.co/service/v1/esp32/update-sensor";
+String error_url = "https://telua.co/service/v1/esp32/error-sensor";
+String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
- bool hasRouter = false;
- bool hasSensor = false;
- bool hasError = true;
+int EEPROM_ADDRESS_SSID = 0;
+int EEPROM_ADDRESS_PASS = 32;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
+int EEPROM_ADDRESS_DEVICE_ID = 128;
+int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
+int EEPROM_ADDRESS_TRIGGER = 256;
 
- int time_to_sleep_mode = TIME_TO_SLEEP;
+bool hasRouter = false;
+bool hasSensor = false;
+bool hasError = true;
+
+
+int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT31 sht3x = Adafruit_SHT31();
 
@@ -275,8 +276,8 @@ void startSmartConfig(){
 
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int lastStringLength = current_ssid.length();
-
+   unsigned int  Length_of_ssid  = current_ssid.length();
+   g_ssid = current_ssid;
    hasRouter = false;
 
    int n = WiFi.scanNetworks();
@@ -290,12 +291,22 @@ void startSmartConfig(){
        String SSID = WiFi.SSID(i);
        Serial.print("scanNetworks SSID=");
        Serial.println(SSID);
-       if (lastStringLength > 0) {
+       if( i < 5){
+            ssid_list = ssid_list + SSID +  ",";
+        }
+        
+       if (Length_of_ssid > 0) {
          if (current_ssid.equals(SSID)) {
            hasRouter = true;
+            
            break;
          }
        }
+     }
+
+     int len = ssid_list.length();
+     if(len >1){
+        ssid_list = ssid_list.substring(0,len-1);
      }
    }
    WiFi.scanDelete();
@@ -315,8 +326,7 @@ void startSmartConfig(){
      }
    }
 
-   
-     if (WiFi.status() != WL_CONNECTED){
+   if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
   } 
 //  else{
@@ -324,7 +334,6 @@ void startSmartConfig(){
 //   }
 //    
    Serial.println(WiFi.localIP());
- 
  }
 
  void turnOffWiFi() {
@@ -332,7 +341,7 @@ void startSmartConfig(){
  }
 
  void initSht4x() {
-   Serial.println("Telua SHT3x test");
+  Serial.println("Telua SHT3x test");
    if (!sht3x.begin(0x44)) {
      Serial.println("Couldn't find SHT4x");
    } else {
@@ -374,11 +383,7 @@ void startSmartConfig(){
  }
 
  void sendReport() {
-   if (WiFi.status() != WL_CONNECTED) {
-     return;
-   }
-
-   String temperature = "0";
+    String temperature = "0";
    String relative_humidity = "0";
    float fHumidity = 0.0;
    float fTemperature = 0.0;
@@ -401,7 +406,10 @@ void startSmartConfig(){
        delay(500);
      }
    }
-
+   
+   if (WiFi.status() != WL_CONNECTED) {
+     return;
+   }
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
@@ -448,7 +456,7 @@ void startSmartConfig(){
            currentValue = fHumidity;
          }
 
-         if (opera == "=") {
+          if (opera == "=") {
            if (currentValue == value) {
               hasTrigger = true;
            }
@@ -629,7 +637,7 @@ void startSmartConfig(){
    //Increment boot number and print it every reboot
    ++bootCount;
    Serial.println("Boot number: " + String(bootCount));
-
+ 
    initEEPROM();
 
    initWiFi();
