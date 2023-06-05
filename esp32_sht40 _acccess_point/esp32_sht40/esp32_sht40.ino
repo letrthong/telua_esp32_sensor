@@ -204,7 +204,7 @@ void startLocalWeb(){
                          client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4  + "</p>");
 
                           client.println("<h4> </h4>");
-                          client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
+                          client.println("<a href=\"https://telua.co/aiot\"  >https://telua.co/aiot</a>");
                       }
                   }
                  
@@ -336,7 +336,7 @@ void startSmartConfig(){
      }
    }
 
-   if (WiFi.status() == WL_CONNECTED){
+   if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
   } 
  
