@@ -292,7 +292,10 @@ void startSmartConfig(){
        Serial.print("scanNetworks SSID=");
        Serial.println(SSID);
        if (lastStringLength > 0) {
-        ssid_list = ssid_list + SSID +  ",";
+        if( i < 5){
+            ssid_list = ssid_list + SSID +  ",";
+        }
+      
          if (current_ssid.equals(SSID)) {
            hasRouter = true;
             
