@@ -200,8 +200,8 @@ void startLocalWeb(){
                      client.println("<p>Please recheck SSID and password of Wi-Fi</p>");
                   }else{
                       if(privateIpv4.length() >0){
-                         client.println("<p  style=\"color:red;\"> Thiet Bi Co The Ket Noi Internet với IPv4=" + privateIpv4  + "</p>");
-                         client.println("<p  style=\"color:red;\"> The device can conenct the inernet with IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> Thiet bi Co the ket Noi Internet voi IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4  + "</p>");
                       }
                   }
                   client.println("<h4> </h4>");
@@ -319,20 +319,20 @@ void startSmartConfig(){
    }
    WiFi.scanDelete();
 
-//   if (hasRouter == true) {
-//     WiFi.begin(current_ssid, current_pass);
-//     Serial.print("Connecting to WiFi ..");
-//     int count = 0;
-//     while (WiFi.status() != WL_CONNECTED) {
-//       Serial.print('.');
-//       delay(500);
-//        // 15 seconds
-//       count = count + 1;
-//       if (count > 30  ) {
-//         break;
-//       }
-//     }
-//   }
+   if (hasRouter == true) {
+     WiFi.begin(current_ssid, current_pass);
+     Serial.print("Connecting to WiFi ..");
+     int count = 0;
+     while (WiFi.status() != WL_CONNECTED) {
+       Serial.print('.');
+       delay(500);
+        // 15 seconds
+       count = count + 1;
+       if (count > 30  ) {
+         break;
+       }
+     }
+   }
 
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
