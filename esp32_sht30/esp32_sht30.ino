@@ -197,13 +197,16 @@ void startLocalWeb(){
                   client.println("</form>");
                   if( hasWrongFormat == true){
                      client.println("<p>Xin kiem tra lai SSID va Mat Khau cua Wi-Fi</p>");
+                     client.println("<p>Please recheck SSID and password of Wi-Fi</p>");
                   }else{
                       if(privateIpv4.length() >0){
-                         client.println("<p> IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> Thiet bi co the ket noi Internet voi IPv4=" + privateIpv4  + "</p>");
+                         client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4  + "</p>");
+
+                          client.println("<h4> </h4>");
+                          client.println("<a href=\"https://telua.co/aiot\"  >https://telua.co/aiot</a>");
                       }
                   }
-                  client.println("<h4> </h4>");
-                  client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
                   
                   client.println("</body></html>");
                   
