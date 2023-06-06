@@ -70,6 +70,7 @@ void startLocalWeb(){
     String header;
     bool hasConnection = false;
     int count = 0;
+   bool hasRestart = false;
     while(1){
        WiFiClient client = server.available(); 
        unsigned long currentMillis = millis();
@@ -77,11 +78,15 @@ void startLocalWeb(){
            previousMillis = currentMillis;
             Serial.println("waiting connection");
             count = count +1;
+            if(hasConnection == true  ){
+              hasRestart = true;
+            }
        }
 
-       if(hasConnection == true  || count > 10){
+       if(  count > 10 || hasRestart == true){
            server.close();
            WiFi.disconnect();
+           delay(100);
            ESP.restart(); 
            return;
        }
@@ -198,6 +203,7 @@ void startLocalWeb(){
                   }
                   client.println("<h4> </h4>");
                   client.println("<a href=\"https://telua.co/aiot\"  target=\"_blank\">https://telua.co/aiot</a>");
+                  
                   client.println("</body></html>");
                   
                   // The HTTP response ends with another blank line
@@ -329,10 +335,7 @@ void startSmartConfig(){
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
   } 
-//  else{
-//       startLocalWeb();
-//   }
-//    
+ 
    Serial.println(WiFi.localIP());
  }
 
