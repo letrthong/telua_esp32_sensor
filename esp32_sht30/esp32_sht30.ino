@@ -68,7 +68,7 @@ void startLocalWeb(){
     
     server.begin();
     String header;
-    bool hasConnection = false;
+    bool hasConnection = false; 
     int count = 0;
    bool hasRestart = false;
     while(1){
