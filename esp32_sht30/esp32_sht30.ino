@@ -79,11 +79,12 @@ void startLocalWeb(){
             Serial.println("waiting connection");
             count = count +1;
             if(hasConnection == true  ){
-              hasRestart = true;
+              hasConnection = false;
+               count = 9;
             }
        }
 
-       if(  count > 10 || hasRestart == true){
+       if(  count >= 10){
            server.close();
            WiFi.disconnect();
            delay(100);
