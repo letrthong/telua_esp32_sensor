@@ -640,7 +640,7 @@ void startSmartConfig(){
  void setup() {
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
-   if(bootCount >=  60){
+   if(bootCount >=  30){
       bootCount = 0;
        ESP.restart();
    }
