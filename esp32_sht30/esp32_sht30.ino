@@ -16,7 +16,8 @@
  #define TIME_TO_SLEEP 30
 
 RTC_DATA_ATTR int bootCount = 0;
- 
+RTC_DATA_ATTR bool isCorrectPassword = false;
+
 String deviceID = "";
 String serialNumber = "";
 String configTrigger = "";
@@ -325,12 +326,16 @@ void startSmartConfig(){
      WiFi.begin(current_ssid, current_pass);
      Serial.print("Connecting to WiFi ..");
      int count = 0;
+     int retryTime = 30;
+     if(isCorrectPassword == true){
+        retryTime = 60;
+     }
      while (WiFi.status() != WL_CONNECTED) {
        Serial.print('.');
        delay(500);
         // 15 seconds
        count = count + 1;
-       if (count > 30  ) {
+       if (retryTime > 30  ) {
          break;
        }
      }
@@ -338,7 +343,9 @@ void startSmartConfig(){
 
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
-  } 
+  }else{
+    isCorrectPassword = true;
+  }
  
    Serial.println(WiFi.localIP());
  }
