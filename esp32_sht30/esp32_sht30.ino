@@ -440,8 +440,9 @@ void startSmartConfig(){
      return;
    }
 
-   if ( WiFi.localIP().toString() == "0.0.0.0") {
-      Serial.println("sendReport  ip= 0.0.0.0");
+   String localIP =  WiFi.localIP().toString();
+   if ( localIP== "0.0.0.0") {
+      Serial.println("sendReport  localIP= 0.0.0.0");
      return;
    }
 
