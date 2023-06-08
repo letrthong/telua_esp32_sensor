@@ -333,7 +333,7 @@ void startSmartConfig(){
    if (hasRouter == true) {
      WiFi.begin(current_ssid, current_pass);
      Serial.println("Connecting to WiFi ..");
-     int count = 0;
+     int countWifiStatus = 0;
      int retryTime = 30;
      if(isCorrectPassword == true){
         retryTime = 60;
