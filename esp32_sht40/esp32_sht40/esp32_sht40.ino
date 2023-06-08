@@ -80,11 +80,11 @@ void startLocalWeb(){
             count = count +1;
             if(hasConnection == true  ){
                hasConnection = false;
-               count = 4;
+               count = 5;
             }
        }
 
-       if(  count >= 5  ){
+       if(  count >= 6){
            server.close();
            WiFi.disconnect();
            delay(100);
@@ -291,39 +291,48 @@ void startSmartConfig(){
    unsigned int  Length_of_ssid  = current_ssid.length();
    g_ssid = current_ssid;
    hasRouter = false;
+   if(isCorrectPassword == false){
+        for(int y = 0; y< 3; y++){
+             int n = WiFi.scanNetworks();
+             Serial.println("Scan done");
+             if (n == 0) {
+               Serial.println("no networks found");
+             } else {
+               Serial.print(n);
+               Serial.println(" networks found");
+               for (int i = 0; i < n; ++i) {
+                 String SSID = WiFi.SSID(i);
+                 Serial.print("scanNetworks SSID=");
+                 Serial.println(SSID);
+                 if( i < 5){
+                      ssid_list = ssid_list + SSID +  ",";
+                  }
+                  
+                 if (Length_of_ssid > 0) {
+                   if (current_ssid.equals(SSID)) {
+                     hasRouter = true;
+                      
+                     break;
+                   }
+                 }
+               }
+          
+               int len = ssid_list.length();
+               if(len >1){
+                  ssid_list = ssid_list.substring(0,len-1);
+               }
+             }
+             WiFi.scanDelete();
 
-   int n = WiFi.scanNetworks();
-   Serial.println("Scan done");
-   if (n == 0) {
-     Serial.println("no networks found");
-   } else {
-     Serial.print(n);
-     Serial.println(" networks found");
-     for (int i = 0; i < n; ++i) {
-       String SSID = WiFi.SSID(i);
-       Serial.print("scanNetworks SSID=");
-       Serial.println(SSID);
-       if( i < 5){
-            ssid_list = ssid_list + SSID +  ",";
+            if(hasRouter == true){
+              break;
+           }
+           delay(500);
         }
-        
-       if (Length_of_ssid > 0) {
-         if (current_ssid.equals(SSID)) {
-           hasRouter = true;
-            
-           break;
-         }
-       }
-     }
-
-     int len = ssid_list.length();
-     if(len >1){
-        ssid_list = ssid_list.substring(0,len-1);
-     }
    }
-   WiFi.scanDelete();
+  
 
-   if (hasRouter == true) {
+   if (hasRouter == true || isCorrectPassword == true) {
      WiFi.begin(current_ssid, current_pass);
      Serial.print("Connecting to WiFi ..");
      int count = 0;
@@ -340,15 +349,17 @@ void startSmartConfig(){
          break;
        }
      }
+
+     if(WiFi.status() == WL_CONNECTED){
+        isCorrectPassword = true;
+     }
    }
 
-   if (WiFi.status() != WL_CONNECTED){
+      Serial.println(WiFi.localIP());
+   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  } else{
-    isCorrectPassword = true;
-  }
- 
-   Serial.println(WiFi.localIP());
+  } 
+
  }
 
  void turnOffWiFi() {
@@ -686,10 +697,11 @@ void startSmartConfig(){
  void setup() {
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
-    if(bootCount >=  30){
+    if(bootCount >=  60){
       bootCount = 0;
        ESP.restart();
    }
+    Serial.println("Ver:6/8/2023");
    //Increment boot number and print it every reboot
    ++bootCount;
    Serial.println("Boot number: " + String(bootCount));
