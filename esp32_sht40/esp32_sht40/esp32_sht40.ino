@@ -472,8 +472,16 @@ void startSmartConfig(){
    }
    
    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("sendReport WiFi.status() != WL_CONNECTED");
      return;
    }
+
+    String localIP =  WiFi.localIP().toString();
+   if ( localIP== "0.0.0.0") {
+      Serial.println("sendReport  localIP= 0.0.0.0");
+     return;
+   }
+
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
@@ -565,7 +573,7 @@ void startSmartConfig(){
    if (hasError == true) {
      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
-
+  Serial.println(serverPath);
  
    http.begin( * client, serverPath.c_str());
 
