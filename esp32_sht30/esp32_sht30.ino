@@ -287,50 +287,62 @@ void startSmartConfig(){
 
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int  Length_of_ssid  = current_ssid.length();
+   unsigned int  length_of_ssid  = current_ssid.length();
    g_ssid = current_ssid;
    hasRouter = false;
 
-   int n = WiFi.scanNetworks();
-   Serial.println("Scan done");
-   if (n == 0) {
-     Serial.println("no networks found");
-   } else {
-     Serial.print(n);
-     Serial.println(" networks found");
-     for (int i = 0; i < n; ++i) {
-       String SSID = WiFi.SSID(i);
-       Serial.print("scanNetworks SSID=");
-       Serial.println(SSID);
-       if( i < 5){
-            ssid_list = ssid_list + SSID +  ",";
-        }
-        
-       if (Length_of_ssid > 0) {
-         if (current_ssid.equals(SSID)) {
-           hasRouter = true;
+   for(int y = 0; y< 3; y++){
+      ssid_list = "";
+      int n = WiFi.scanNetworks();
+      Serial.println("Scan done");
+       if (n == 0) {
+         Serial.println("no networks found");
+       } else {
+         Serial.print(n);
+         Serial.println(" networks found");
+         for (int i = 0; i < n; ++i) {
+           String SSID = WiFi.SSID(i);
+           Serial.print("scanNetworks SSID=");
+           Serial.println(SSID);
+           if( i < 5){
+                ssid_list = ssid_list + SSID +  ",";
+            }
             
-           break;
+           if (length_of_ssid > 0) {
+             if (current_ssid.equals(SSID)) {
+               hasRouter = true;
+                Serial.println("scanNetworks hasRouter");
+               break;
+             }
+           }
+         }
+    
+         int len = ssid_list.length();
+         if(len >1){
+            ssid_list = ssid_list.substring(0,len-1);
          }
        }
-     }
+       WiFi.scanDelete();
 
-     int len = ssid_list.length();
-     if(len >1){
-        ssid_list = ssid_list.substring(0,len-1);
-     }
+       if(hasRouter == true){
+        break;
+       }
+       delay(500);
    }
-   WiFi.scanDelete();
 
    if (hasRouter == true) {
      WiFi.begin(current_ssid, current_pass);
-     Serial.print("Connecting to WiFi ..");
+     Serial.println("Connecting to WiFi ..");
      int count = 0;
      int retryTime = 30;
      if(isCorrectPassword == true){
         retryTime = 60;
      }
      while (WiFi.status() != WL_CONNECTED) {
+       String privateIpv4  =  WiFi.localIP().toString().c_str();
+       if(privateIpv4.length() >0){
+          Serial.println(WiFi.localIP());
+       }
        Serial.print('.');
        delay(500);
         // 15 seconds
@@ -338,7 +350,9 @@ void startSmartConfig(){
        if (retryTime > 30  ) {
          break;
        }
+       
      }
+      
    }
 
    if (WiFi.status() != WL_CONNECTED){
@@ -347,7 +361,7 @@ void startSmartConfig(){
     isCorrectPassword = true;
   }
  
-   Serial.println(WiFi.localIP());
+  
  }
 
  void turnOffWiFi() {
