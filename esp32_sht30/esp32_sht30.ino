@@ -339,22 +339,18 @@ void startSmartConfig(){
         retryTime = 60;
      }
      while (WiFi.status() != WL_CONNECTED) {
-       String privateIpv4  =  WiFi.localIP().toString().c_str();
-       if(privateIpv4.length() >0){
-          Serial.println(WiFi.localIP());
-       }
        Serial.print('.');
        delay(500);
         // 15 seconds
        count = count + 1;
-       if (retryTime > 30  ) {
+       if (count  > retryTime  ) {
          break;
        }
-       
+        
      }
       
    }
-
+    Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED){
       startLocalWeb();
   }else{
