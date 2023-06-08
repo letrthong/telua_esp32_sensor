@@ -436,8 +436,16 @@ void startSmartConfig(){
    }
    
    if (WiFi.status() != WL_CONNECTED) {
+       Serial.println("sendReport WiFi.status() != WL_CONNECTED");
      return;
    }
+
+   if ( WiFi.localIP().toString() == "0.0.0.0") {
+      Serial.println("sendReport  ip= 0.0.0.0");
+     return;
+   }
+
+   
    
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
@@ -529,7 +537,7 @@ void startSmartConfig(){
    if (hasError == true) {
      serverPath = error_url + "?sensorName=SHT30&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
-
+   Serial.println(serverPath);
  
    http.begin( * client, serverPath.c_str());
 
