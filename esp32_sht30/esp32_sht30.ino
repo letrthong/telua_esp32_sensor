@@ -342,20 +342,21 @@ void startSmartConfig(){
        Serial.print('.');
        delay(500);
         // 15 seconds
-       count = count + 1;
-       if (count  > retryTime  ) {
+       countWifiStatus = countWifiStatus + 1;
+       if (countWifiStatus  > retryTime  ) {
          break;
        }
         
      }
-      
+
+     if(WiFi.status() == WL_CONNECTED){
+        isCorrectPassword = true;
+     }
    }
     Serial.println(WiFi.localIP());
-   if (WiFi.status() != WL_CONNECTED){
+   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  }else{
-    isCorrectPassword = true;
-  }
+  } 
  
   
  }
