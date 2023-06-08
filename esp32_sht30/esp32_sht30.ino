@@ -661,10 +661,8 @@ void startSmartConfig(){
  void setup() {
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
-   if(bootCount >=  30){
-      bootCount = 0;
-       ESP.restart();
-   }
+   
+   Serial.println("Ver:6/8/2023");
    //Increment boot number and print it every reboot
    ++bootCount;
    Serial.println("Boot number: " + String(bootCount));
