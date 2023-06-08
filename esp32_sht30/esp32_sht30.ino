@@ -330,7 +330,7 @@ void startSmartConfig(){
        delay(500);
    }
 
-   if (hasRouter == true) {
+   if (hasRouter == true || isCorrectPassword == true) {
      WiFi.begin(current_ssid, current_pass);
      Serial.println("Connecting to WiFi ..");
      int countWifiStatus = 0;
