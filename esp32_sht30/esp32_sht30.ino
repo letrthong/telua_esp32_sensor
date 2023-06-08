@@ -291,44 +291,47 @@ void startSmartConfig(){
    g_ssid = current_ssid;
    hasRouter = false;
 
-   for(int y = 0; y< 3; y++){
-      ssid_list = "";
-      int n = WiFi.scanNetworks();
-      Serial.println("Scan done");
-       if (n == 0) {
-         Serial.println("no networks found");
-       } else {
-         Serial.print(n);
-         Serial.println(" networks found");
-         for (int i = 0; i < n; ++i) {
-           String SSID = WiFi.SSID(i);
-           Serial.print("scanNetworks SSID=");
-           Serial.println(SSID);
-           if( i < 5){
-                ssid_list = ssid_list + SSID +  ",";
-            }
-            
-           if (length_of_ssid > 0) {
-             if (current_ssid.equals(SSID)) {
-               hasRouter = true;
-                Serial.println("scanNetworks hasRouter");
-               break;
+    if(isCorrectPassword == false){
+        for(int y = 0; y< 3; y++){
+        ssid_list = "";
+        int n = WiFi.scanNetworks();
+        Serial.println("Scan done");
+         if (n == 0) {
+           Serial.println("no networks found");
+         } else {
+           Serial.print(n);
+           Serial.println(" networks found");
+           for (int i = 0; i < n; ++i) {
+             String SSID = WiFi.SSID(i);
+             Serial.print("scanNetworks SSID=");
+             Serial.println(SSID);
+             if( i < 5){
+                  ssid_list = ssid_list + SSID +  ",";
+              }
+              
+             if (length_of_ssid > 0) {
+               if (current_ssid.equals(SSID)) {
+                 hasRouter = true;
+                  Serial.println("scanNetworks hasRouter");
+                 break;
+               }
              }
            }
+      
+           int len = ssid_list.length();
+           if(len >1){
+              ssid_list = ssid_list.substring(0,len-1);
+           }
          }
-    
-         int len = ssid_list.length();
-         if(len >1){
-            ssid_list = ssid_list.substring(0,len-1);
+         WiFi.scanDelete();
+  
+         if(hasRouter == true){
+          break;
          }
-       }
-       WiFi.scanDelete();
-
-       if(hasRouter == true){
-        break;
-       }
-       delay(500);
-   }
+         delay(500);
+     }
+    }
+   
 
    if (hasRouter == true || isCorrectPassword == true) {
      WiFi.begin(current_ssid, current_pass);
