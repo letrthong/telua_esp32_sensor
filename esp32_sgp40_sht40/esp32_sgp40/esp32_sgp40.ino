@@ -59,13 +59,13 @@ void intGpio(){
 }
 
 void turnOffLed(){
-    Serial.println("turnOffLed");
+    //Serial.println("turnOffLed");
     digitalWrite(ledPin, LOW);
 }
 
 
 void turnOnBuzzer(){
-  Serial.println("turnOnBuzzer");
+  //Serial.println("turnOnBuzzer");
    digitalWrite(buzzerPin, HIGH);
 }
 
@@ -473,7 +473,7 @@ void startLocalWeb(){
    }
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
-    turnOffWiFi()
+    turnOffWiFi();
      return;
    }
 
