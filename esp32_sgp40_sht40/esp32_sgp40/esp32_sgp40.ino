@@ -16,7 +16,8 @@
  #define TIME_TO_SLEEP 30
 
 
- RTC_DATA_ATTR int bootCount = 0;
+RTC_DATA_ATTR int bootCount = 0;
+RTC_DATA_ATTR bool isCorrectPassword = false;
 
 
  String deviceID = "";
@@ -83,90 +84,79 @@ void turnOnLed(){
 
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int lastStringLength = current_ssid.length();
-
+   unsigned int  length_of_ssid  = current_ssid.length();
+   g_ssid = current_ssid;
    hasRouter = false;
 
-   int n = WiFi.scanNetworks();
-   Serial.println("Scan done");
-   if (n == 0) {
-     Serial.println("no networks found");
-   } else {
-     Serial.print(n);
-     Serial.println(" networks found");
-     for (int i = 0; i < n; ++i) {
-       String SSID = WiFi.SSID(i);
-       Serial.print("scanNetworks SSID=");
-       Serial.println(SSID);
-       if (lastStringLength > 0) {
-         if (current_ssid.equals(SSID)) {
-           hasRouter = true;
-           break;
+    if(isCorrectPassword == false){
+        for(int y = 0; y< 3; y++){
+        ssid_list = "";
+        int n = WiFi.scanNetworks();
+        Serial.println("Scan done");
+         if (n == 0) {
+           Serial.println("no networks found");
+         } else {
+           Serial.print(n);
+           Serial.println(" networks found");
+           for (int i = 0; i < n; ++i) {
+             String SSID = WiFi.SSID(i);
+             Serial.print("scanNetworks SSID=");
+             Serial.println(SSID);
+             if( i < 5){
+                  ssid_list = ssid_list + SSID +  ",";
+              }
+              
+             if (length_of_ssid > 0) {
+               if (current_ssid.equals(SSID)) {
+                 hasRouter = true;
+                  Serial.println("scanNetworks hasRouter");
+                 break;
+               }
+             }
+           }
+      
+           int len = ssid_list.length();
+           if(len >1){
+              ssid_list = ssid_list.substring(0,len-1);
+           }
          }
-       }
+         WiFi.scanDelete();
+  
+         if(hasRouter == true){
+          break;
+         }
+         delay(500);
      }
-   }
-   WiFi.scanDelete();
+    }
+   
 
-   if (hasRouter == true) {
+   if (hasRouter == true || isCorrectPassword == true) {
      WiFi.begin(current_ssid, current_pass);
-     Serial.print("Connecting to WiFi ..");
-     int count = 0;
+     Serial.println("Connecting to WiFi ..");
+     int countWifiStatus = 0;
+     int retryTime = 30;
+     if(isCorrectPassword == true){
+        retryTime = 60;
+     }
      while (WiFi.status() != WL_CONNECTED) {
        Serial.print('.');
-       delay(1000);
-       count = count + 1;
-       if (count > 10) {
+       delay(500);
+        // 15 seconds
+       countWifiStatus = countWifiStatus + 1;
+       if (countWifiStatus  > retryTime  ) {
          break;
        }
+        
+     }
+
+     if(WiFi.status() == WL_CONNECTED){
+        isCorrectPassword = true;
      }
    }
-
-   int count = 0;
-   if (WiFi.status() != WL_CONNECTED) {
-     WiFi.mode(WIFI_AP_STA);
-     WiFi.beginSmartConfig();
-     while (!WiFi.smartConfigDone()) {
-       delay(500);
-       Serial.print(".");
-       count = count + 1;
-       if (count > 360) {
-         ESP.restart();
-       }
-     }
-
-     Serial.println("");
-     Serial.println("SmartConfig received.");
-
-     count = 0;
-     while (WiFi.status() != WL_CONNECTED) {
-       delay(500);
-       Serial.print(".");
-       count = count + 1;
-       if (count > 360) {
-         ESP.restart();
-       }
-     }
-
-     String ssid = WiFi.SSID();
-     String pass = WiFi.psk();
-
-     if (ssid.length() > 1 && pass.length() >= 8) {
-       Serial.print("SmartConfig readString ssid=");
-       Serial.println(ssid);
-
-       Serial.print("SmartConfig readString pass=");
-       Serial.println(pass);
-
-       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
-       EEPROM.commit();
-
-       EEPROM.writeString(EEPROM_ADDRESS_PASS, pass);
-       EEPROM.commit();
-     }
-   }
-
-   Serial.println(WiFi.localIP());
+    Serial.println(WiFi.localIP());
+   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
+      startLocalWeb();
+  } 
  }
 
  void turnOffWiFi() {
@@ -290,12 +280,17 @@ void turnOnLed(){
       
    }
     
-   if (WiFi.status() != WL_CONNECTED || hasReport == false) {
+   if ( hasReport == false) {
      return;
    }
-   
+
+    initWiFi();
+    if (WiFi.status() != WL_CONNECTED  ) {
+     return;
+   }
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
+    turnOffWiFi()
      return;
    }
 
@@ -359,6 +354,8 @@ void turnOnLed(){
    // Free resources
    http.end();
    delete client;
+
+   turnOffWiFi();
  }
  /*
  Method to print the reason by which ESP32
@@ -376,8 +373,7 @@ void turnOnLed(){
    initEEPROM();
 
    intGpio();
-   initWiFi();
-
+   
    initSht4x();
 
    sendReport(false);
@@ -386,17 +382,6 @@ void turnOnLed(){
  }
 
  void loop() {
-      unsigned long currentMillis = millis();
-  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
-  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
-      Serial.print(millis());
-      Serial.println("Reconnecting to WiFi...");
-      WiFi.disconnect();
-      WiFi.reconnect();
-      previousMillis = currentMillis;
-  }
-
-  
    //This is not going to be called
       for(int i= 0; i < time_to_sleep_mode ; i++){
           sendReport(false);
