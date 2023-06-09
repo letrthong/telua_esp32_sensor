@@ -63,6 +63,10 @@ void turnOffLed(){
     digitalWrite(ledPin, LOW);
 }
 
+void turnOnLed(){
+  //Serial.println("turnOnLed");
+   digitalWrite(ledPin, HIGH);
+}
 
 void turnOnBuzzer(){
   //Serial.println("turnOnBuzzer");
@@ -71,15 +75,11 @@ void turnOnBuzzer(){
 
 
 void turnOffBuzzer(){
-    Serial.println("turnOffBuzzer");
+    //Serial.println("turnOffBuzzer");
     digitalWrite(buzzerPin, LOW);
 }
 
 
-void turnOnLed(){
-  Serial.println("turnOnLed");
-   digitalWrite(ledPin, HIGH);
-}
 
 void startLocalWeb(){
     WiFi.mode(WIFI_AP_STA);
@@ -471,6 +471,14 @@ void startLocalWeb(){
     if (WiFi.status() != WL_CONNECTED  ) {
      return;
    }
+
+     String localIP =  WiFi.localIP().toString();
+   if ( localIP== "0.0.0.0") {
+      Serial.println("sendReport  localIP= 0.0.0.0");
+      turnOffWiFi();
+     return;
+   }
+   
    WiFiClientSecure * client = new WiFiClientSecure;
    if (!client) {
     turnOffWiFi();
@@ -559,7 +567,7 @@ void startLocalWeb(){
    
    initSht4x();
 
-   sendReport(false);
+   sendReport(true);
 
     
  }
