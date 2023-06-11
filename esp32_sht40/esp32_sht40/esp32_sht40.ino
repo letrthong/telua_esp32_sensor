@@ -48,6 +48,21 @@ unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
 
+void startSleepMode(){
+    /*
+   First we configure the wake up source
+   We set our ESP32 to wake up every 5 seconds
+   */
+   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
+   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+
+   Serial.println("Going to sleep now");
+   Serial.flush();
+   esp_deep_sleep_start();
+   Serial.println("This will never be printed");
+}
+
+
 void startLocalWeb(){
     WiFi.mode(WIFI_AP_STA);
     WiFiServer server(80);
@@ -88,7 +103,7 @@ void startLocalWeb(){
            server.close();
            WiFi.disconnect();
            delay(100);
-           ESP.restart(); 
+           startSleepMode();
            return;
        }
 
@@ -726,18 +741,8 @@ void startSmartConfig(){
 
    //Print the wakeup reason for ESP32
    print_wakeup_reason();
-
-   /*
-   First we configure the wake up source
-   We set our ESP32 to wake up every 5 seconds
-   */
-   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
-
-   Serial.println("Going to sleep now");
-   Serial.flush();
-   esp_deep_sleep_start();
-   Serial.println("This will never be printed");
+   startSleepMode();
+ 
  }
 
  void loop() {
