@@ -141,6 +141,8 @@ void startLocalWeb(){
                          index = info.indexOf("&password="); 
                           
                          String ssid = info.substring(0,index);
+                         ssid.replace("+", " ");
+                          
                          String passowrd= info.substring(index+10);
                          passowrd.replace(" ",  "");
                          
