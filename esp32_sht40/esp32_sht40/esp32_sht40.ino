@@ -141,6 +141,8 @@ void startLocalWeb(){
                          index = info.indexOf("&password="); 
                           
                          String ssid = info.substring(0,index);
+                         ssid.replace("+", " ");
+                         
                          String passowrd= info.substring(index+10);
                          passowrd.replace(" ",  "");
                          
@@ -326,7 +328,6 @@ void startSmartConfig(){
                  if (Length_of_ssid > 0) {
                    if (current_ssid.equals(SSID)) {
                      hasRouter = true;
-                      
                      break;
                    }
                  }
@@ -373,7 +374,7 @@ void startSmartConfig(){
       Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  } 
+  }
 
  }
 
