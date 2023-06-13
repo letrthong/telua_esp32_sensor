@@ -21,6 +21,7 @@ RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
 String configTrigger = "";
+String select_html = "";
 String serverName = "https://telua.co/service/v1/esp32/update-sensor";
 String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
@@ -44,7 +45,7 @@ Adafruit_SHT31 sht3x = Adafruit_SHT31();
 const char* ssid     = "Telua_Sht30_";
 const char* password = "12345678";
 String g_ssid = "";
-String ssid_list = "";
+ 
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
@@ -203,13 +204,11 @@ void startLocalWeb(){
                        client.println("<p>SSID=" + g_ssid  + "</p>");
                   }
  
-                  if(ssid_list.length() >0){
-                       client.println("<p> Danh sach SSID - SSID list = [" + ssid_list  + "]</p>");
-                  }
-
+        
                   client.println("<form action=\"/router_info\"  method=\"get\">");
                   client.println("<label style=\"color:blue;\">SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
-                  client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
+                 // client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
+                 client.println(select_html);
                   client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
                   client.println("<input type=\"text\" style=\"height:25px;\" id=\"password\" name=\"password\" value=\"\"><br>");
                   client.println("<input type=\"submit\" style=\"margin-top:20px; height:40px;\"  value=\"Xac Nhan - Submit\">");
@@ -308,38 +307,37 @@ void startSmartConfig(){
    unsigned int  length_of_ssid  = current_ssid.length();
    g_ssid = current_ssid;
    hasRouter = false;
-
+  
     if(isCorrectPassword == false){
         for(int y = 0; y< 3; y++){
-        ssid_list = "";
-        int n = WiFi.scanNetworks();
-        Serial.println("Scan done");
-         if (n == 0) {
-           Serial.println("no networks found");
-         } else {
-           Serial.print(n);
-           Serial.println(" networks found");
-           for (int i = 0; i < n; ++i) {
-             String SSID = WiFi.SSID(i);
-             Serial.print("scanNetworks SSID=");
-             Serial.println(SSID);
-             if( i < 5){
-                  ssid_list = ssid_list + SSID +  ",";
-              }
-              
-             if (length_of_ssid > 0) {
-               if (current_ssid.equals(SSID)) {
-                 hasRouter = true;
-                  Serial.println("scanNetworks hasRouter");
-                 break;
+          int n = WiFi.scanNetworks();
+          Serial.println("Scan done");
+           if (n == 0) {
+             Serial.println("no networks found");
+           } else {
+             Serial.print(n);
+             Serial.println(" networks found");
+            select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
+             for (int i = 0; i < n; ++i) {
+               String SSID = WiFi.SSID(i);
+               Serial.print("scanNetworks SSID=");
+               Serial.println(SSID);
+
+                 if( i < 10){
+                    select_html  = select_html +  "<option value=\""  + SSID + "\">" +  SSID + "</option>";
+                 }
+                
+               if (length_of_ssid > 0) {
+                 if (current_ssid.equals(SSID)) {
+                   hasRouter = true;
+                    Serial.println("scanNetworks hasRouter");
+                   // break;
+                 }
                }
              }
-           }
-      
-           int len = ssid_list.length();
-           if(len >1){
-              ssid_list = ssid_list.substring(0,len-1);
-           }
+             select_html  = select_html +  "<option value=\" \"> </option>";
+             select_html  = select_html + " </select> <br>";
+              
          }
          WiFi.scanDelete();
   
@@ -377,7 +375,9 @@ void startSmartConfig(){
     Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  } 
+  } else{
+    startLocalWeb();
+  }
  
   
  }
