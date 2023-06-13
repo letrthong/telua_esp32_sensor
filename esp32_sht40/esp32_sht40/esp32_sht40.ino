@@ -378,9 +378,7 @@ void startSmartConfig(){
       Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  }else{
-    startLocalWeb();
-  }
+  } 
 
  }
 
