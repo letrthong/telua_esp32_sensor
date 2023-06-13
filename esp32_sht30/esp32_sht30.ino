@@ -317,7 +317,7 @@ void startSmartConfig(){
            } else {
              Serial.print(n);
              Serial.println(" networks found");
-            select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
+             select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
              for (int i = 0; i < n; ++i) {
                String SSID = WiFi.SSID(i);
                Serial.print("scanNetworks SSID=");
@@ -331,7 +331,7 @@ void startSmartConfig(){
                  if (current_ssid.equals(SSID)) {
                    hasRouter = true;
                     Serial.println("scanNetworks hasRouter");
-                   // break;
+                    break;
                  }
                }
              }
@@ -377,11 +377,8 @@ void startSmartConfig(){
     Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  } else{
-    startLocalWeb();
-  }
+  }  
  
-  
  }
 
  void turnOffWiFi() {
