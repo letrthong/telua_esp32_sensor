@@ -331,7 +331,7 @@ void startSmartConfig(){
                  if (current_ssid.equals(SSID)) {
                    hasRouter = true;
                     Serial.println("scanNetworks hasRouter");
-                    break;
+                    //break;
                  }
                }
              }

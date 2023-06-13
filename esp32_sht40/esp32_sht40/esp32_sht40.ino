@@ -332,7 +332,7 @@ void startSmartConfig(){
                  if (Length_of_ssid > 0) {
                    if (current_ssid.equals(SSID)) {
                      hasRouter = true;
-                     break;
+                     //break;
                    }
                  }
                }
