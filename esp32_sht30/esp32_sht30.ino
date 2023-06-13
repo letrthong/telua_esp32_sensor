@@ -206,7 +206,7 @@ void startLocalWeb(){
  
         
                   client.println("<form action=\"/router_info\"  method=\"get\">");
-                  client.println("<label style=\"color:blue;\">SSID cua Wi-Fi - SSID of Wi-Fi</label><br>");
+                  client.println("<label style=\"color:blue;\">Chon SSID cua Wi-Fi - Select SSID of Wi-Fi</label><br>");
                  // client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
                  client.println(select_html);
                   client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
