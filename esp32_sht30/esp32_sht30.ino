@@ -335,7 +335,9 @@ void startSmartConfig(){
                  }
                }
              }
-             select_html  = select_html +  "<option value=\" \"> </option>";
+             if(n < 1){
+                 select_html  = select_html +  "<option value=\" \"> </option>";
+             }
              select_html  = select_html + " </select> <br>";
               
          }
