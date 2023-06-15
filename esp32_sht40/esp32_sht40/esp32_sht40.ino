@@ -38,10 +38,10 @@ int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
 
 bool hasRouter = false;
-int g_encryption_Type = WIFI_AUTH_OPEN;
+RTC_DATA_ATTR int g_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasRemoteRouter = false;
-int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
+RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
@@ -383,8 +383,9 @@ void startSmartConfig(){
      }else{
         WiFi.begin(current_ssid, current_pass);
      }
-    
-     Serial.print("Connecting to WiFi ..");
+
+      Serial.print(current_ssid);
+     Serial.print(" Connecting to WiFi ..");
      int count = 0;
      int retryTime = 30;
      if(isCorrectPassword == true){
