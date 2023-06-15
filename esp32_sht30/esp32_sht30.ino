@@ -22,18 +22,27 @@ String deviceID = "";
 String serialNumber = "";
 String configTrigger = "";
 String select_html = "";
+String remote_ssid = "";
+String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/update-sensor";
 String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 64;
+int EEPROM_ADDRESS_REMOTE_SSID = 48;
+int EEPROM_ADDRESS_REOMVE_PASS = 64;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
 
 bool hasRouter = false;
+int g_encryption_Type = WIFI_AUTH_OPEN;
+
+bool hasRemoteRouter = false;
+int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
+
 bool hasSensor = false;
 bool hasError = true;
 
@@ -48,7 +57,6 @@ String g_ssid = "";
  
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
-int g_encryption_Type = WIFI_AUTH_OPEN;
 
 void startSleepMode(){
     /*
@@ -156,7 +164,7 @@ void startLocalWeb(){
                          Serial.print(passowrd);
                          Serial.print("]");
   
-                        if(ssid.length()>0 && passowrd.length() >= 8){
+                        if(ssid.length()>0 ){
                               if(passowrd.length() == 0){
                                Serial.println("WIFI_AUTH_OPEN");
                                WiFi.begin(ssid);
@@ -164,6 +172,7 @@ void startLocalWeb(){
                              }else{
                                WiFi.begin(ssid, passowrd);
                              }
+                             
                              Serial.print("Connecting to WiFi ..");
                              int count = 0;
                              while (WiFi.status() != WL_CONNECTED) {
@@ -305,66 +314,72 @@ void startSmartConfig(){
 }
 
  void initWiFi() {
-   WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_STA);
 
    String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
    String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-   unsigned int  length_of_ssid  = current_ssid.length();
+ 
+   unsigned int  Length_of_ssid  = current_ssid.length();
    g_ssid = current_ssid;
    hasRouter = false;
-  
-    if(isCorrectPassword == false){
+   if(isCorrectPassword == false){
         for(int y = 0; y< 3; y++){
-          int n = WiFi.scanNetworks();
-          Serial.println("Scan done");
-           if (n == 0) {
-             Serial.println("no networks found");
-           } else {
-             Serial.print(n);
-             Serial.println(" networks found");
-             select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
-             for (int i = 0; i < n; ++i) {
-               String SSID = WiFi.SSID(i);
-               Serial.print("scanNetworks SSID=");
-               Serial.println(SSID);
-
+             int n = WiFi.scanNetworks();
+             Serial.println("Scan done");
+             if (n == 0) {
+               Serial.println("no networks found");
+             } else {
+               Serial.print(n);
+               Serial.println(" networks found");
+               select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
+               for (int i = 0; i < n; ++i) {
+                 String SSID = WiFi.SSID(i);
+                 Serial.print("scanNetworks SSID=");
+                 Serial.println(SSID);
                  if( i < 10){
                     select_html  = select_html +  "<option value=\""  + SSID + "\">" +  SSID + "</option>";
                  }
-                
-               if (length_of_ssid > 0) {
-                 if (current_ssid.equals(SSID)) {
-                   hasRouter = true;
-                   g_encryption_Type = WiFi.encryptionType(i);
-                    Serial.println("scanNetworks hasRouter");
-                    //break;
+                  
+                 if (Length_of_ssid > 0) {
+                   if (current_ssid.equals(SSID)) {
+                     hasRouter = true;
+                     g_encryption_Type = WiFi.encryptionType(i);
+                     //break;
+                   }
+
+                   if (remote_ssid.equals(SSID)) {
+                     hasRemoteRouter = true;
+                     g_remtoe_encryption_Type = WiFi.encryptionType(i);
+                     //break;
+                   }
+                   
                  }
                }
-             }
-             if(n < 1){
+          
+                if(n < 1){
                  select_html  = select_html +  "<option value=\" \"> </option>";
+                }
+                select_html  = select_html + " </select> <br>";
              }
-             select_html  = select_html + " </select> <br>";
-              
-         }
-         WiFi.scanDelete();
+             WiFi.scanDelete();
+
+            if(hasRouter == true){
+              break;
+           }
+           delay(500);
+        }
+   }
   
-         if(hasRouter == true){
-          break;
-         }
-         delay(500);
-     }
-    }
-   
 
    if (hasRouter == true || isCorrectPassword == true) {
-      if(g_encryption_Type  == WIFI_AUTH_OPEN){
+     if(g_encryption_Type  == WIFI_AUTH_OPEN){
         WiFi.begin(current_ssid);
      }else{
         WiFi.begin(current_ssid, current_pass);
      }
-     Serial.println("Connecting to WiFi ..");
-     int countWifiStatus = 0;
+    
+     Serial.print("Connecting to WiFi ..");
+     int count = 0;
      int retryTime = 30;
      if(isCorrectPassword == true){
         retryTime = 60;
@@ -373,21 +388,61 @@ void startSmartConfig(){
        Serial.print('.');
        delay(500);
         // 15 seconds
-       countWifiStatus = countWifiStatus + 1;
-       if (countWifiStatus  > retryTime  ) {
+       count = count + 1;
+       if (count > retryTime  ) {
          break;
        }
-        
      }
 
      if(WiFi.status() == WL_CONNECTED){
         isCorrectPassword = true;
+     }else{
+        // Retry again
+        Serial.println(" Retry with the remote router");
+        if(hasRemoteRouter == true){
+           WiFi.disconnect();
+           delay(500);
+           if(g_remtoe_encryption_Type  == WIFI_AUTH_OPEN){
+              WiFi.begin(remote_ssid);
+           }else{
+              WiFi.begin(remote_ssid, remote_pass);
+           }
+           Serial.print("Connecting to Remote WiFi ..");
+           int count = 0;
+           int retryTime = 30;
+           while (WiFi.status() != WL_CONNECTED) {
+             Serial.print('.');
+             delay(500);
+              // 15 seconds
+             count = count + 1;
+             if (count > retryTime  ) {
+               break;
+             }
+           }
+
+           if(WiFi.status() == WL_CONNECTED){
+                Serial.println("Remote WL_CONNECTED");
+                if( current_ssid != remote_ssid){
+                    EEPROM.writeString(EEPROM_ADDRESS_SSID, remote_ssid);
+                    EEPROM.commit();
+                    
+                    EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
+                    EEPROM.commit();
+                }
+            }
+        }
      }
    }
-    Serial.println(WiFi.localIP());
+
+    
+   
+   Serial.println(WiFi.localIP());
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
-  }  
+  } 
+//  else{
+//      startLocalWeb();
+//  }
  
  }
 
@@ -435,6 +490,14 @@ void startSmartConfig(){
    configTrigger = EEPROM.readString(EEPROM_ADDRESS_TRIGGER);
    Serial.print("initEEPROM configTrigger=");
    Serial.println(configTrigger);
+
+   remote_ssid = EEPROM.readString(EEPROM_ADDRESS_REMOTE_SSID);
+  Serial.print("initEEPROM remote_ssid=");
+  Serial.println(remote_ssid);
+  
+  remote_pass = EEPROM.readString(EEPROM_ADDRESS_REOMVE_PASS);
+  Serial.print("initEEPROM remote_pass=");
+  Serial.println(remote_pass);
  }
 
  void sendReport() {
@@ -554,7 +617,7 @@ void startSmartConfig(){
      }
    } 
 
-   client -> setInsecure();
+   client->setInsecure();
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT30&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
@@ -602,6 +665,34 @@ void startSmartConfig(){
          }
        }
 
+       // Router info
+       bool hasSSID = doc.containsKey("ssid");
+       bool hasPassword = doc.containsKey("password");
+       if (hasSSID == true && hasPassword == true   ) {
+          String ssid = doc["ssid"];
+          String password = doc["password"];
+         Serial.print("deserializeJson ssid=");
+         Serial.println(ssid);
+
+
+         Serial.print("deserializeJson password=");
+         Serial.println(password);
+         if(ssid.length() >0 && remote_ssid != ssid){
+            remote_ssid = ssid;
+            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
+            EEPROM.commit();
+         }else{
+            Serial.println("remote_ssid is the same");
+         }
+
+         if(remote_pass != password){
+            remote_pass = password;
+            EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
+            EEPROM.commit();
+         }
+       }
+
+       // Device ID
        if (deviceID.length() != 32) {
          bool hasDeviceID = doc.containsKey("deviceID");
          if (hasDeviceID == true) {

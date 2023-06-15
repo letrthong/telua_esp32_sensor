@@ -660,7 +660,7 @@ void startSmartConfig(){
      }
    } 
 
-   client -> setInsecure();
+   client->setInsecure();
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
