@@ -54,7 +54,6 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 const char* ssid     = "Telua_Sht40_";
 const char* password = "12345678";
 String g_ssid = "";
-String ssid_list = "";
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
@@ -220,11 +219,7 @@ void startLocalWeb(){
                   if(g_ssid.length() >0){
                        client.println("<p>Ten mang-Network name=" + g_ssid  + "</p>");
                   }
- 
-                  if(ssid_list.length() >0){
-                       client.println("<p> Danh sach SSID - SSID list = [" + ssid_list  + "]</p>");
-                  }
-
+  
                   client.println("<form action=\"/router_info\"  method=\"get\">");
                   client.println("<label style=\"color:blue;\">Chon SSID cua Wi-Fi - Select SSID of Wi-Fi</label><br>");
                   //client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
