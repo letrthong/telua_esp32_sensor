@@ -397,7 +397,10 @@ void startSmartConfig(){
 
      if(WiFi.status() == WL_CONNECTED){
         isCorrectPassword = true;
-     }else  if(isCorrectPassword == false){
+     }
+   }
+
+   if(isCorrectPassword == false){
         // Retry again
         Serial.println(" Retry with the remote router");
         if(hasRemoteRouter == true){
@@ -430,14 +433,11 @@ void startSmartConfig(){
                     
                     EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
                     EEPROM.commit();
-
-                     ESP.restart();
+                    ESP.restart();
                 }
             }
         }
-     }
    }
-
     
    
    Serial.println(WiFi.localIP());
