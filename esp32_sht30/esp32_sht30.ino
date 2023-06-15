@@ -430,6 +430,8 @@ void startSmartConfig(){
                     
                     EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
                     EEPROM.commit();
+
+                     ESP.restart();
                 }
             }
         }

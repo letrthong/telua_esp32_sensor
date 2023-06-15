@@ -411,7 +411,7 @@ void startSmartConfig(){
            WiFi.disconnect();
            delay(500);
            if(g_remtoe_encryption_Type  == WIFI_AUTH_OPEN){
-             Serial.println("WIFI_AUTH_OPEN");
+              Serial.println("WIFI_AUTH_OPEN");
               WiFi.begin(remote_ssid);
            }else{
               WiFi.begin(remote_ssid, remote_pass);
@@ -437,6 +437,7 @@ void startSmartConfig(){
                     
                     EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
                     EEPROM.commit();
+                    ESP.restart();
                 }
             }
         }
