@@ -400,7 +400,7 @@ void startSmartConfig(){
        }
      }
 
-     if(WiFi.status() != WL_CONNECTED){
+     if(WiFi.status() == WL_CONNECTED){
         isCorrectPassword = true;
      }else{
         // Retry again
@@ -530,13 +530,13 @@ void startSmartConfig(){
    Serial.print("initEEPROM configTrigger=");
    Serial.println(configTrigger);
 
-    remote_ssid = EEPROM.readString(EEPROM_ADDRESS_REMOTE_SSID);
-    Serial.print("initEEPROM remote_ssid=");
-   Serial.println(remote_ssid);
-   
-    remote_pass = EEPROM.readString(EEPROM_ADDRESS_REOMVE_PASS);
-    Serial.print("initEEPROM remote_pass=");
-   Serial.println(remote_pass);
+  remote_ssid = EEPROM.readString(EEPROM_ADDRESS_REMOTE_SSID);
+  Serial.print("initEEPROM remote_ssid=");
+  Serial.println(remote_ssid);
+  
+  remote_pass = EEPROM.readString(EEPROM_ADDRESS_REOMVE_PASS);
+  Serial.print("initEEPROM remote_pass=");
+  Serial.println(remote_pass);
  }
 
  void sendReport() {
