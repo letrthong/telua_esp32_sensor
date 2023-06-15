@@ -218,7 +218,7 @@ void startLocalWeb(){
                   }
 
                   if(g_ssid.length() >0){
-                       client.println("<p>SSID=" + g_ssid  + "</p>");
+                       client.println("<p>Ten mang-Network name=" + g_ssid  + "</p>");
                   }
  
                   if(ssid_list.length() >0){
