@@ -48,7 +48,7 @@ String g_ssid = "";
  
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
-
+int g_encryption_Type = WIFI_AUTH_OPEN;
 
 void startSleepMode(){
     /*
@@ -157,8 +157,13 @@ void startLocalWeb(){
                          Serial.print("]");
   
                         if(ssid.length()>0 && passowrd.length() >= 8){
-                    
-                             WiFi.begin(ssid, passowrd);
+                              if(passowrd.length() == 0){
+                               Serial.println("WIFI_AUTH_OPEN");
+                               WiFi.begin(ssid);
+                               passowrd = "12345678";
+                             }else{
+                               WiFi.begin(ssid, passowrd);
+                             }
                              Serial.print("Connecting to WiFi ..");
                              int count = 0;
                              while (WiFi.status() != WL_CONNECTED) {
@@ -330,6 +335,7 @@ void startSmartConfig(){
                if (length_of_ssid > 0) {
                  if (current_ssid.equals(SSID)) {
                    hasRouter = true;
+                   g_encryption_Type = WiFi.encryptionType(i);
                     Serial.println("scanNetworks hasRouter");
                     //break;
                  }
@@ -352,7 +358,11 @@ void startSmartConfig(){
    
 
    if (hasRouter == true || isCorrectPassword == true) {
-     WiFi.begin(current_ssid, current_pass);
+      if(g_encryption_Type  == WIFI_AUTH_OPEN){
+        WiFi.begin(current_ssid);
+     }else{
+        WiFi.begin(current_ssid, current_pass);
+     }
      Serial.println("Connecting to WiFi ..");
      int countWifiStatus = 0;
      int retryTime = 30;
