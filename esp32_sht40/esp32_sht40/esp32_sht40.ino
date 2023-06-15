@@ -400,13 +400,14 @@ void startSmartConfig(){
        }
      }
 
-     if(WiFi.status() == WL_CONNECTED){
+     if(WiFi.status() != WL_CONNECTED){
         isCorrectPassword = true;
      }else{
         // Retry again
+        Serial.println(" Retry with the remote router");
         if(hasRemoteRouter == true){
            WiFi.disconnect();
-            delay(500);
+           delay(500);
            if(g_remtoe_encryption_Type  == WIFI_AUTH_OPEN){
               WiFi.begin(remote_ssid);
            }else{
@@ -426,6 +427,7 @@ void startSmartConfig(){
            }
 
            if(WiFi.status() == WL_CONNECTED){
+                Serial.println("Remote WL_CONNECTED");
                 if( current_ssid != remote_ssid){
                     EEPROM.writeString(EEPROM_ADDRESS_SSID, remote_ssid);
                     EEPROM.commit();
@@ -721,7 +723,9 @@ void startSmartConfig(){
          if(ssid.length() >0 && remote_ssid != ssid){
             remote_ssid = ssid;
             EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
-             EEPROM.commit();
+            EEPROM.commit();
+         }else{
+            Serial.println("remote_ssid is the same");
          }
 
          if(remote_pass != password){
