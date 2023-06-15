@@ -570,12 +570,14 @@ void startSmartConfig(){
    }
    
    if (WiFi.status() != WL_CONNECTED) {
+      time_to_sleep_mode = 60;
       Serial.println("sendReport WiFi.status() != WL_CONNECTED");
      return;
    }
 
     String localIP =  WiFi.localIP().toString();
    if ( localIP== "0.0.0.0") {
+       time_to_sleep_mode = 60;
       Serial.println("sendReport  localIP= 0.0.0.0");
      return;
    }
