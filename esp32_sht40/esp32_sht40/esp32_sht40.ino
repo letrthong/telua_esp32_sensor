@@ -402,7 +402,7 @@ void startSmartConfig(){
 
      if(WiFi.status() == WL_CONNECTED){
         isCorrectPassword = true;
-     }else{
+     }else if(isCorrectPassword == false){
         // Retry again
         Serial.println(" Retry with the remote router");
         if(hasRemoteRouter == true){
