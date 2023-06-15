@@ -379,6 +379,7 @@ void startSmartConfig(){
 
    if (hasRouter == true || isCorrectPassword == true) {
      if(g_encryption_Type  == WIFI_AUTH_OPEN){
+        Serial.println("WIFI_AUTH_OPEN");
         WiFi.begin(current_ssid);
      }else{
         WiFi.begin(current_ssid, current_pass);
@@ -410,6 +411,7 @@ void startSmartConfig(){
            WiFi.disconnect();
            delay(500);
            if(g_remtoe_encryption_Type  == WIFI_AUTH_OPEN){
+             Serial.println("WIFI_AUTH_OPEN");
               WiFi.begin(remote_ssid);
            }else{
               WiFi.begin(remote_ssid, remote_pass);
