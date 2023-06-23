@@ -160,6 +160,9 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
         Serial.print("\t");
         Serial.print("Humidity:");
         Serial.println(humidity);
+       if( humidity < 10){
+           ESP. restart(); 
+        }
     }
  }
   
