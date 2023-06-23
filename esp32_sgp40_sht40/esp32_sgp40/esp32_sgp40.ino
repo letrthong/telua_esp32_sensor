@@ -60,7 +60,6 @@ void turnOnNotification(int led){
 }
  
  
- 
  void initSht4x() {
    Serial.println("Telua SHT4x test");
     
