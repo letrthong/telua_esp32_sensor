@@ -432,6 +432,7 @@ void startLocalWeb(){
    http.end();
    delete client;
     WiFi.disconnect();
+     WiFi.mode(WIFI_OFF); 
  }
  
  void initSht4x() {
