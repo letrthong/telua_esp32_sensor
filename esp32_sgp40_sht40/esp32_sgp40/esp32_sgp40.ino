@@ -155,7 +155,7 @@ void turnOnNotification(int led){
       Serial.print("Raw measurement: ");
       Serial.println(sraw);
       
-      int32_t   voc_index = sgp.measureVocIndex( t, h);
+      int32_t  voc_index = sgp.measureVocIndex( t, h);
       Serial.print("Voc Index: ");
       Serial.println(voc_index);
       led_index = voc_index;
@@ -167,22 +167,18 @@ void turnOnNotification(int led){
    Serial.begin(115200);
    delay(1000); 
    intGpio();
-   
    initSht4x();
- 
  }
 
 void processSensor(){
     readSensor();
     if(led_index > 400){
       turnOnNotification(3);
-    }
-    else if(led_index > 200){
+    } else if(led_index > 200){
         turnOnNotification(2);
-    }
-    else if(led_index > 100){
+    } else if(led_index > 100){
       turnOnNotification(1);
-    }else{
+    } else{
       turnOnNotification(0);
     } 
 }
