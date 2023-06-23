@@ -39,22 +39,24 @@ void intGpio(){
 void turnOnNotification(int led){
    if( led == 0){
        digitalWrite(ledBlue, HIGH);
-       delay(500);
-        digitalWrite(ledBlue, LOW);
+       delay(1000);
+       digitalWrite(ledBlue, LOW);
    }else  if( led == 1){
-       digitalWrite(ledGreen, HIGH);
+      digitalWrite(ledGreen, HIGH);
+      delay(1000);
+      digitalWrite(ledGreen, LOW);
+   }else if( led == 2){
+        digitalWrite(ledYellow, HIGH);
         delay(500);
-        digitalWrite(ledGreen, LOW);
-   }else  if( led == 2){
-       digitalWrite(ledYellow, HIGH);
-         delay(500);
         digitalWrite(ledYellow, LOW);
-   }else  if( led == 3){
+        delay(500);
+   }else if( led == 3){
       digitalWrite(ledRed, HIGH);
-       delay(500);
-       digitalWrite(ledRed, LOW);
+      delay(500);
+      digitalWrite(ledRed, LOW);
+      delay(500);
    }
-    delay(500);
+   
 }
  
  
