@@ -33,6 +33,8 @@ RTC_DATA_ATTR bool isCorrectPassword = false;
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
+int32_t voc_Index =0;
+ 
  bool hasRouter = false;
  bool hasSensor = false;
  int time_to_sleep_mode = TIME_TO_SLEEP;
@@ -41,46 +43,52 @@ Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 Adafruit_SGP40 sgp;
 
 // the LED is connected to GPIO 5
-const int ledPin =  5; 
-const int buzzerPin =  17; 
-
+const int ledBlue =  5; 
+const int ledGreen =  17; 
+const int ledYellow =  16; 
+const int ledRed=  4; 
 const char* ssid     = "Telua_SGP4x_";
 const char* password = "12345678";
 String g_ssid = "";
 String ssid_list = "";
 
 void intGpio(){
-  pinMode(ledPin, OUTPUT);
-  digitalWrite(ledPin, LOW);
+  pinMode(ledBlue, OUTPUT);
+  digitalWrite(ledBlue, LOW);
 
-  pinMode(buzzerPin, OUTPUT);
-  digitalWrite(buzzerPin, LOW);
+  pinMode(ledGreen, OUTPUT);
+  digitalWrite(ledGreen, LOW);
+
+   pinMode(ledYellow, OUTPUT);
+  digitalWrite(ledYellow, LOW);
+
+  pinMode(ledRed, OUTPUT);
+  digitalWrite(ledRed, LOW);
   
 }
 
-void turnOffLed(){
-    //Serial.println("turnOffLed");
-    digitalWrite(ledPin, LOW);
+void turnOnNotification(int led){
+   if( led == 0){
+       digitalWrite(ledBlue, LOW);
+       delay(500);
+        digitalWrite(ledBlue, HIGH);
+   }else  if( led == 1){
+       digitalWrite(ledGreen, LOW);
+        delay(500);
+        digitalWrite(ledBlue, HIGH);
+   }else  if( led == 2){
+       digitalWrite(ledYellow, LOW);
+         delay(500);
+        digitalWrite(ledBlue, HIGH);
+   }else  if( led == 3){
+      digitalWrite(ledRed, LOW);
+       delay(500);
+       digitalWrite(ledBlue, HIGH);
+   }
+    delay(500);
 }
-
-void turnOnLed(){
-  //Serial.println("turnOnLed");
-   digitalWrite(ledPin, HIGH);
-}
-
-void turnOnBuzzer(){
-  //Serial.println("turnOnBuzzer");
-   digitalWrite(buzzerPin, HIGH);
-}
-
-
-void turnOffBuzzer(){
-    //Serial.println("turnOffBuzzer");
-    digitalWrite(buzzerPin, LOW);
-}
-
-
-
+ 
+ 
 void startLocalWeb(){
     WiFi.mode(WIFI_AP_STA);
     WiFiServer server(80);
@@ -444,7 +452,7 @@ void startLocalWeb(){
      relative_humidity = String(humidity.relative_humidity, 2);
 
      // https://github.com/adafruit/Adafruit_SGP40
-      int32_t voc_index;
+       
       uint16_t sraw;
       float t  = temp.temperature;
        Serial.print("Temp *C = "); Serial.print(t); Serial.print("\t\t");
@@ -576,14 +584,17 @@ void startLocalWeb(){
    //This is not going to be called
       for(int i= 0; i < time_to_sleep_mode ; i++){
           sendReport(false);
-
-          for(int y= 0; y< 5; y++){
-            turnOnLed();
-             delay(50);
-            turnOffLed();
-             delay(150);
+           if(voc_index > 400){
+            turnOnNotification(3);
           }
-           
+          else  if(voc_index > 200){
+            turnOnNotification(2);
+          }
+          else if(voc_index > 100){
+            turnOnNotification(1);
+          }else{
+            turnOnNotification(0);
+          }
       }
 
       sendReport(true);
