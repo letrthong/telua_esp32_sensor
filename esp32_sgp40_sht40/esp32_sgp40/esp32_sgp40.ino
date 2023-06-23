@@ -184,8 +184,7 @@ void processSensor(){
       turnOnNotification(1);
     }else{
       turnOnNotification(0);
-    }
-    delay(1000);
+    } 
 }
 
 void loop() {
