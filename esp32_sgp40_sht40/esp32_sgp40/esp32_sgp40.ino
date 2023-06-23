@@ -273,6 +273,7 @@ void startLocalWeb(){
  void reportCloud(String  temperature, String relative_humidity, String  str_voc_index) {
        Serial.println("reportCloud start");
        WiFi.mode(WIFI_STA);
+       delay(1000);
        String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
        String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
        unsigned int  length_of_ssid  = current_ssid.length();
@@ -364,6 +365,7 @@ void startLocalWeb(){
       return;
     }
     
+    Serial.println("WiFiClientSecure");
     WiFiClientSecure * client = new WiFiClientSecure;
     if (!client) {
       WiFi.disconnect();
@@ -374,7 +376,7 @@ void startLocalWeb(){
    client -> setInsecure();
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40-SGP40&temperature=" + temperature + "&humidity=" + relative_humidity +"&voc_index="+ str_voc_index  +  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-
+   Serial.println("http.begin");
    http.begin( *client, serverPath.c_str());
 
    // Send HTTP GET request
@@ -395,34 +397,34 @@ void startLocalWeb(){
 
      } else {
 
-       int intervalTime = doc["intervalTime"];
-       Serial.print("deserializeJson intervalTime=");
-       Serial.println(intervalTime);
-       if (intervalTime >= 30) {
-
-         if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
-           time_to_sleep_mode = intervalTime;
-           EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
-           EEPROM.commit();
-         }
-       }
-
-       if (deviceID.length() != 32) {
-         String id = doc["deviceID"];
-         Serial.print("deserializeJson deviceID=");
-         Serial.println(id);
-         if (id.length() > 1 && id.length() < 64) {
-           EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
-           EEPROM.commit();
-         }
-
-         String serial_number = doc["serialNumber"];
-         if (serial_number.length() > 1 && serial_number.length() < 64) {
-           EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
-           EEPROM.commit();
-         }
-       }
-     }
+//       int intervalTime = doc["intervalTime"];
+//       Serial.print("deserializeJson intervalTime=");
+//       Serial.println(intervalTime);
+//       if (intervalTime >= 30) {
+//
+//         if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
+//           time_to_sleep_mode = intervalTime;
+//           EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+//           EEPROM.commit();
+//         }
+//       }
+//
+//       if (deviceID.length() != 32) {
+//         String id = doc["deviceID"];
+//         Serial.print("deserializeJson deviceID=");
+//         Serial.println(id);
+//         if (id.length() > 1 && id.length() < 64) {
+//           EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
+//           EEPROM.commit();
+//         }
+//
+//         String serial_number = doc["serialNumber"];
+//         if (serial_number.length() > 1 && serial_number.length() < 64) {
+//           EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
+//           EEPROM.commit();
+//         }
+//       }
+//     }
 
    } else {
      //        Serial.print("Error code: ");
@@ -432,7 +434,7 @@ void startLocalWeb(){
    http.end();
    delete client;
     WiFi.disconnect();
-     WiFi.mode(WIFI_OFF); 
+    WiFi.mode(WIFI_OFF); 
  }
  
  void initSht4x() {
@@ -577,10 +579,8 @@ void startLocalWeb(){
     
  }
 
- void loop() {
-   //This is not going to be called
-   // time_to_sleep_mode
-      for(int i= 0; i < 10 ; i++){
+ void processSensor(){
+     for(int i= 0; i < 10 ; i++){
           Serial.print(" i=");
           Serial.print(i);
           readSensor(false);
@@ -600,4 +600,9 @@ void startLocalWeb(){
 
       readSensor(true);
       delay(1000);
+ }
+ void loop() {
+   //This is not going to be called
+   // time_to_sleep_mode
+     processSensor();
  }
