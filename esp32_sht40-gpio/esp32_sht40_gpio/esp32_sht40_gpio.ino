@@ -656,9 +656,11 @@ void startSmartConfig(){
 
          if(hasTrigger == true){
              strTriggerParameter = strTriggerParameter + action + "-";
-             //@Turn on off led
+             //@Turn on off led btn01 btn02 alarm
+          
+              Serial.println(currentValue);
          }
-       }
+       }    
      }
    } 
 
