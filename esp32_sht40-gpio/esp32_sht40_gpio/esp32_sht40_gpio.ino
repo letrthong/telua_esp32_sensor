@@ -51,7 +51,7 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
-const char* ssid     = "Telua_Sht40_";
+const char* ssid     = "Telua_Sht40_control_";
 const char* password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
@@ -664,14 +664,14 @@ void startSmartConfig(){
 
    client->setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SHT40_Control_Equipment&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(strTriggerParameter.length() > 0){
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
   }
     
    if (hasError == true) {
-     serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     serverPath = error_url + "?sensorName=SHT40_Control_Equipment&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
   Serial.println(serverPath);
  
