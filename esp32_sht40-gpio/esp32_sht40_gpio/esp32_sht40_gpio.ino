@@ -578,7 +578,7 @@ void startSmartConfig(){
  }
 
  bool sendReport(bool hasReport) {
-   bool retCode;
+   bool retCode = false;
    String temperature = "0";
    String relative_humidity = "0";
    float fHumidity = 0.0;
