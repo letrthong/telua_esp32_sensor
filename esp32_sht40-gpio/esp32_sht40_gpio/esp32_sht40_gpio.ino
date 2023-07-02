@@ -57,7 +57,24 @@ String g_ssid = "";
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
- 
+const int ledBlue =  5; 
+const int ledGreen =  17; 
+const int ledYellow =  16; 
+const int ledRed=  4; 
+void intGpio(){
+    pinMode(ledBlue, OUTPUT);
+    digitalWrite(ledBlue, LOW);
+    
+    pinMode(ledGreen, OUTPUT);
+    digitalWrite(ledGreen, LOW);
+    
+    pinMode(ledYellow, OUTPUT);
+    digitalWrite(ledYellow, LOW);
+    
+    pinMode(ledRed, OUTPUT);
+    digitalWrite(ledRed, LOW);
+}
+
 void startSleepMode(){
     /*
    First we configure the wake up source
@@ -840,6 +857,8 @@ void startSmartConfig(){
  }
 
  void setup() {
+   intGpio();
+   
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
     if(bootCount >=  60){
