@@ -75,6 +75,27 @@ void intGpio(){
     digitalWrite(ledRed, LOW);
 }
 
+void turnOnBtn01(){
+  Serial.println("turnOnBtn01");
+}
+void turnOffBtn01(){
+  Serial.println("turnOffBtn01");
+}
+
+void turnOnBtn02(){
+  Serial.println("turnOnBtn02");
+}
+void turnOffBtn02(){
+   Serial.println("turnOffBtn02");
+}
+
+void turnOnAlarm(){
+   Serial.println("turnOnAlarm");
+}
+void turnOffAlarm(){
+  Serial.println("turnOffAlarm");
+}
+ 
 void startSleepMode(){
     /*
    First we configure the wake up source
@@ -556,9 +577,8 @@ void startSmartConfig(){
   Serial.println(remote_pass);
  }
 
- void sendReport() {
-   
-
+ bool sendReport(bool hasReport) {
+   bool retCode;
    String temperature = "0";
    String relative_humidity = "0";
    float fHumidity = 0.0;
@@ -585,27 +605,8 @@ void startSmartConfig(){
        delay(500);
      }
    }
-   
-   if (WiFi.status() != WL_CONNECTED) {
-      time_to_sleep_mode = 60;
-      Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-     return;
-   }
 
-    String localIP =  WiFi.localIP().toString();
-   if ( localIP== "0.0.0.0") {
-       time_to_sleep_mode = 60;
-      Serial.println("sendReport  localIP= 0.0.0.0");
-     return;
-   }
-
-   
-   WiFiClientSecure * client = new WiFiClientSecure;
-   if (!client) {
-     return;
-   }
-
-   String strTriggerParameter = "";
+  String strTriggerParameter = "";
    //process trigger
    if (configTrigger.length() > 1 && hasSensor == true) {
      StaticJsonDocument < 1024 > docTrigger;
@@ -674,20 +675,62 @@ void startSmartConfig(){
          if(hasTrigger == true){
              strTriggerParameter = strTriggerParameter + action + "-";
              //@Turn on off led btn01 btn02 alarm
-              if(currentValue == "btn01"){
-                
-              } else if(currentValue == "btn02"){
-                
-              } else if(currentValue == "alarm"){
-                
+            
+              if(action == "btn01"){
+                turnOnBtn01();
+                retCode = true;
+              } else {
+                turnOffBtn01();
               }
               
+        
+              if(action == "btn02"){
+                turnOnBtn02();
+                retCode = true;
+              } else{
+                turnOffBtn02();
+              }
+
+              if(action == "alarm"){
+                turnOnAlarm();
+                retCode = true;
+                
+              } else{
+                turnOffAlarm();
+              }
+      
+              
+              Serial.println(action); 
               Serial.println(currentValue);
          }
        }    
      }
    } 
 
+   if(hasReport == false){
+      return retCode;
+   }
+   
+   if (WiFi.status() != WL_CONNECTED) {
+      time_to_sleep_mode = 60;
+      Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+      return false;
+   }
+
+   String localIP =  WiFi.localIP().toString();
+   if ( localIP== "0.0.0.0") {
+       time_to_sleep_mode = 60;
+      Serial.println("sendReport  localIP= 0.0.0.0");
+     return false;
+   }
+
+   
+   WiFiClientSecure * client = new WiFiClientSecure;
+   if (!client) {
+     return false;  ;
+   }
+
+  
    client->setInsecure();
    HTTPClient http;
    String serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
@@ -824,6 +867,8 @@ void startSmartConfig(){
    // Free resources
    http.end();
    delete client;
+
+   return retCode;
  }
  /*
  Method to print the reason by which ESP32
@@ -876,10 +921,25 @@ void startSmartConfig(){
 
    initSht4x();
 
-   sendReport();
+   //sendReport();
+
+   
+   while(true){
+      bool ret = sendReport(true);
+      if(ret == true){
+         delay(1000);
+         for(int i = 0; i < time_to_sleep_mode; i++){
+            if (sendReport(false) == false){
+                break;
+            }
+            delay(1000);
+        }
+      }else{
+        break;
+      }
+   }
 
    turnOffWiFi();
-
    //Print the wakeup reason for ESP32
    print_wakeup_reason();
    startSleepMode();
