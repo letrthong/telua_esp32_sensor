@@ -235,8 +235,10 @@ BH1750 lightMeter;
 
    String temperature = "0";
    String relative_humidity = "0";
+   String lux= "0";
    float fHumidity = 0.0;
    float fTemperature = 0.0;
+   
    if (hasSensor == true) {
      for (int i = 0; i < 3; i++) {
        sensors_event_t humidity, temp;
@@ -263,10 +265,11 @@ BH1750 lightMeter;
    if (hasSensor == true) {
        for(int i = 0; i< 10; i++){
           if(   lightMeter.measurementReady()){
-            float lux = lightMeter.readLightLevel();
+            float fLux = lightMeter.readLightLevel();
             Serial.print("Light: ");
-            Serial.print(lux);
+            Serial.print(fLux);
             Serial.println(" lx");
+            lux = String(fLux, 2);
             break;
           }
           delay(10);
@@ -356,14 +359,14 @@ BH1750 lightMeter;
 
    client -> setInsecure();
    HTTPClient http;
-   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+   String serverPath = serverName + "?sensorName=SHT40_BH1750&temperature=" + temperature + "&humidity=" + relative_humidity + "&lux=" + lux + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(strTriggerParameter.length() > 0){
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +  +"&trigger=" + strTriggerParameter;   
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity  +"&lux=" + lux   +"&trigger=" + strTriggerParameter;   
   }
     
    if (hasError == true) {
-     serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     serverPath = error_url + "?sensorName=SHT40_BH1750&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
    }
 
  
