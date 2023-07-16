@@ -16,6 +16,8 @@ và thử lại trong 5 lần
 sẽ chờ 3 giây. sau đó  hiện trang web portal ra
 
 
+4/ Không cần hiện thông tin prefix, web portal trên nút "Quét"
+
 
 
 
