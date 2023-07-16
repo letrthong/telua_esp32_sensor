@@ -1,6 +1,7 @@
 
 Cần cải thiện một số điểm bên dưới
 
+Ngày 17/07/2012
             
 1/ Xét mặc định
    prefix : telua
