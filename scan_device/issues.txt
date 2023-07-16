@@ -1,0 +1,12 @@
+
+1/ Xét mặc định
+   Refix : telua
+   Mật Khẩu:  12345678
+   web portal: http://192.168.0.1
+ 
+2/ Sẽ quét WiFi để tìm thiết bị . Nếu không tìm thấy thiết bị sẽ chờ 1 giây (sleep(1)
+và thử lại trong 5 lần
+
+
+3/ Sau khi tìm thấy thiết bị, sẽ kết nối với mật khẩu. Sau khi kết nối thiết bị thành công
+sẽ chờ 3 giây. sau đó  hiện trang web portal ra
