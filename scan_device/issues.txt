@@ -3,7 +3,7 @@ Cần cải thiện một số điểm bên dưới
 
             
 1/ Xét mặc định
-   Refix : telua
+   prefix : telua
    Mật Khẩu:  12345678
    web portal: http://192.168.0.1
  
