@@ -444,9 +444,10 @@ void startSmartConfig(){
    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false){
       startLocalWeb();
   } 
-//  else{
-//      startLocalWeb();
-//  }
+  else{
+        isCorrectPassword = false;
+      startLocalWeb();   
+  }
  
  }
 
