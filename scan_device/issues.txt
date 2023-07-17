@@ -4,7 +4,7 @@ Cần cải thiện một số điểm bên dưới
 Ngày 17/07/2012
             
 1/ Xét mặc định
-   prefix : telua
+   prefix : Telua
    Mật Khẩu:  12345678
    web portal: http://192.168.0.1
  
@@ -20,6 +20,7 @@ sẽ chờ 3 giây. sau đó  hiện trang web portal ra
 4/ Không cần hiện thông tin prefix, web portal trên nút "Quét"
 
 
+5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  web portal  ( Kiểm tra trước khi kết tới thiết bị)
 
 
 Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
