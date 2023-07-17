@@ -11,7 +11,7 @@ Ngày 17/07/2012
  
 2/ Sẽ quét WiFi để tìm thiết bị . Nếu không tìm thấy thiết bị sẽ chờ 1 giây (sleep(1)
 và thử lại trong 5 lần  ?
-    - Có thể quét tối đa bao nhiều lần ?
+    - Có thể quét tối đa bao nhiều lần  liên tục ?
 	- Thời gian quét mỗi lần là bao lâu ?
 	
 
