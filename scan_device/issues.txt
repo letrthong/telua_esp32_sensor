@@ -14,12 +14,15 @@ và thử lại trong 5 lần  ?
     - Có thể quét tối đa bao nhiều lần  liên tục ?
 	- Thời gian quét mỗi lần là bao lâu ?
 	
+	Kiểm tra lại sao lần đầu tiền sau khi cài  không thể quét được thiết bị ?
+	        Sau khi Thông đổi telua thành hcm -> Sau khi vô hcm ok 
+			Sau đó nhấp reset - > mới quét được thiết bị
 	
 	
 
 
 3/ Sau khi tìm thấy thiết bị, sẽ kết nối với mật khẩu. Sau khi kết nối thiết bị thành công
-sẽ chờ 3 giây. sau đó  hiện trang web portal ra
+sẽ chờ 3 giây. sau đó  hiện trang web portal ra  --> Done
 
 
 4/ Không cần hiện thông tin prefix, Web portal trên nút "Quét" :  --> Done
