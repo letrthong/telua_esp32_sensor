@@ -20,7 +20,7 @@ RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
 String configTrigger = "";
-RTC_DATA_ATTR String select_html = "";
+String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
    
