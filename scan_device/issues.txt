@@ -6,7 +6,7 @@ Ngày 17/07/2012
 1/ Xét mặc định
    prefix : Telua
    Mật Khẩu:  12345678
-   web portal: http://192.168.0.1
+   Web portal: http://192.168.0.1
  
  
 2/ Sẽ quét WiFi để tìm thiết bị . Nếu không tìm thấy thiết bị sẽ chờ 1 giây (sleep(1)
@@ -17,10 +17,10 @@ và thử lại trong 5 lần
 sẽ chờ 3 giây. sau đó  hiện trang web portal ra
 
 
-4/ Không cần hiện thông tin prefix, web portal trên nút "Quét"
+4/ Không cần hiện thông tin prefix, Web portal trên nút "Quét"
 
 
-5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  web portal  ( Kiểm tra trước khi kết nối tới thiết bị)
+5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  Web portal  ( Kiểm tra trước khi kết nối tới thiết bị)
 
 
 Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
