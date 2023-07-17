@@ -113,7 +113,7 @@ void startLocalWeb(){
            server.close();
            WiFi.disconnect();
            delay(100);
-           time_to_sleep_mode = 120;
+           time_to_sleep_mode = 60;
            startSleepMode();
            return;
        }
