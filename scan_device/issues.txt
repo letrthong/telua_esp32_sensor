@@ -13,11 +13,7 @@ Ngày 17/07/2012
 và thử lại trong 5 lần  ?
     - Có thể quét tối đa bao nhiều lần  liên tục ?
 	- Thời gian quét mỗi lần là bao lâu ?
-	
-	Kiểm tra lại sao lần đầu tiền sau khi cài  không thể quét được thiết bị ?
-	        Sau khi Thông đổi telua thành hcm -> Sau khi vô hcm ok 
-			Sau đó nhấp reset - > mới quét được thiết bị
-	
+ 
 	
 
 
