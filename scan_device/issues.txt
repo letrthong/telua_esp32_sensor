@@ -3,7 +3,7 @@ Cần cải thiện một số điểm bên dưới
 
 Ngày 17/07/2012
             
-1/ Xét mặc định
+1/ Xét mặc định                                --> Done
    prefix : Telua
    Mật Khẩu:  12345678
    Web portal: http://192.168.0.1
@@ -14,16 +14,18 @@ và thử lại trong 5 lần  ?
     - Có thể quét tối đa bao nhiều lần  liên tục ?
 	- Thời gian quét mỗi lần là bao lâu ?
 	
+	
+	
 
 
 3/ Sau khi tìm thấy thiết bị, sẽ kết nối với mật khẩu. Sau khi kết nối thiết bị thành công
 sẽ chờ 3 giây. sau đó  hiện trang web portal ra
 
 
-4/ Không cần hiện thông tin prefix, Web portal trên nút "Quét"
+4/ Không cần hiện thông tin prefix, Web portal trên nút "Quét" :  --> Done
 
 
-5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  Web portal  ( Kiểm tra trước khi kết nối tới thiết bị)
+5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  Web portal  ( Kiểm tra trước khi kết nối tới thiết bị) ->  --> Done
 
 
 Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
