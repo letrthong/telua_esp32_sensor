@@ -20,7 +20,7 @@ sẽ chờ 3 giây. sau đó  hiện trang web portal ra
 4/ Không cần hiện thông tin prefix, web portal trên nút "Quét"
 
 
-5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  web portal  ( Kiểm tra trước khi kết tới thiết bị)
+5/ Nếu điện thoại đang kết  tới Telua*** thì trỏ tới trang  web portal  ( Kiểm tra trước khi kết nối tới thiết bị)
 
 
 Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
