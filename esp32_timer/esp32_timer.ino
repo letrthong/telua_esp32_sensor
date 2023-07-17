@@ -445,7 +445,6 @@ void startSmartConfig(){
       startLocalWeb();
   } 
   else{
-        isCorrectPassword = false;
       startLocalWeb();   
   }
  
