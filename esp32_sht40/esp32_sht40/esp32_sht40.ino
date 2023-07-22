@@ -57,7 +57,7 @@ unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 15000;
+unsigned long intervalLocalWeb = 30000;
 
 void startSleepMode() {
   /*
@@ -95,6 +95,9 @@ void startLocalWeb() {
   bool hasConnection = false;
   int count = 0;
   int countWaitRequest = 0;
+  
+  unsigned long currentMillisLocalWeb = millis();
+  previousMillisLocalWeb = currentMillisLocalWeb;
   while (1) {
     WiFiClient client = server.available();
     unsigned long currentMillis = millis();
