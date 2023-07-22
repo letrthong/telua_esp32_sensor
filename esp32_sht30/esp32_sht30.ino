@@ -127,7 +127,7 @@ void startLocalWeb() {
       while (client.connected()) { // loop while the client's connected
         if (client.available()) { // if there's bytes to read from the client,
           unsigned long currentMillisLocalWeb = millis();
-           previousMillisLocalWeb = currentMillisLocalWeb;
+          previousMillisLocalWeb = currentMillisLocalWeb;
            
           char c = client.read(); // read a byte, then
           //            Serial.write(c);                    // print it out the serial monitor
@@ -254,6 +254,17 @@ void startLocalWeb() {
             }
           } else if (c != '\r') { // if you got anything else but a carriage return character,
             currentLine += c; // add it to the end of the currentLine
+          }
+        } else{
+          unsigned long currentMillisLocalWeb = millis();
+          if (currentMillisLocalWeb - previousMillisLocalWeb >= intervalLocalWeb) {
+            previousMillisLocalWeb = currentMillisLocalWeb;
+            Serial.println("waiting httpRequest");
+            countWaitRequest = countWaitRequest + 1;
+            if(countWaitRequest >=2){
+              countWaitRequest = 0;
+              break;
+            }
           }
         }
       }
