@@ -57,7 +57,7 @@ unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 30000;
+unsigned long intervalLocalWeb = 15000;
 
 void startSleepMode() {
   /*
