@@ -110,11 +110,11 @@ void startLocalWeb() {
       count = count + 1;
       if (hasConnection == true) {
         hasConnection = false;
-        count = 4;
+        count = 5;
       }
     }
 
-    if (count >= 5) {
+    if (count >= 6) {
       server.close();
       WiFi.disconnect();
       delay(100);
