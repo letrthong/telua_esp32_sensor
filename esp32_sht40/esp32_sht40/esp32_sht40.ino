@@ -261,6 +261,7 @@ void startLocalWeb() {
             Serial.println("waiting httpRequest");
             countWaitRequest = countWaitRequest + 1;
             if(countWaitRequest >=2){
+              countWaitRequest = 0;
               break;
             }
           }
