@@ -132,6 +132,7 @@ void startLocalWeb() {
         if (client.available()) { // if there's bytes to read from the client,
           unsigned long currentMillisLocalWeb = millis();
           previousMillisLocalWeb = currentMillisLocalWeb;
+		  countWaitRequest = 0;
            
           char c = client.read(); // read a byte, then
           //            Serial.write(c);                    // print it out the serial monitor
