@@ -105,15 +105,15 @@ void startLocalWeb(){
             count = count +1;
             if(hasConnection == true  ){
               hasConnection = false;
-               count = 5;
+               count = 4;
             }
        }
 
-       if(  count >= 6){
+       if(  count >= 5){
            server.close();
            WiFi.disconnect();
            delay(100);
-          time_to_sleep_mode = 60;
+          time_to_sleep_mode = 30;
           startSleepMode();
            return;
        }
