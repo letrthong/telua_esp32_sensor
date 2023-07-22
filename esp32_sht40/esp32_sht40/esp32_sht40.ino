@@ -94,7 +94,7 @@ void startLocalWeb() {
   String header;
   bool hasConnection = false;
   int count = 0;
-
+  int countWaitRequest = 0;
   while (1) {
     WiFiClient client = server.available();
     unsigned long currentMillis = millis();
@@ -124,6 +124,9 @@ void startLocalWeb() {
       String privateIpv4 = "";
       while (client.connected()) { // loop while the client's connected
         if (client.available()) { // if there's bytes to read from the client,
+           unsigned long currentMillisLocalWeb = millis();
+           previousMillisLocalWeb = currentMillisLocalWeb;
+ 
           char c = client.read(); // read a byte, then
           //            Serial.write(c);                    // print it out the serial monitor
           header += c;
@@ -250,6 +253,16 @@ void startLocalWeb() {
             }
           } else if (c != '\r') { // if you got anything else but a carriage return character,
             currentLine += c; // add it to the end of the currentLine
+          }
+        }else{
+          unsigned long currentMillisLocalWeb = millis();
+          if (currentMillisLocalWeb - previousMillisLocalWeb >= intervalLocalWeb) {
+            previousMillisLocalWeb = currentMillisLocalWeb;
+            Serial.println("waiting httpRequest");
+            countWaitRequest = countWaitRequest + 1;
+            if(countWaitRequest >=2){
+              ESP.restart();
+            }
           }
         }
       }
