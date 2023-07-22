@@ -254,7 +254,7 @@ void startLocalWeb() {
           } else if (c != '\r') { // if you got anything else but a carriage return character,
             currentLine += c; // add it to the end of the currentLine
           }
-        }else{
+        } else{
           unsigned long currentMillisLocalWeb = millis();
           if (currentMillisLocalWeb - previousMillisLocalWeb >= intervalLocalWeb) {
             previousMillisLocalWeb = currentMillisLocalWeb;
