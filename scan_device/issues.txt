@@ -1,7 +1,7 @@
 
 Cần cải thiện một số điểm bên dưới
 
-Ngày 17/07/2012
+Ngày 17/07/2012 (V1)
             
 1/ Xét mặc định                                --> Done
    prefix : Telua
@@ -28,6 +28,40 @@ sẽ chờ 3 giây. sau đó  hiện trang web portal ra  --> Done
 
 
 Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
+
+
+
+Ngay 23/07/2023  (V2)
+
+Restful APIS
+https://telua.co/services/bot/v1/production/management/esp32/device/add
+https://telua.co/services/bot/v1/production/management/esp32/device/status 
+
+Chi tiêt ở https://telua.co/tmonitor#api
+
+QR code là dữ liệu text có dữ liệu giống như ở  ( Quét thử ở thư mục qr)
+https://telua.co/services/v1/factory/getSerialNumber
+{"password":"35404275","serialNumber":"VNJU-1275-53","wiFi":"Telua_1654-7858"}
+
+
+1/ Thử phát 2 wifi,  Wifi1 có thể truy cập, Sau đó vô wifi2 , Mở app Tconfig và điền thông tin wifi1 
+->  Tconfig không thể truy cập vô Wifi1 bởi Wifi1 đã được lưu trên thiết bị
+
+Giải quyết: Có cách nào quên (forget Wifi) nếu không thử truy cập ? 
+( https://stackoverflow.com/questions/11134383/how-to-forget-a-wireless-network-in-android-programmatically)
+
+
+2/ Thêm 1 menu icon cho QR code 
+Usecase1:
+- bước1: Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang online thì không cần quét điền WiFi
+- Bước2 : Nếu thiết bị chưa  đăng kí sẽ lấy thông tin và đăng kí thiêt bị
+
+
+Usecase2:  
+- bước1: Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang offline thì  sử dụng thông tin trong QR để truy cập ( thử 3 mỗi lần chác nhau 15 giây)
+- bước2: Nếu thiết bị chưa  đăng kí sẽ lấy thông tin và đăng kí thiêt bị
+
+3/ Thêm 1 menu  login nhưng  khi nhấp sẽ trở tới https://telua.co/aiot ( tạm thời vậy ) 
 
 
 
