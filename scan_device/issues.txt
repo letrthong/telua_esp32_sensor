@@ -31,6 +31,10 @@ Một số yêu cầu sau khi cài ứng dụng: Cần phép lấy vị trí
 
 
 
+Tổng kết: Android là Ok 
+          Iphone sẽ hỗ trợ V2  ( Giới hạn về mặt kĩ thuật) -> Ok 
+
+
 Ngay 23/07/2023  (V2)
 
 Restful APIS
