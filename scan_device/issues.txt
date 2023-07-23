@@ -51,7 +51,7 @@ https://telua.co/services/v1/factory/getSerialNumber
 1/ Thử phát 2 wifi,  Wifi1 có thể truy cập, Sau đó vô wifi2 , Mở app Tconfig và điền thông tin wifi1 
 ->  Tconfig không thể truy cập vô Wifi1 bởi Wifi1 đã được lưu trên thiết bị
 
-Giải quyết: Có cách nào quên (forget Wifi) nếu không thử truy cập ? 
+Giải quyết: Có cách nào quên (forget Wifi)  nếu không thể truy cập ?  quên và thử lại ?
 ( https://stackoverflow.com/questions/11134383/how-to-forget-a-wireless-network-in-android-programmatically)
 
 
