@@ -57,12 +57,12 @@ Giải quyết: Có cách nào quên (forget Wifi)  nếu không thể truy cậ
 
 2/ Thêm 1 menu icon cho QR code 
 Usecase1:
-- bước1: Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang online thì không cần quét điền WiFi
+- bước1: Quet QR và Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang online thì không cần quét điền WiFi
 - Bước2 : Nếu thiết bị chưa  đăng kí sẽ lấy thông tin và đăng kí thiêt bị
 
 
 Usecase2:  
-- bước1: Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang offline thì  sử dụng thông tin trong QR để truy cập ( thử 3 mỗi lần chác nhau 15 giây)
+- bước1: Quet QR và  Kiểm tra nếu https://telua.co/services/bot/v1/production/management/esp32/device/status  đang offline thì  sử dụng thông tin trong QR để truy cập ( thử 3 mỗi lần chác nhau 15 giây)
 - bước2: Nếu thiết bị chưa  đăng kí sẽ lấy thông tin và đăng kí thiêt bị
 
 3/ Thêm 1 menu  login nhưng  khi nhấp sẽ trở tới https://telua.co/aiot ( tạm thời vậy ) 
