@@ -68,5 +68,19 @@ Usecase2:
 3/ Thêm 1 menu  login nhưng  khi nhấp sẽ trở tới https://telua.co/aiot ( tạm thời vậy ) 
 
 
+Ngay 25/07/2023   
+
+ 
+- 2/ Thêm 1 menu icon cho QR code: Cái này có phải là user quét QR code để tự động đăng nhập vào wifi không ạ? ->  đúng rồi em và có thử vài lần
+
+Nếu đúng thì có cần lưu lại thông tin wifi trong setting của app không? ->  Không cần lưu, Cái setting cứ giữa nguyền 
+do một số thiết bị
+
+
+
+- Bước2 : Nếu thiết bị chưa  đăng kí sẽ lấy thông tin và đăng kí thiêt bị:
+ Em thấy POST https://telua.co/services/bot/v1/production/management/esp32/device/add cần body {"serialNumber": "7668-6645-43", "accountId": "letrthong@gmail.com", "pincode": "1234" }, V
+vậy accoutId và pincode là app hiển thị form để user nhập tay phải không ạ? -   Đúng rồi em  Nên cần form để điền . do bảo mật nên khi người dùng login vô 
+https://telua.co/aiot họ sẽ lấy được pinCode 
 
 Email: LeTrThong@gmail.com
