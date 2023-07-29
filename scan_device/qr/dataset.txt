@@ -1,0 +1,19 @@
+======================================================
+
+
+
+{"serialNumber": "3327-7732-34"}  
+
+{"validId": true, "isOnline": true, "isRegister": true}
+
+
+=======================================================
+
+{"serialNumber": "1212-6735-58"} 
+{"validId": true, "isOnline": false, "isRegister": true}
+
+
+======================================================
+
+{"serialNumber": "1212-6735-38"} 
+{"validId": false, "isOnline": false, "isRegister": false}
