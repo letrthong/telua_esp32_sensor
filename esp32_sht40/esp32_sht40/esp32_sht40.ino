@@ -238,7 +238,7 @@ void startLocalWeb() {
               } else {
                 if (privateIpv4.length() > 0) {
                   client.println("<p  style=\"color:red;\"> Thiet bi co the ket noi Internet voi IPv4=" + privateIpv4 + "</p>");
-                  client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4 + "</p>");
+                  client.println("<p  style=\"color:red;\"> The device can connect the internet with IPv4=" + privateIpv4 + "</p>");
 
                   client.println("<h4> </h4>");
                   client.println("<a href=\"https://telua.co/aiot\"  >https://telua.co/aiot</a>");
