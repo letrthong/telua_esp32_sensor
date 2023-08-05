@@ -60,25 +60,51 @@ unsigned long interval = 30000;
 const int ledBlue =  5; 
 const int ledGreen =  17; 
 const int ledYellow =  16; 
-const int ledRed=  4; 
+const int ledRed=   4; 
+
 void intGpio(){
+     Serial.println("intGpio");
     pinMode(ledBlue, OUTPUT);
-    digitalWrite(ledBlue, LOW);
+   
     
     pinMode(ledGreen, OUTPUT);
-    digitalWrite(ledGreen, LOW);
+   
     
     pinMode(ledYellow, OUTPUT);
-    digitalWrite(ledYellow, LOW);
+    
     
     pinMode(ledRed, OUTPUT);
-    digitalWrite(ledRed, LOW);
+
+   Serial.println("intGpio HIGH");
+  digitalWrite(ledYellow, HIGH);
+  digitalWrite(ledBlue, HIGH);
+  digitalWrite(ledGreen, HIGH);
+  digitalWrite(ledRed, HIGH);
+   delay(5000);
+
+    Serial.println("intGpio LOW");
+  digitalWrite(ledYellow, LOW);
+  digitalWrite(ledBlue, LOW);
+  digitalWrite(ledGreen, LOW);
+  digitalWrite(ledRed, LOW);
+
+   delay(5000);
+    Serial.println("intGpio HIGH");
+  digitalWrite(ledYellow, HIGH);
+  digitalWrite(ledBlue, HIGH);
+  digitalWrite(ledGreen, HIGH);
+  digitalWrite(ledRed, HIGH);
+  
 }
 
 void turnOnBtn01(){
   Serial.println("turnOnBtn01");
+  digitalWrite(ledBlue, HIGH);
+   digitalWrite(ledGreen, HIGH);
 }
 void turnOffBtn01(){
+   digitalWrite(ledBlue, LOW);
+   digitalWrite(ledGreen, LOW);
   Serial.println("turnOffBtn01");
 }
 
@@ -680,7 +706,7 @@ void startSmartConfig(){
                 turnOnBtn01();
                 retCode = true;
               } else {
-                turnOffBtn01();
+                //turnOffBtn01();
               }
               
         
@@ -902,7 +928,7 @@ void startSmartConfig(){
  }
 
  void setup() {
-   intGpio();
+  
    
    Serial.begin(115200);
    delay(1000); //Take some time to open up the Serial Monitor
@@ -914,38 +940,41 @@ void startSmartConfig(){
    //Increment boot number and print it every reboot
    ++bootCount;
    Serial.println("Boot number: " + String(bootCount));
- 
-   initEEPROM();
 
-   initWiFi();
-
-   initSht4x();
-
-   //sendReport();
-
+   intGpio();
    
-   while(true){
-      bool ret = sendReport(true);
-      if(ret == true){
-         delay(1000);
-         for(int i = 0; i < time_to_sleep_mode; i++){
-            if (sendReport(false) == false){
-                break;
-            }
-            delay(1000);
-        }
-      }else{
-        break;
-      }
-   }
-
-   turnOffWiFi();
-   //Print the wakeup reason for ESP32
-   print_wakeup_reason();
-   startSleepMode();
+//   initEEPROM();
+//
+//   initWiFi();
+//
+//   initSht4x();
+//
+//   //sendReport();
+//
+//   
+//   while(true){
+//      bool ret = sendReport(true);
+//      if(ret == true){
+//         delay(1000);
+//         for(int i = 0; i < time_to_sleep_mode; i++){
+//            if (sendReport(false) == false){
+//                break;
+//            }
+//            delay(1000);
+//        }
+//      }else{
+//        break;
+//      }
+//   }
+//
+//   turnOffWiFi();
+//   //Print the wakeup reason for ESP32
+//   print_wakeup_reason();
+//   startSleepMode();
  
  }
 
  void loop() {
    //This is not going to be called
+   
  }
