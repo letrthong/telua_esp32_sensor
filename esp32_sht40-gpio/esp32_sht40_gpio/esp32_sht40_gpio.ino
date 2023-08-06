@@ -76,24 +76,23 @@ void intGpio(){
     pinMode(ledRed, OUTPUT);
 
    Serial.println("intGpio HIGH");
-  digitalWrite(ledYellow, HIGH);
+   
   digitalWrite(ledBlue, HIGH);
   digitalWrite(ledGreen, HIGH);
-  digitalWrite(ledRed, HIGH);
+ 
    delay(5000);
 
     Serial.println("intGpio LOW");
-  digitalWrite(ledYellow, LOW);
+  
   digitalWrite(ledBlue, LOW);
   digitalWrite(ledGreen, LOW);
-  digitalWrite(ledRed, LOW);
-
+  
    delay(5000);
     Serial.println("intGpio HIGH");
-  digitalWrite(ledYellow, HIGH);
+   
   digitalWrite(ledBlue, HIGH);
   digitalWrite(ledGreen, HIGH);
-  digitalWrite(ledRed, HIGH);
+ 
   
 }
 
@@ -976,5 +975,5 @@ void startSmartConfig(){
 
  void loop() {
    //This is not going to be called
-   
+   delay(1000);
  }
