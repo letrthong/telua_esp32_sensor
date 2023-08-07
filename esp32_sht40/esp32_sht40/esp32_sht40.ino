@@ -228,7 +228,7 @@ void startLocalWeb() {
               client.println("<label style=\"color:blue;\">Chon SSID cua Wi-Fi - Select SSID of Wi-Fi</label><br>");
               //client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
               client.println(select_html);
-              client.println("<label style=\"height:15px;\" >Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
+              client.println("<label style=\"margin-top:15px;\" >Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
               client.println("<input type=\"text\" style=\"height:25px;\" id=\"password\" name=\"password\" value=\"\"><br>");
               client.println("<input type=\"submit\" style=\"margin-top:20px; height:40px;\"  value=\"Xac Nhan - Submit\">");
               client.println("</form>");
