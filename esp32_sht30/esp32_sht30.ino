@@ -231,7 +231,7 @@ void startLocalWeb() {
               client.println("<label style=\"color:blue;\">Chon SSID cua Wi-Fi - Select SSID of Wi-Fi</label><br>");
               // client.println("<input type=\"text\" style=\"height:25px;\"  id=\"ssid\" name=\"ssid\" value=\"\"><br>");
               client.println(select_html);
-              client.println("<label>Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
+              client.println("<label style=\"height:15px;\" >Mat Khau cua Wi-Fi - Password of Wi-Fi</label><br>");
               client.println("<input type=\"text\" style=\"height:25px;\" id=\"password\" name=\"password\" value=\"\"><br>");
               client.println("<input type=\"submit\" style=\"margin-top:20px; height:40px;\"  value=\"Xac Nhan - Submit\">");
               client.println("</form>");
@@ -350,7 +350,7 @@ void initWiFi() {
       } else {
         Serial.print(n);
         Serial.println(" networks found");
-        select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
+        select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px; \"   name=\"ssid\">";
         for (int i = 0; i < n; ++i) {
           String SSID = WiFi.SSID(i);
           Serial.print("scanNetworks SSID=");
@@ -461,9 +461,9 @@ void initWiFi() {
   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
     startLocalWeb();
   }
-  //  else{
-  //      startLocalWeb();
-  //  }
+  else{
+      startLocalWeb();
+  }
 
 }
 
