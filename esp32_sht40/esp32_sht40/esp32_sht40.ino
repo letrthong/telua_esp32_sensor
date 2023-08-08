@@ -709,7 +709,7 @@ bool sendReport(bool hasReport) {
   }
 
    if(hasReport == false){
-      return retCode;
+      return ret;
    }
   
   if (WiFi.status() != WL_CONNECTED) {
