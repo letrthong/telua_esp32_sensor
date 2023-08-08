@@ -552,8 +552,8 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-void sendReport() {
-
+bool sendReport() {
+  bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
   float fHumidity = 0.0;
@@ -584,19 +584,19 @@ void sendReport() {
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    return;
+    return false;
   }
 
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
-    return;
+    return false;
   }
 
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
-    return;
+    return false;
   }
 
   String strTriggerParameter = "";
@@ -808,6 +808,8 @@ void sendReport() {
   // Free resources
   http.end();
   delete client;
+
+  return ret;
 }
 /*
 Method to print the reason by which ESP32
@@ -847,7 +849,7 @@ void setup() {
     bootCount = 0;
     ESP.restart();
   }
-  Serial.println("Ver:6/8/2023");
+  Serial.println("Ver:8/Aug/2023");
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
