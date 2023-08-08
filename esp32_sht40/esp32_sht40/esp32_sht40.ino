@@ -83,14 +83,21 @@ void turnOffAll(){
    digitalWrite(ledAlarm, LOW);
 }
 
-void turnOnRelay(String action){
+bool turnOnRelay(String action){
+   bool retCode  = false;
+   
    if( action =="btn01"){
        digitalWrite(ledRelay01, HIGH);
+        retCode = true;
    }else  if( action =="btn02"){
       digitalWrite(ledRelay02, HIGH);
+       retCode = true;
    } else  if( action =="alarm"){
        digitalWrite(ledAlarm, HIGH);
+       retCode = true;
    } 
+
+   return retCode;
 }
 
 void turnOffRelay(String action){
@@ -700,8 +707,8 @@ bool sendReport(bool hasReport) {
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
-               turnOnRelay(action);
-               ret = true;
+               ret = turnOnRelay(action);
+                
             }
         }
       }
