@@ -51,6 +51,8 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 const char * ssid = "Telua_Sht40_";
+const char * ssid_gpio = "Telua_Sht40_controller_"; 
+
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
@@ -58,6 +60,49 @@ unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
+
+
+
+// the LED is connected to GPIO 5
+bool hasGPIo = true;
+const int ledRelay01 =  5; 
+const int ledRelay02 =  17; 
+ const int ledAlarm =  4; 
+
+void intGpio(){
+  pinMode(ledRelay01, OUTPUT);
+  pinMode(ledRelay02, OUTPUT);
+  pinMode(ledAlarm, OUTPUT);
+    
+   turnOffAll();
+}
+
+void turnOffAll(){
+   digitalWrite(ledRelay01, LOW);
+   digitalWrite(ledRelay02, LOW);
+   digitalWrite(ledAlarm, LOW);
+}
+
+void turnOnRelay(String action){
+   if( action =="btn01"){
+       digitalWrite(ledRelay01, HIGH);
+   }else  if( action =="btn02"){
+      digitalWrite(ledRelay02, HIGH);
+   } else  if( action =="alarm"){
+       digitalWrite(ledAlarm, HIGH);
+   } 
+}
+
+void turnOffRelay(String action){
+   if( action =="btn01"){
+       digitalWrite(ledRelay01, LOW);
+   }else  if( action =="btn02"){
+      digitalWrite(ledRelay02, LOW);
+   } else  if( action =="alarm"){
+       digitalWrite(ledAlarm, LOW);
+   } 
+}
+
 
 void startSleepMode() {
   /*
@@ -84,7 +129,12 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  WiFi.softAP(ssid + serialNumber, password);
+  if(hasGPIo == false){
+     WiFi.softAP(ssid + serialNumber, password); 
+  }else{
+     WiFi.softAP(ssid_gpio + serialNumber, password);
+  }
+ 
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -552,7 +602,7 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-bool sendReport() {
+bool sendReport(bool hasReport) {
   bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
@@ -581,25 +631,7 @@ bool sendReport() {
     }
   }
 
-  if (WiFi.status() != WL_CONNECTED) {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    return false;
-  }
-
-  String localIP = WiFi.localIP().toString();
-  if (localIP == "0.0.0.0") {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport  localIP= 0.0.0.0");
-    return false;
-  }
-
-  WiFiClientSecure * client = new WiFiClientSecure;
-  if (!client) {
-    return false;
-  }
-
-  String strTriggerParameter = "";
+   String strTriggerParameter = "";
   //process trigger
   if (configTrigger.length() > 1 && hasSensor == true) {
     StaticJsonDocument < 1024 > docTrigger;
@@ -667,22 +699,55 @@ bool sendReport() {
 
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
-          //@Turn on off led
+           if(hasGPIo == true){
+               turnOnRelay(action);
+               ret = true;
+            }
         }
       }
     }
   }
 
+   if(hasReport == false){
+      return retCode;
+   }
+  
+  if (WiFi.status() != WL_CONNECTED) {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    return false;
+  }
+
+  String localIP = WiFi.localIP().toString();
+  if (localIP == "0.0.0.0") {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport  localIP= 0.0.0.0");
+    return false;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+  if (!client) {
+    return false;
+  }
+
+  
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
+  if(hasGPIo == true){
+    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  }
+  
   if (strTriggerParameter.length() > 0) {
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-    serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      if(hasGPIo == true){
+          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     }
   }
   Serial.println(serverPath);
 
@@ -855,13 +920,44 @@ void setup() {
   Serial.println("Boot number: " + String(bootCount));
 
   initEEPROM();
-
   initWiFi();
 
   initSht4x();
 
-  sendReport();
+  
+  if(hasGPIo == false){
+    sendReport(true); 
+  }else{
+    intGpio();
+       for(int i = 0; i< 15; i++){
+          bool ret = sendReport(true);
+          if(ret == true){
+             delay(1000);
+             for(int i = 0; i < time_to_sleep_mode; i++){
+                if (sendReport(false) == false){
+                    break;
+                }
+                delay(1000);
+            }
+          }else{
+            break;
+          }
+      }
 
+    turnOffAll();
+  }
+ 
+
+  if(hasGPIo == true){
+    turnOffAll();
+  }
+  
+  
+
+  if(hasGPIo == true){
+    turnOffAll();
+  }
+  
   turnOffWiFi();
 
   //Print the wakeup reason for ESP32
