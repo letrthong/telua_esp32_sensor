@@ -935,23 +935,23 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
-    intGpio();
-       for(int i = 0; i< 15; i++){
-          bool ret = sendReport(true);
-          if(ret == true){
-             delay(1000);
-             for(int i = 0; i < time_to_sleep_mode; i++){
-                if (sendReport(false) == false){
-                    break;
-                }
-                delay(1000);
-            }
-          }else{
-            break;
+      intGpio();
+      for(int i = 0; i< 15; i++){
+        bool ret = sendReport(true);
+        if(ret == true){
+           delay(1000);
+           for(int i = 0; i < time_to_sleep_mode; i++){
+              if (sendReport(false) == false){
+                  break;
+              }
+              delay(1000);
           }
+        }else{
+          break;
+        }
       }
 
-    turnOffAll();
+      turnOffAll();
   }
  
 
