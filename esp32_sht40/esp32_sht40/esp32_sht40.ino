@@ -954,16 +954,6 @@ void setup() {
       turnOffAll();
   }
  
-
-  if(hasGPIo == true){
-    turnOffAll();
-  }
-  
-  
-
-  if(hasGPIo == true){
-    turnOffAll();
-  }
   
   turnOffWiFi();
 
