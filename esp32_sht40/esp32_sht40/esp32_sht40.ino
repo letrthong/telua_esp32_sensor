@@ -1,13 +1,8 @@
 #include <WiFi.h>
-
 #include <EEPROM.h>
-
 #include <WiFiClientSecure.h>
-
 #include <HTTPClient.h>
-
 #include <ArduinoJson.h>
-
 #include "Adafruit_SHT4x.h"
 
 
@@ -64,10 +59,10 @@ unsigned long intervalLocalWeb = 30000;
 
 
 // the LED is connected to GPIO 5
-bool hasGPIo = false;
+bool hasGPIo = true;
 const int ledRelay01 =  5; 
 const int ledRelay02 =  17; 
- const int ledAlarm =  4; 
+const int ledAlarm =  4; 
 
 void intGpio(){
   pinMode(ledRelay01, OUTPUT);
