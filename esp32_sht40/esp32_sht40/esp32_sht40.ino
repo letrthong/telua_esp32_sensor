@@ -703,7 +703,6 @@ bool sendReport(bool hasReport) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
                ret = turnOnRelay(action);
-                
             }
         }
       }
