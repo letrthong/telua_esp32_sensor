@@ -945,11 +945,11 @@ void setup() {
         }
       }
 		
-      for(int i = 0; i < 120 ; i++){
+      for(int i = 0; i < time_to_sleep_mode ; i++){
          delay(1000);
       }
       turnOffAll();
-	  time_to_sleep_mode = 60;
+	  
   }
  
   

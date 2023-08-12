@@ -59,7 +59,7 @@ unsigned long intervalLocalWeb = 30000;
 
 
 // the LED is connected to GPIO 5
-bool hasGPIo = true;
+bool hasGPIo = false;
 const int ledRelay01 =  5; 
 const int ledRelay02 =  17; 
 const int ledAlarm =  4; 
@@ -945,11 +945,11 @@ void setup() {
         }
       }
 		
-      for(int i = 0; i < 120 ; i++){
+      for(int i = 0; i < time_to_sleep_mode ; i++){
          delay(1000);
       }
       turnOffAll();
-	  time_to_sleep_mode = 60;
+	  
   }
  
   
