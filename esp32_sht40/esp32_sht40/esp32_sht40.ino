@@ -944,11 +944,12 @@ void setup() {
           break;
         }
       }
-
-      for(int i = 0; i < time_to_sleep_mode; i++){
+		
+      for(int i = 0; i < 120 ; i++){
          delay(1000);
       }
       turnOffAll();
+	  time_to_sleep_mode = 60;
   }
  
   
