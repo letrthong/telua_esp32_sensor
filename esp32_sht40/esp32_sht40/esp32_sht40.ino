@@ -27,7 +27,7 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
 int EEPROM_ADDRESS_REOMVE_PASS = 64;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;httpResponseCode
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
@@ -872,7 +872,7 @@ bool sendReport(bool hasReport) {
     time_to_sleep_mode = TIME_TO_SLEEP;
 
     //Timeout
-    if(httpResponseCode == 11){
+    if(httpResponseCode == -11){
       http.end();
       delete client;
       delay(3000);

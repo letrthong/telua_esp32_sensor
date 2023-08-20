@@ -768,7 +768,9 @@ void sendReport() {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
     time_to_sleep_mode = TIME_TO_SLEEP;
-    if(httpResponseCode == 11){
+
+    //Timeout
+    if(httpResponseCode == -11){
       http.end();
       delete client;
       delay(3000);
