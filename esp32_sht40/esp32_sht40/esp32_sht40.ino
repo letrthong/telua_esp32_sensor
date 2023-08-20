@@ -867,9 +867,18 @@ bool sendReport(bool hasReport) {
     }
 
   } else {
-    //        Serial.print("Error code: ");
-    //        Serial.println(httpResponseCode);
+     Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
     time_to_sleep_mode = TIME_TO_SLEEP;
+
+    //Timeout
+    if(httpResponseCode == 11){
+      http.end();
+      delete client;
+      delay(3000);
+      ESP.restart();
+      return;
+    }
   }
   // Free resources
   http.end();
