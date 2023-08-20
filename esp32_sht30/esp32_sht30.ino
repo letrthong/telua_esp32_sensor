@@ -765,8 +765,8 @@ void sendReport() {
     }
 
   } else {
-    //        Serial.print("Error code: ");
-    //        Serial.println(httpResponseCode);
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
     time_to_sleep_mode = TIME_TO_SLEEP;
   }
   // Free resources
