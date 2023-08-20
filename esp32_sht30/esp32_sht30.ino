@@ -771,7 +771,7 @@ void sendReport() {
     if(httpResponseCode == 11){
        http.end();
       delete client;
-      delay(1000);
+      delay(3000);
       ESP.restart();
     }
   }
