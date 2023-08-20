@@ -267,7 +267,7 @@ void startLocalWeb() {
               client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
               client.println("<link rel=\"icon\" href=\"data:,\">");
               // Web Page Heading 
-              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform</h4>");
+              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform - 20-08-2023 </h4>");
               if (serialNumber.length() > 0) {
                 client.println("<p>Serial Number=" + serialNumber + "</p>");
               }
