@@ -674,7 +674,7 @@ bool sendReport(bool hasReport) {
         } else if (property == "humidity") {
           currentValue = fHumidity;
         } else if (property == "error"){
-          if (hasSensor == true){
+          if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
           }
         }
