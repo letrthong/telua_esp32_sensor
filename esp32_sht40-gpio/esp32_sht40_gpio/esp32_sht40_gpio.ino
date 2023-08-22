@@ -62,7 +62,7 @@ unsigned long intervalLocalWeb = 30000;
 bool hasGPIo = true;
 const int ledRelay01 =  5; 
 const int ledRelay02 =  17; 
-const int ledAlarm =  4; 
+const int ledAlarm =  19; 
 
 void intGpio(){
   pinMode(ledRelay01, OUTPUT);
@@ -80,14 +80,16 @@ void turnOffAll(){
 
 bool turnOnRelay(String action){
    bool retCode  = false;
-   
    if( action =="btn01"){
+       Serial.println("turnOnRelay btn01");
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
    }else  if( action =="btn02"){
+       Serial.println("turnOnRelay btn02");
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( action =="alarm"){
+        Serial.println("turnOnRelay alarm");
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -673,6 +675,12 @@ bool sendReport(bool hasReport) {
           currentValue = fHumidity;
         }
 
+        if (property == "error"){
+          if (hasSensor == true){
+            hasTrigger = true;
+          }
+        }
+        
         if (opera == "=") {
           if (currentValue == value) {
             hasTrigger = true;
