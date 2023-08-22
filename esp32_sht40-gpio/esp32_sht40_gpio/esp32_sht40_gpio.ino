@@ -703,7 +703,7 @@ bool sendReport(bool hasReport) {
           if (currentValue != value) {
             hasTrigger = true;
           }
-        }
+       }
 
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
