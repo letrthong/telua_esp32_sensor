@@ -637,7 +637,7 @@ bool sendReport(bool hasReport) {
 
    String strTriggerParameter = "";
   //process trigger
-  if (configTrigger.length() > 1 && hasSensor == true) {
+  if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
 
     // parse a JSON array
