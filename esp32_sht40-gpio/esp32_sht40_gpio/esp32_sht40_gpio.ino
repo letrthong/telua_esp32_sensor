@@ -954,6 +954,7 @@ void setup() {
 		
       for(int i = 0; i < time_to_sleep_mode ; i++){
          delay(1000);
+         Serial.println("sendReport sleep=" + String(i));
       }
       turnOffAll();
 	  
