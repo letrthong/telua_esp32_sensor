@@ -944,6 +944,7 @@ void setup() {
               if (sendReport(false) == false){
                   break;
               }
+              Serial.println("sendReport count=" + String(i));
               delay(1000);
           }
         }else{
