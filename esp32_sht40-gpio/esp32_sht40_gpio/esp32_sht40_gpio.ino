@@ -699,32 +699,34 @@ bool sendReport(bool hasReport) {
           }
         }
         
-        if (opera == "=") {
-          if (currentValue == value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<") {
-          if (currentValue < value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">") {
-          if (currentValue > value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">=") {
-          if (currentValue >= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<=") {
-          if (currentValue <= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "!=") {
-          if (currentValue != value) {
-            hasTrigger = true;
-          }
-       }
-
+        if (property != "error"){
+            if (opera == "=") {
+                if (currentValue == value) {
+                  hasTrigger = true;
+                }
+              } else if (opera == "<") {
+                if (currentValue < value) {
+                  hasTrigger = true;
+                    }
+            } else if (opera == ">") {
+              if (currentValue > value) {
+                hasTrigger = true;
+              }
+            } else if (opera == ">=") {
+              if (currentValue >= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "<=") {
+              if (currentValue <= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "!=") {
+              if (currentValue != value) {
+                hasTrigger = true;
+              }
+           }
+        }
+  
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
