@@ -955,6 +955,9 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
+  if(hasGPIo == true){
+    intGpio();
+  }
   initEEPROM();
   initWiFi();
 
@@ -964,7 +967,7 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
-      intGpio();
+      bool hasAction = false;
       for(int i = 0; i< 15; i++){
         bool ret = sendReport(true);
         if(ret == true){
@@ -973,6 +976,8 @@ void setup() {
               if (sendReport(false) == false){
                   break;
               }
+              hasAction = true;
+              Serial.println("sendReport count=" + String(i));
               delay(1000);
           }
         }else{
@@ -980,9 +985,12 @@ void setup() {
         }
       }
     
-      for(int i = 0; i < time_to_sleep_mode ; i++){
-         delay(1000);
-      }
+       if(hasAction == true){
+          for(int i = 0; i < time_to_sleep_mode ; i++){
+           delay(1000);
+           Serial.println("sendReport sleep=" + String(i));
+          }
+       }
       turnOffAll();
     
   }
