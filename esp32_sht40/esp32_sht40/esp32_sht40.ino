@@ -58,24 +58,45 @@ unsigned long intervalLocalWeb = 30000;
 
 
 
+
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
-const int ledRelay01 =  5; 
-const int ledRelay02 =  17; 
-const int ledAlarm =  4; 
+const int ledRelay01 = 17 ; 
+const int ledRelay02 =  5; 
+const int ledAlarm =  19; 
+const int ledFloatSwitch =  4; 
+
+const int btnTop = 18;
+const int btnBot = 16;
 
 void intGpio(){
   pinMode(ledRelay01, OUTPUT);
   pinMode(ledRelay02, OUTPUT);
   pinMode(ledAlarm, OUTPUT);
-    
+//  pinMode(ledFloatSwitch, OUTPUT);  
+
+//  pinMode(btnTop, INPUT); 
+//  pinMode(btnBot, INPUT);  
    turnOffAll();
 }
 
 void turnOffAll(){
-   digitalWrite(ledRelay01, LOW);
+     digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
+   
+//   digitalWrite(ledFloatSwitch, LOW);
+//
+//   
+//   int buttonState = digitalRead(btnTop);
+//    if (buttonState == HIGH) {
+//        digitalWrite(ledRelay01, HIGH);
+//    }
+//
+//     buttonState = digitalRead(btnBot);
+//    if (buttonState == HIGH) {
+//        digitalWrite(ledRelay02, HIGH);
+//    }
 }
 
 bool turnOnRelay(String action){
@@ -635,7 +656,7 @@ bool sendReport(bool hasReport) {
 
    String strTriggerParameter = "";
   //process trigger
-  if (configTrigger.length() > 1 && hasSensor == true) {
+  if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
 
     // parse a JSON array
@@ -671,34 +692,40 @@ bool sendReport(bool hasReport) {
           currentValue = fTemperature;
         } else if (property == "humidity") {
           currentValue = fHumidity;
-        }
-
-        if (opera == "=") {
-          if (currentValue == value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<") {
-          if (currentValue < value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">") {
-          if (currentValue > value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">=") {
-          if (currentValue >= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<=") {
-          if (currentValue <= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "!=") {
-          if (currentValue != value) {
+        } else if (property == "error"){
+          if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
           }
         }
-
+        
+        if (property != "error"){
+            if (opera == "=") {
+                if (currentValue == value) {
+                  hasTrigger = true;
+                }
+              } else if (opera == "<") {
+                if (currentValue < value) {
+                  hasTrigger = true;
+                    }
+            } else if (opera == ">") {
+              if (currentValue > value) {
+                hasTrigger = true;
+              }
+            } else if (opera == ">=") {
+              if (currentValue >= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "<=") {
+              if (currentValue <= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "!=") {
+              if (currentValue != value) {
+                hasTrigger = true;
+              }
+           }
+        }
+  
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
@@ -708,7 +735,7 @@ bool sendReport(bool hasReport) {
       }
     }
   }
-
+  
    if(hasReport == false){
       return ret;
    }

@@ -27,7 +27,7 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
 int EEPROM_ADDRESS_REOMVE_PASS = 64;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
@@ -58,6 +58,7 @@ unsigned long intervalLocalWeb = 30000;
 
 
 
+
 // the LED is connected to GPIO 5
 bool hasGPIo = true;
 const int ledRelay01 = 17 ; 
@@ -80,7 +81,7 @@ void intGpio(){
 }
 
 void turnOffAll(){
-   digitalWrite(ledRelay01, LOW);
+     digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
    
@@ -100,16 +101,14 @@ void turnOffAll(){
 
 bool turnOnRelay(String action){
    bool retCode  = false;
+   
    if( action =="btn01"){
-       Serial.println("turnOnRelay btn01");
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
    }else  if( action =="btn02"){
-       Serial.println("turnOnRelay btn02");
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( action =="alarm"){
-        Serial.println("turnOnRelay alarm");
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -289,7 +288,7 @@ void startLocalWeb() {
               client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
               client.println("<link rel=\"icon\" href=\"data:,\">");
               // Web Page Heading 
-              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform</h4>");
+              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform - 20-08-2023 </h4>");
               if (serialNumber.length() > 0) {
                 client.println("<p>Serial Number=" + serialNumber + "</p>");
               }
@@ -533,9 +532,9 @@ void initWiFi() {
   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
     startLocalWeb();
   }
-  //  else{
-  //      startLocalWeb();
-  //  }
+//    else{
+//        startLocalWeb();
+//    }
 
 }
 
@@ -736,7 +735,7 @@ bool sendReport(bool hasReport) {
       }
     }
   }
-
+  
    if(hasReport == false){
       return ret;
    }
@@ -895,9 +894,17 @@ bool sendReport(bool hasReport) {
     }
 
   } else {
-    //        Serial.print("Error code: ");
-    //        Serial.println(httpResponseCode);
+     Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
     time_to_sleep_mode = TIME_TO_SLEEP;
+
+    //Timeout
+    if(httpResponseCode == -11){
+      http.end();
+      delete client;
+      delay(3000);
+      ESP.restart();
+    }
   }
   // Free resources
   http.end();
@@ -948,10 +955,6 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
-  if(hasGPIo == true){
-    intGpio();
-  }
-  
   initEEPROM();
   initWiFi();
 
@@ -961,8 +964,7 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
- 
-      bool hasAction = false;
+      intGpio();
       for(int i = 0; i< 15; i++){
         bool ret = sendReport(true);
         if(ret == true){
@@ -971,24 +973,18 @@ void setup() {
               if (sendReport(false) == false){
                   break;
               }
-              hasAction = true;
-              Serial.println("sendReport count=" + String(i));
               delay(1000);
           }
         }else{
           break;
         }
       }
-
-       if(hasAction == true){
-          for(int i = 0; i < time_to_sleep_mode ; i++){
-           delay(1000);
-           Serial.println("sendReport sleep=" + String(i));
-          }
-       }
-      
+    
+      for(int i = 0; i < time_to_sleep_mode ; i++){
+         delay(1000);
+      }
       turnOffAll();
-	  
+    
   }
  
   
