@@ -63,12 +63,19 @@ bool hasGPIo = true;
 const int ledRelay01 = 17 ; 
 const int ledRelay02 =  5; 
 const int ledAlarm =  19; 
+const int ledFloatSwitch =  4; 
+
+const int btnTop = 18;
+const int btnBot = 16;
 
 void intGpio(){
   pinMode(ledRelay01, OUTPUT);
   pinMode(ledRelay02, OUTPUT);
   pinMode(ledAlarm, OUTPUT);
-    
+//  pinMode(ledFloatSwitch, OUTPUT);  
+
+//  pinMode(btnTop, INPUT); 
+//  pinMode(btnBot, INPUT);  
    turnOffAll();
 }
 
@@ -76,6 +83,19 @@ void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
+   
+//   digitalWrite(ledFloatSwitch, LOW);
+//
+//   
+//   int buttonState = digitalRead(btnTop);
+//    if (buttonState == HIGH) {
+//        digitalWrite(ledRelay01, HIGH);
+//    }
+//
+//     buttonState = digitalRead(btnBot);
+//    if (buttonState == HIGH) {
+//        digitalWrite(ledRelay02, HIGH);
+//    }
 }
 
 bool turnOnRelay(String action){
@@ -926,6 +946,10 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
+  if(hasGPIo == true){
+    intGpio();
+  }
+  
   initEEPROM();
   initWiFi();
 
@@ -935,7 +959,7 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
-      intGpio();
+ 
       bool hasAction = false;
       for(int i = 0; i< 15; i++){
         bool ret = sendReport(true);
