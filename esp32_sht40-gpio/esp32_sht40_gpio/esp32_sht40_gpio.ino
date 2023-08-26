@@ -108,7 +108,7 @@ bool turnOnRelay(String action){
    }else  if( action =="btn02"){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action =="alarm"){
+   } else  if( action == "alarm"){
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -669,7 +669,7 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
-      
+     
       for (JsonObject v: triggerList) {
         String property = v["property"];
         Serial.print("property=");
