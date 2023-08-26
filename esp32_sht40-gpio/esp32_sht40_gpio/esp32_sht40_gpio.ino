@@ -46,7 +46,7 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Sht40_controller_"; 
+const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -669,6 +669,7 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
+      
       for (JsonObject v: triggerList) {
         String property = v["property"];
         Serial.print("property=");
@@ -883,6 +884,11 @@ bool sendReport(bool hasReport) {
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
           }
+
+           if(hasGPIo == true){
+            turnOffAll();
+          }
+          
         }
       } else {
         if (configTrigger.length() > 1) {
