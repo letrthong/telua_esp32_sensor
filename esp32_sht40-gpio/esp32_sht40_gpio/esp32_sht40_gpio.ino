@@ -879,16 +879,22 @@ bool sendReport(bool hasReport) {
         Serial.print("strTrigger=");
         Serial.println(strTrigger);
         if (configTrigger != strTrigger) {
-          configTrigger = strTrigger;
+         
+           if(hasGPIo == true){
+            if (strTrigger.length() < 256){
+               configTrigger = strTrigger;
+                turnOffAll();
+            }else{
+              Serial.println("strTrigger.length()=" + String(strTrigger.length()));
+            }
+          }else{
+             configTrigger = strTrigger; 
+          }
+          
           if (configTrigger.length() < 256) {
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
           }
-
-           if(hasGPIo == true){
-            turnOffAll();
-          }
-          
         }
       } else {
         if (configTrigger.length() > 1) {
