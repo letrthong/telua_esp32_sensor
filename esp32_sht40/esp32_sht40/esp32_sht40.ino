@@ -691,13 +691,13 @@ bool sendReport(bool hasReport) {
          float currentValue = 0;
         if (property == "temperature") {
           currentValue = fTemperature;
-        } else if (property == "temp") {
+        } else if (property == "tem") {
           currentValue = fTemperature;
         } else if (property == "humidity") {
           currentValue = fHumidity;
-        }  else if (property == "humi") {
+        }  else if (property == "hum") {
           currentValue = fHumidity;
-        } else if (property == "error"){
+        } else if (property == "err"){
           if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
           }
