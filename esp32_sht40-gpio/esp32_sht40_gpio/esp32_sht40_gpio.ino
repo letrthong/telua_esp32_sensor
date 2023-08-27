@@ -40,6 +40,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
+int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
@@ -669,7 +670,7 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
-     
+       
       for (JsonObject v: triggerList) {
         String property = v["property"];
         Serial.print("property=");
@@ -730,7 +731,10 @@ bool sendReport(bool hasReport) {
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
-               ret = turnOnRelay(action);
+               bool result = turnOnRelay(action);
+               if(result == true){
+                    ret = true;
+               }
             }
         }
       }
@@ -878,15 +882,14 @@ bool sendReport(bool hasReport) {
         serializeJson(triggerList, strTrigger);
         Serial.print("strTrigger=");
         Serial.println(strTrigger);
+        Serial.println("strTrigger.length()=" + String(strTrigger.length()));
         if (configTrigger != strTrigger) {
          
            if(hasGPIo == true){
             if (strTrigger.length() < 256){
                configTrigger = strTrigger;
                 turnOffAll();
-            }else{
-              Serial.println("strTrigger.length()=" + String(strTrigger.length()));
-            }
+            } 
           }else{
              configTrigger = strTrigger; 
           }
@@ -904,18 +907,22 @@ bool sendReport(bool hasReport) {
         }
       }
     }
-
+    retryTimeout = 0;
   } else {
      Serial.print("Error code: ");
     Serial.println(httpResponseCode);
     time_to_sleep_mode = TIME_TO_SLEEP;
-
+    retryTimeout = retryTimeout + 1;
     //Timeout
     if(httpResponseCode == -11){
       http.end();
       delete client;
       delay(3000);
-      ESP.restart();
+      if(retryTimeout >= 2){
+        ESP.restart();
+      }else{
+        return ret;
+      } 
     }
   }
   // Free resources
