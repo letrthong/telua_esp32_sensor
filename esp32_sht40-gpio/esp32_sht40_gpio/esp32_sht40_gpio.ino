@@ -910,20 +910,20 @@ bool sendReport(bool hasReport) {
     retryTimeout = 0;
   } else {
      Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-    time_to_sleep_mode = TIME_TO_SLEEP;
-    retryTimeout = retryTimeout + 1;
-    //Timeout
-    if(httpResponseCode == -11){
-      http.end();
-      delete client;
-      delay(3000);
-      if(retryTimeout >= 3){
-        ESP.restart();
-      }else{
-        return ret;
-      } 
-    }
+     Serial.println(httpResponseCode);
+      time_to_sleep_mode = TIME_TO_SLEEP;
+      retryTimeout = retryTimeout + 1;
+      //Timeout
+      if(httpResponseCode == -11){
+        http.end();
+        delete client;
+        delay(3000);
+        if(retryTimeout >= 3){
+          ESP.restart();
+        }else{
+          return ret;
+        } 
+      }
   }
   // Free resources
   http.end();
