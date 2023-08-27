@@ -103,13 +103,13 @@ void turnOffAll(){
 bool turnOnRelay(String action){
    bool retCode  = false;
    
-   if( action =="btn01"){
+   if( action =="btn01On"){
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
-   }else  if( action =="btn02"){
+   }else  if( action =="btn02On"){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action == "alarm"){
+   } else  if( action == "ledAlarm"){
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -117,14 +117,16 @@ bool turnOnRelay(String action){
    return retCode;
 }
 
-void turnOffRelay(String action){
-   if( action =="btn01"){
+bool turnOffRelay(String action){
+   bool retCode  = false;
+   if( action =="btn01Off"){
        digitalWrite(ledRelay01, LOW);
-   }else  if( action =="btn02"){
+   }else  if( action =="btn02Off"){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alarm"){
+   } else  if( action =="alarmOff"){
        digitalWrite(ledAlarm, LOW);
    } 
+   return retCode;
 }
 
 
@@ -727,16 +729,28 @@ bool sendReport(bool hasReport) {
               }
            }
         }
-  
+        // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
-               bool result = turnOnRelay(action);
-               if(result == true){
-                    ret = true;
-               }
+               int index = action.indexOf("On");
+                if (index >= 0) {
+                   bool result = turnOnRelay(action);
+                   if(result == true){
+                        ret = true;
+                   }
+                } else {
+                  index = action.indexOf("Off");
+                  if (index >= 0) {
+                      bool result = turnOffRelay(action);
+                     if(result == true){
+                          ret = true;
+                     }
+                  }
+                }
             }
         }
+        //  -- End hasTrigger----------------
       }
     }
   }
@@ -991,7 +1005,6 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
-      bool hasAction = false;
       for(int i = 0; i< 15; i++){
         bool ret = sendReport(true);
         if(ret == true){
@@ -1000,7 +1013,7 @@ void setup() {
               if (sendReport(false) == false){
                   break;
               }
-              hasAction = true;
+             
               Serial.println("sendReport count=" + String(i));
               delay(1000);
           }
@@ -1008,15 +1021,6 @@ void setup() {
           break;
         }
       }
-    
-       if(hasAction == true){
-          for(int i = 0; i < time_to_sleep_mode ; i++){
-           delay(1000);
-           Serial.println("sendReport sleep=" + String(i));
-          }
-       }
-      turnOffAll();
-    
   }
  
   
