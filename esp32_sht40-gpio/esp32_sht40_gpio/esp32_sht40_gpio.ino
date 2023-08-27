@@ -918,7 +918,7 @@ bool sendReport(bool hasReport) {
       http.end();
       delete client;
       delay(3000);
-      if(retryTimeout >= 2){
+      if(retryTimeout >= 3){
         ESP.restart();
       }else{
         return ret;
