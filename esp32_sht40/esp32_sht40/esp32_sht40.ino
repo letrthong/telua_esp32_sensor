@@ -40,13 +40,14 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
+RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
 const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Sht40_controller_"; 
+const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -55,10 +56,7 @@ unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
-
-
-
-
+ 
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
 const int ledRelay01 = 17 ; 
@@ -102,13 +100,13 @@ void turnOffAll(){
 bool turnOnRelay(String action){
    bool retCode  = false;
    
-   if( action =="btn01"){
+   if( action =="btn01On"){
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
-   }else  if( action =="btn02"){
+   }else  if( action =="btn02On"){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action =="alarm"){
+   } else  if( action == "ledAlarm"){
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -116,14 +114,16 @@ bool turnOnRelay(String action){
    return retCode;
 }
 
-void turnOffRelay(String action){
-   if( action =="btn01"){
+bool turnOffRelay(String action){
+   bool retCode  = false;
+   if( action =="btn01Off"){
        digitalWrite(ledRelay01, LOW);
-   }else  if( action =="btn02"){
+   }else  if( action =="btn02Off"){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alarm"){
+   } else  if( action =="alarmOff"){
        digitalWrite(ledAlarm, LOW);
    } 
+   return retCode;
 }
 
 
@@ -669,6 +669,7 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
+       
       for (JsonObject v: triggerList) {
         String property = v["property"];
         Serial.print("property=");
@@ -725,13 +726,28 @@ bool sendReport(bool hasReport) {
               }
            }
         }
-  
+        // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
            if(hasGPIo == true){
-               ret = turnOnRelay(action);
+               int index = action.indexOf("On");
+                if (index >= 0) {
+                   bool result = turnOnRelay(action);
+                   if(result == true){
+                        ret = true;
+                   }
+                } else {
+                  index = action.indexOf("Off");
+                  if (index >= 0) {
+                      bool result = turnOffRelay(action);
+                     if(result == true){
+                          ret = true;
+                     }
+                  }
+                }
             }
         }
+        //  -- End hasTrigger----------------
       }
     }
   }
@@ -877,8 +893,18 @@ bool sendReport(bool hasReport) {
         serializeJson(triggerList, strTrigger);
         Serial.print("strTrigger=");
         Serial.println(strTrigger);
+        Serial.println("strTrigger.length()=" + String(strTrigger.length()));
         if (configTrigger != strTrigger) {
-          configTrigger = strTrigger;
+         
+           if(hasGPIo == true){
+            if (strTrigger.length() < 256){
+               configTrigger = strTrigger;
+                turnOffAll();
+            } 
+          }else{
+             configTrigger = strTrigger; 
+          }
+          
           if (configTrigger.length() < 256) {
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
@@ -892,19 +918,28 @@ bool sendReport(bool hasReport) {
         }
       }
     }
-
+    retryTimeout = 0;
   } else {
      Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-    time_to_sleep_mode = TIME_TO_SLEEP;
-
-    //Timeout
-    if(httpResponseCode == -11){
-      http.end();
-      delete client;
-      delay(3000);
-      ESP.restart();
-    }
+     Serial.println(httpResponseCode);
+      time_to_sleep_mode = TIME_TO_SLEEP;
+      retryTimeout = retryTimeout + 1;
+      //Timeout
+      if(httpResponseCode == -11){
+        http.end();
+        delete client;
+        delay(3000);
+         if(hasGPIo == true){
+              if(retryTimeout >= 3){
+                ESP.restart();
+              }else{
+                return ret;
+            } 
+         }else{
+             ESP.restart();
+         }
+       
+      }
   }
   // Free resources
   http.end();
@@ -944,7 +979,7 @@ void print_wakeup_reason() {
 }
 
 void setup() {
-    Serial.begin(115200);
+  Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
   if (bootCount >= 60) {
     bootCount = 0;
@@ -967,7 +1002,6 @@ void setup() {
   if(hasGPIo == false){
     sendReport(true); 
   }else{
-      bool hasAction = false;
       for(int i = 0; i< 15; i++){
         bool ret = sendReport(true);
         if(ret == true){
@@ -976,7 +1010,7 @@ void setup() {
               if (sendReport(false) == false){
                   break;
               }
-              hasAction = true;
+             
               Serial.println("sendReport count=" + String(i));
               delay(1000);
           }
@@ -984,15 +1018,6 @@ void setup() {
           break;
         }
       }
-    
-       if(hasAction == true){
-          for(int i = 0; i < time_to_sleep_mode ; i++){
-           delay(1000);
-           Serial.println("sendReport sleep=" + String(i));
-          }
-       }
-      turnOffAll();
-    
   }
  
   
