@@ -97,16 +97,17 @@ void turnOffAll(){
 //    }
 }
 
+
 bool turnOnRelay(String action){
    bool retCode  = false;
    
-   if( action =="btn01On"){
+   if( action =="b1On"){
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
-   }else  if( action =="btn02On"){
+   }else  if( action =="b2On"){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action == "ledAlarm"){
+   } else  if( action == "alOn"){
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -116,16 +117,15 @@ bool turnOnRelay(String action){
 
 bool turnOffRelay(String action){
    bool retCode  = false;
-   if( action =="btn01Off"){
+   if( action =="b1Off"){
        digitalWrite(ledRelay01, LOW);
-   }else  if( action =="btn02Off"){
+   }else  if( action =="b2Off"){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alarmOff"){
+   } else  if( action =="alOff"){
        digitalWrite(ledAlarm, LOW);
    } 
    return retCode;
 }
-
 
 void startSleepMode() {
   /*
@@ -688,10 +688,14 @@ bool sendReport(bool hasReport) {
         Serial.println(action);
 
         hasTrigger = false;
-        float currentValue = 0;
+         float currentValue = 0;
         if (property == "temperature") {
           currentValue = fTemperature;
+        } else if (property == "temp") {
+          currentValue = fTemperature;
         } else if (property == "humidity") {
+          currentValue = fHumidity;
+        }  else if (property == "humi") {
           currentValue = fHumidity;
         } else if (property == "error"){
           if (hasSensor   == false || hasError == true ){
