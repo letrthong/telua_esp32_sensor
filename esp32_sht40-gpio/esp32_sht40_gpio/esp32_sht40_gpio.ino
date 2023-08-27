@@ -918,11 +918,16 @@ bool sendReport(bool hasReport) {
         http.end();
         delete client;
         delay(3000);
-        if(retryTimeout >= 3){
-          ESP.restart();
-        }else{
-          return ret;
-        } 
+         if(hasGPIo == true){
+              if(retryTimeout >= 3){
+                ESP.restart();
+              }else{
+                return ret;
+            } 
+         }else{
+             ESP.restart();
+         }
+       
       }
   }
   // Free resources
