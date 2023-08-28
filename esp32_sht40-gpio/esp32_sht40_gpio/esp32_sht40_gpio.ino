@@ -676,7 +676,7 @@ bool sendReport(bool hasReport) {
       for (JsonObject v: triggerList) {
         String property = "";
         bool hasProperty = v.containsKey("property");
-        if (hasTriggers == true) {
+        if (hasProperty == true) {
             property = v["property"];
         }else{
             hasProperty = v.containsKey("pro");
