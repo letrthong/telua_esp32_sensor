@@ -71,9 +71,9 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 void intGpio(){
-  pinMode(ledRelay01, OUTPUT);
-  pinMode(ledRelay02, OUTPUT);
-  pinMode(ledAlarm, OUTPUT);
+    pinMode(ledRelay01, OUTPUT);
+    pinMode(ledRelay02, OUTPUT);
+    pinMode(ledAlarm, OUTPUT);
 //  pinMode(ledFloatSwitch, OUTPUT);  
 
 //  pinMode(btnTop, INPUT); 
@@ -82,7 +82,7 @@ void intGpio(){
 }
 
 void turnOffAll(){
-     digitalWrite(ledRelay01, LOW);
+   digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
    
@@ -762,7 +762,7 @@ bool sendReport(bool hasReport) {
    if(hasReport == false){
       return ret;
    }
-  
+   
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
@@ -802,6 +802,7 @@ bool sendReport(bool hasReport) {
   }
   Serial.println(serverPath);
 
+  http.setTimeout(60000);
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -931,20 +932,20 @@ bool sendReport(bool hasReport) {
      Serial.println(httpResponseCode);
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
-      //Timeout
+      //Timeout - https://github.com/esp8266/Arduino/issues/5137
       if(httpResponseCode == -11){
         http.end();
         delete client;
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true){
-              if(retryTimeout >= 3){
-                ESP.restart();
+              if(retryTimeout > 3){
+                 ESP.restart();
               }else{
                 return ret;
             } 
          }else{
-             ESP.restart();
+              ESP.restart();
          }
        
       }
