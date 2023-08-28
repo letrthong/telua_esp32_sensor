@@ -674,58 +674,19 @@ bool sendReport(bool hasReport) {
       bool hasTrigger = false;
        
       for (JsonObject v: triggerList) {
-        String property = "";
-        bool hasProperty = v.containsKey("property");
-        if (hasProperty == true) {
-            property = v["property"];
-        }else{
-            hasProperty = v.containsKey("pro");
-            if (hasProperty == true) {
-              property = v["hasProperty"];
-            }
-        }
-        
+         String property = v["property"];
         Serial.print("property=");
         Serial.println(property);
 
-        String opera = "";
-        bool hasOperator = v.containsKey("operator");
-        if (hasOperator == true) {
-            opera = v["operator"];
-        } else{
-            hasOperator = v.containsKey("ope");
-            if (hasOperator == true) {
-              opera = v["ope"];
-            }
-        }
-        
+        String opera = v["operator"];
         Serial.print("operator=");
         Serial.println(opera);
 
-        float value = 0.0;
-        bool hasValue = v.containsKey("value");
-        if (hasValue == true) {
-            value = v["value"];
-        } else{
-            hasValue = v.containsKey("val");
-            if (hasValue == true) {
-              value = v["val"];
-            }
-        }
+        float value = v["value"];
         Serial.print("value=");
         Serial.println(value);
 
         String action = v["action"];
-         bool hasAction = v.containsKey("action");
-         if (hasAction == true) {
-            action = v["action"];
-        } else{
-            hasAction = v.containsKey("act");
-            if (hasAction == true) {
-              action = v["act"];
-            }
-        }
-        
         Serial.print("action=");
         Serial.println(action);
 
