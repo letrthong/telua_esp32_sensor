@@ -57,7 +57,8 @@ unsigned long intervalLocalWeb = 30000;
 bool hasM2M  = false;
 bool hasTemp = false;
 bool hasHum = false;
- 
+bool hasCorrectData = false;
+
 float  M2MTemp = 0.0;
 float  M2MHum = 0.0;
  
@@ -569,6 +570,7 @@ bool sendReport(bool hasReport) {
       hasTemp = false;
       hasHum = false;
       hasM2M = false;
+      hasCorrectData = false;
           
       if (WiFi.status() != WL_CONNECTED) {
         time_to_sleep_mode = 10;
@@ -720,6 +722,14 @@ bool sendReport(bool hasReport) {
                 hasHum = true;
               }
               Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
+
+              hasKey = M2MObjectt.containsKey("isCorrectData");
+              if(hasKey == true){
+                M2MHum = M2MObjectt["isCorrectData"];
+                hasCorrectData = true;
+              }
+              
+              
           }
         }
         retryTimeout = 0;
@@ -828,13 +838,13 @@ bool sendReport(bool hasReport) {
     if (hasTrigger == true) {
          Serial.println("hasTrigger action="+ action);
         int index = action.indexOf("On");
-            if (index >= 0) {
+            if (index >= 0 && hasCorrectData == true) {
                bool result = turnOnRelay(action);
                if(result == true){
                     ret = true;
                }
             } else {
-              index = action.indexOf("Off");
+              index = action.indexOf("Off" && hasCorrectData == true);
               if (index >= 0) {
                   bool result = turnOffRelay(action);
                  if(result == true){
