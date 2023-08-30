@@ -897,7 +897,7 @@ void setup() {
   initWiFi();
   
    
-  for(int i = 0; i< time_to_sleep_mode*15; i++){
+  for(int i = 0; i< time_to_sleep_mode*30; i++){
     bool ret = sendReport(true);
     if(ret == true){
       delay(5000);
