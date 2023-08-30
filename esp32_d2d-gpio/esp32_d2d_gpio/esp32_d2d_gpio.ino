@@ -725,11 +725,8 @@ bool sendReport(bool hasReport) {
 
               hasKey = M2MObjectt.containsKey("isCorrectData");
               if(hasKey == true){
-                M2MHum = M2MObjectt["isCorrectData"];
-                hasCorrectData = true;
-              }
-              
-              
+                hasCorrectData = M2MObjectt["isCorrectData"];
+              } 
           }
         }
         retryTimeout = 0;
