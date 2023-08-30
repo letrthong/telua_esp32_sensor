@@ -897,18 +897,12 @@ void setup() {
   initWiFi();
   
    
-    for(int i = 0; i< 15; i++){
+    for(int i = 0; i< time_to_sleep_mode*15; i++){
       bool ret = sendReport(true);
       if(ret == true){
-         delay(1000);
-         for(int y = 0; y < time_to_sleep_mode; y ++){
-            if (sendReport(false) == false){
-                break;
-            }
-           
-            Serial.println("sendReport count=" + String(y));
-            delay(1000);
-        }
+        delay(5000);
+        Serial.println("sendReport count i=" + String(i));
+        delay(1000);
       }else{
         break;
       }
@@ -919,7 +913,6 @@ void setup() {
   //Print the wakeup reason for ESP32
   print_wakeup_reason();
   startSleepMode();
-
 }
 
 void loop() {
