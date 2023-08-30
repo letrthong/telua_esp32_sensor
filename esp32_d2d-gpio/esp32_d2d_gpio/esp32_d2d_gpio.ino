@@ -17,7 +17,7 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
-String serverName = "https://telua.co/service/v1/esp32/update-sensor";
+String serverName = "https://telua.co/service/v1/esp32/m2m";
  
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
