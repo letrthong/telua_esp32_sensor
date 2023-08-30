@@ -903,11 +903,11 @@ void setup() {
   initEEPROM();
   initWiFi();
   
-   
-  for(int i = 0; i< time_to_sleep_mode*30; i++){
+   // 30minutes*3
+  for(int i = 0; i< 60*30; i++){
     bool ret = sendReport(true);
     if(ret == true){
-      delay(5000);
+      delay(3000);
       Serial.println("sendReport count i=" + String(i));
       delay(1000);
     }else{
