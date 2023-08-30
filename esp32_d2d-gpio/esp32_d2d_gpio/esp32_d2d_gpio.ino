@@ -727,6 +727,7 @@ bool sendReport(bool hasReport) {
               if(hasKey == true){
                 hasCorrectData = M2MObjectt["isCorrectData"];
               } 
+              Serial.println("deserializeJson M2MSensor isCorrectData=" + String(hasCorrectData));
           }
         }
         retryTimeout = 0;
