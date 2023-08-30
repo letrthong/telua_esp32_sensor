@@ -564,11 +564,12 @@ void initEEPROM() {
 bool sendReport(bool hasReport) {
   bool ret = false;
   
-  hasTemp = false;
-  hasHum = false;
-  hasM2M = false;
-          
+ 
   if( hasReport == true){
+      hasTemp = false;
+      hasHum = false;
+      hasM2M = false;
+          
       if (WiFi.status() != WL_CONNECTED) {
         time_to_sleep_mode = 10;
         Serial.println("sendReport WiFi.status() != WL_CONNECTED");
@@ -797,31 +798,31 @@ bool sendReport(bool hasReport) {
       currentValue = M2MHum;
     }  
     
-        if (opera == "=") {
-          if (currentValue == value) {
-            hasTrigger = true;
-          } 
-        } else if (opera == "<") {
-          if (currentValue < value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">") {
-          if (currentValue > value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">=") {
-          if (currentValue >= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<=") {
-          if (currentValue <= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "!=") {
-          if (currentValue != value) {
-            hasTrigger = true;
-          }
-       }
+    if (opera == "=") {
+      if (currentValue == value) {
+        hasTrigger = true;
+      } 
+    } else if (opera == "<") {
+      if (currentValue < value) {
+        hasTrigger = true;
+      }
+    } else if (opera == ">") {
+      if (currentValue > value) {
+        hasTrigger = true;
+      }
+    } else if (opera == ">=") {
+      if (currentValue >= value) {
+        hasTrigger = true;
+      }
+    } else if (opera == "<=") {
+      if (currentValue <= value) {
+        hasTrigger = true;
+      }
+    } else if (opera == "!=") {
+      if (currentValue != value) {
+        hasTrigger = true;
+      }
+   }
 
     // -- start hasTrigger----------------
     if (hasTrigger == true) {
@@ -900,7 +901,7 @@ void setup() {
       bool ret = sendReport(true);
       if(ret == true){
          delay(1000);
-         for(int i = 0; i < time_to_sleep_mode; i++){
+         for(int y = 0; y < time_to_sleep_mode; y ++){
             if (sendReport(false) == false){
                 break;
             }
