@@ -703,20 +703,22 @@ bool sendReport(bool hasReport) {
               hasM2M = true;
               JsonObject M2MObjectt = doc["M2MSensor"];
               
-              bool hasKey = M2MObjectt.containsKey("Temp");
+              bool hasKey = M2MObjectt.containsKey("temperature");
              
               if(hasKey == true){
                 hasTemp = true;
-                M2MTemp = M2MObjectt["Temp"];
+                M2MTemp = M2MObjectt["temperature"];
               }
-               
+             
+             Serial.println("deserializeJson M2MSensor M2MTemp=" + String(M2MTemp));
       
-                hasKey = M2MObjectt.containsKey("Hum");
-                
+                hasKey = M2MObjectt.containsKey("humidity");
+ 
               if(hasKey == true){
-                M2MHum = M2MObjectt["Hum"];
+                M2MHum = M2MObjectt["humidity"];
                 hasHum = true;
               }
+              Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
           }
         }
         retryTimeout = 0;
@@ -795,9 +797,10 @@ bool sendReport(bool hasReport) {
       currentValue = M2MHum;
     }  
     
-     if (opera == "=") {
-        if (currentValue == value) {
-          hasTrigger = true;
+        if (opera == "=") {
+          if (currentValue == value) {
+            hasTrigger = true;
+          } 
         } else if (opera == "<") {
           if (currentValue < value) {
             hasTrigger = true;
@@ -819,10 +822,10 @@ bool sendReport(bool hasReport) {
             hasTrigger = true;
           }
        }
-     }
-       
+
     // -- start hasTrigger----------------
     if (hasTrigger == true) {
+         Serial.println("hasTrigger action="+ action);
         int index = action.indexOf("On");
             if (index >= 0) {
                bool result = turnOnRelay(action);
