@@ -906,7 +906,7 @@ void setup() {
                 break;
             }
            
-            Serial.println("sendReport count=" + String(i));
+            Serial.println("sendReport count=" + String(y));
             delay(1000);
         }
       }else{
