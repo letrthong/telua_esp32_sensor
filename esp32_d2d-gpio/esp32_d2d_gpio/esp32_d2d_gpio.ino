@@ -897,16 +897,16 @@ void setup() {
   initWiFi();
   
    
-    for(int i = 0; i< time_to_sleep_mode*15; i++){
-      bool ret = sendReport(true);
-      if(ret == true){
-        delay(5000);
-        Serial.println("sendReport count i=" + String(i));
-        delay(1000);
-      }else{
-        break;
-      }
+  for(int i = 0; i< time_to_sleep_mode*15; i++){
+    bool ret = sendReport(true);
+    if(ret == true){
+      delay(5000);
+      Serial.println("sendReport count i=" + String(i));
+      delay(1000);
+    }else{
+      break;
     }
+  }
   
   turnOffWiFi();
 
