@@ -743,101 +743,105 @@ bool sendReport(bool hasReport) {
       delete client;
 
   }
- 
+
+  if(hasM2M == false){
+    return ret;
+  }
     
   //process trigger
-  if (configTrigger.length() > 1  ) {
-    StaticJsonDocument < 1024 > docTrigger;
+  if (configTrigger.length() < 1  ) {
+    return ret;
+  }
+  
+  StaticJsonDocument < 1024 > docTrigger;
+  
+  // parse a JSON array
+  DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
 
-    // parse a JSON array
-    DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
-
-    if (errorTrigger) {
-      Serial.println("deserializeJson() failed");
-    } else {
+  if (errorTrigger) {
+    Serial.println("deserializeJson() failed");
+     return ret;
+  }  
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
        
-      for (JsonObject v: triggerList) {
-         String property = v["property"];
-        Serial.print("property=");
-        Serial.println(property);
+  for (JsonObject v: triggerList) {
+     String property = v["property"];
+    Serial.print("property=");
+    Serial.println(property);
 
-        String opera = v["operator"];
-        Serial.print("operator=");
-        Serial.println(opera);
+    String opera = v["operator"];
+    Serial.print("operator=");
+    Serial.println(opera);
 
-        float value = v["value"];
-        Serial.print("value=");
-        Serial.println(value);
+    float value = v["value"];
+    Serial.print("value=");
+    Serial.println(value);
 
-        String action = v["action"];
-        Serial.print("action=");
-        Serial.println(action);
+    String action = v["action"];
+    Serial.print("action=");
+    Serial.println(action);
 
-        hasTrigger = false;
-        float currentValue = 0;
-        if (property == "temperature") {
-          currentValue = M2MTemp;
-        } else if (property == "tem") {
-          currentValue = M2MTemp;
-        } else if (property == "humidity") {
-          currentValue = M2MHum;
-        }  else if (property == "hum") {
-          currentValue = M2MHum;
-        }  
-        
-         if (opera == "=") {
-              if (currentValue == value) {
-                hasTrigger = true;
+    hasTrigger = false;
+    float currentValue = 0;
+    if (property == "temperature") {
+      currentValue = M2MTemp;
+    } else if (property == "tem") {
+      currentValue = M2MTemp;
+    } else if (property == "humidity") {
+      currentValue = M2MHum;
+    }  else if (property == "hum") {
+      currentValue = M2MHum;
+    }  
+    
+     if (opera == "=") {
+        if (currentValue == value) {
+          hasTrigger = true;
+        } else if (opera == "<") {
+          if (currentValue < value) {
+            hasTrigger = true;
+          }
+        } else if (opera == ">") {
+          if (currentValue > value) {
+            hasTrigger = true;
+          }
+        } else if (opera == ">=") {
+          if (currentValue >= value) {
+            hasTrigger = true;
+          }
+        } else if (opera == "<=") {
+          if (currentValue <= value) {
+            hasTrigger = true;
+          }
+        } else if (opera == "!=") {
+          if (currentValue != value) {
+            hasTrigger = true;
+          }
+       }
+     }
+       
+    // -- start hasTrigger----------------
+    if (hasTrigger == true) {
+        int index = action.indexOf("On");
+            if (index >= 0) {
+               bool result = turnOnRelay(action);
+               if(result == true){
+                    ret = true;
+               }
+            } else {
+              index = action.indexOf("Off");
+              if (index >= 0) {
+                  bool result = turnOffRelay(action);
+                 if(result == true){
+                      ret = true;
+                 }
               }
-              } else if (opera == "<") {
-                if (currentValue < value) {
-                  hasTrigger = true;
-                    }
-            } else if (opera == ">") {
-              if (currentValue > value) {
-                hasTrigger = true;
-              }
-            } else if (opera == ">=") {
-              if (currentValue >= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "<=") {
-              if (currentValue <= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "!=") {
-              if (currentValue != value) {
-                hasTrigger = true;
-              }
-           }
-           
-        // -- start hasTrigger----------------
-        if (hasTrigger == true) {
-            int index = action.indexOf("On");
-                if (index >= 0) {
-                   bool result = turnOnRelay(action);
-                   if(result == true){
-                        ret = true;
-                   }
-                } else {
-                  index = action.indexOf("Off");
-                  if (index >= 0) {
-                      bool result = turnOffRelay(action);
-                     if(result == true){
-                          ret = true;
-                     }
-                  }
-                }
-         }
-        //  -- End hasTrigger----------------
-      }
-    }
+            }
+     }
+    //  -- End hasTrigger----------------
   }
-  
-
+ 
   return ret;
 }
 /*
