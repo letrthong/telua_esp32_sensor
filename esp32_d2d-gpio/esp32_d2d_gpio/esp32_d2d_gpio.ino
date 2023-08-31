@@ -58,6 +58,7 @@ bool hasM2M  = false;
 bool hasTemp = false;
 bool hasHum = false;
 bool hasCorrectData = false;
+bool pollingInterval = 3;
 
 float  M2MTemp = 0.0;
 float  M2MHum = 0.0;
@@ -715,12 +716,21 @@ bool sendReport(bool hasReport) {
              Serial.println("deserializeJson M2MSensor M2MTemp=" + String(M2MTemp));
       
                 hasKey = M2MObjectt.containsKey("humidity");
- 
               if(hasKey == true){
                 M2MHum = M2MObjectt["humidity"];
                 hasHum = true;
               }
-              Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
+               Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
+
+              hasKey = M2MObjectt.containsKey("pollingInterval");
+              if(hasKey == true){
+                int value = M2MObjectt["pollingInterval"];
+                if( value > 1 &&  value< 60){
+                  pollingInterval = value;
+                }           
+              }
+              
+             
 
               hasKey = M2MObjectt.containsKey("isCorrectData");
               if(hasKey == true){
@@ -907,9 +917,8 @@ void setup() {
   for(int i = 0; i< 60*30; i++){
     bool ret = sendReport(true);
     if(ret == true){
-      delay(3000);
+      delay(pollingInterval*1000);
       Serial.println("sendReport count i=" + String(i));
-      delay(1000);
     }else{
       break;
     }
