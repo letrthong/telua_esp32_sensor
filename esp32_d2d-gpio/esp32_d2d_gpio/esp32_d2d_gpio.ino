@@ -54,14 +54,14 @@ unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
 
 // Machine to Machine
-bool hasM2M  = false;
-bool hasTemp = false;
-bool hasHum = false;
-bool hasCorrectData = false;
-bool pollingInterval = 3;
+RTC_DATA_ATTR  bool hasM2M  = false;
+RTC_DATA_ATTR  bool hasTemp = false;
+RTC_DATA_ATTR  bool hasHum = false;
+RTC_DATA_ATTR  bool hasCorrectData = false;
+RTC_DATA_ATTR  bool pollingInterval = 3;
 
-float  M2MTemp = 0.0;
-float  M2MHum = 0.0;
+RTC_DATA_ATTR  float  M2MTemp = 0.0;
+RTC_DATA_ATTR  float  M2MHum = 0.0;
  
 
 // the LED is connected to GPIO 5
