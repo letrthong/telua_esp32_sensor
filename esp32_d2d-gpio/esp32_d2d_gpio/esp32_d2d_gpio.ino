@@ -57,12 +57,13 @@ unsigned long intervalLocalWeb = 30000;
 RTC_DATA_ATTR  bool hasM2M  = false;
 RTC_DATA_ATTR  bool hasTemp = false;
 RTC_DATA_ATTR  bool hasHum = false;
+RTC_DATA_ATTR  bool hasDistance = false;
 RTC_DATA_ATTR  bool hasCorrectData = false;
 RTC_DATA_ATTR  bool pollingInterval = 3;
 
 RTC_DATA_ATTR  float  M2MTemp = 0.0;
 RTC_DATA_ATTR  float  M2MHum = 0.0;
- 
+RTC_DATA_ATTR  float  M2MDistance = 0.0; 
 
 // the LED is connected to GPIO 5
  
@@ -722,6 +723,16 @@ bool sendReport(bool hasReport) {
               }
                Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
 
+
+              hasKey = M2MObjectt.containsKey("distance");
+              if(hasKey == true){
+                M2MDistance = M2MObjectt["distance"];
+                hasDistance = true;
+              }
+               Serial.println("deserializeJson M2MSensor M2MDistance=" + String(M2MDistance));
+
+               
+
               hasKey = M2MObjectt.containsKey("pollingInterval");
               if(hasKey == true){
                 int value = M2MObjectt["pollingInterval"];
@@ -729,9 +740,7 @@ bool sendReport(bool hasReport) {
                   pollingInterval = value;
                 }           
               }
-              
-             
-
+  
               hasKey = M2MObjectt.containsKey("isCorrectData");
               if(hasKey == true){
                 hasCorrectData = M2MObjectt["isCorrectData"];
@@ -813,6 +822,10 @@ bool sendReport(bool hasReport) {
       currentValue = M2MHum;
     }  else if (property == "hum") {
       currentValue = M2MHum;
+    }  else if (property == "distance") {
+      currentValue = M2MDistance;
+    }  else if (property == "dis") {
+      currentValue = M2MDistance;
     }  
     
     if (opera == "=") {
