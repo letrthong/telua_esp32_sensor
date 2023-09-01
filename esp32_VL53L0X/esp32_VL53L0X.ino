@@ -734,7 +734,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=VL53L0X &distance=" + distance +   "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=VL53L0X&distance=" + distance +   "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
     serverPath = serverName + "?sensorName=VL53L0X_Controller&distance=" + distance    + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
