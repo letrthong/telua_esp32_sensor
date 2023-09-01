@@ -586,24 +586,33 @@ void initEEPROM() {
 }
 
 bool sendReport(bool hasReport) {
- String temperature = "";
-  bool ret = false;
-
-   for( int i = 0; i < 100; i++){
+    String distance  = "0";
+    bool ret = false;
+    
+    float fRangeMilliMeter = 0.0;
+    int count = 0;
+   for( int i = 0; i < 6; i++){
          VL53L0X_RangingMeasurementData_t measure;
       lox.rangingTest(&measure, false);
        if (measure.RangeStatus != 4) {  
         // phase failures have incorrect data
         Serial.print("Distance (mm): ");
         Serial.println(measure.RangeMilliMeter);
+        fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMete;
+        count = count +1;
     } else {
          Serial.println(" out of range ");
     }
        delay(500);
    }  
+
+   if(count > 0){
+     float result = (fRangeMilliMeter/count);
+     fRangeMilliMeter =result; 
+     distance = String(result, 2);
+   }
   
    
-    
    String strTriggerParameter = "";
   //process trigger
   if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
@@ -637,70 +646,62 @@ bool sendReport(bool hasReport) {
         Serial.print("action=");
         Serial.println(action);
 
-//        hasTrigger = false;
-//        float currentValue = 0;
-//        if (property == "temperature") {
-//          currentValue = fTemperature;
-//        } else if (property == "tem") {
-//          currentValue = fTemperature;
-//        } else if (property == "humidity") {
-//          currentValue = fHumidity;
-//        }  else if (property == "hum") {
-//          currentValue = fHumidity;
-//        } else if (property == "err"){
-//          if (hasSensor   == false || hasError == true ){
-//            hasTrigger = true;
-//          }
-//        }
+        hasTrigger = false;
+        float currentValue = 0;
+        if (property == "distance") {
+          currentValue = fRangeMilliMeter;
+        } else if (property == "dis") {
+          currentValue = fRangeMilliMeter;
+        } 
         
-//        if (property != "error"){
-//            if (opera == "=") {
-//                if (currentValue == value) {
-//                  hasTrigger = true;
-//                }
-//              } else if (opera == "<") {
-//                if (currentValue < value) {
-//                  hasTrigger = true;
-//                    }
-//            } else if (opera == ">") {
-//              if (currentValue > value) {
-//                hasTrigger = true;
-//              }
-//            } else if (opera == ">=") {
-//              if (currentValue >= value) {
-//                hasTrigger = true;
-//              }
-//            } else if (opera == "<=") {
-//              if (currentValue <= value) {
-//                hasTrigger = true;
-//              }
-//            } else if (opera == "!=") {
-//              if (currentValue != value) {
-//                hasTrigger = true;
-//              }
-//           }
-//        }
+        if (property != "error"){
+            if (opera == "=") {
+                if (currentValue == value) {
+                  hasTrigger = true;
+                }
+              } else if (opera == "<") {
+                if (currentValue < value) {
+                  hasTrigger = true;
+                    }
+            } else if (opera == ">") {
+              if (currentValue > value) {
+                hasTrigger = true;
+              }
+            } else if (opera == ">=") {
+              if (currentValue >= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "<=") {
+              if (currentValue <= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "!=") {
+              if (currentValue != value) {
+                hasTrigger = true;
+              }
+           }
+        }
         // -- start hasTrigger----------------
-//        if (hasTrigger == true) {
-//          strTriggerParameter = strTriggerParameter + action + "-";
-//           if(hasGPIo == true){
-//               int index = action.indexOf("On");
-//                if (index >= 0) {
-//                   bool result = turnOnRelay(action);
-//                   if(result == true){
-//                        ret = true;
-//                   }
-//                } else {
-//                  index = action.indexOf("Off");
-//                  if (index >= 0) {
-//                      bool result = turnOffRelay(action);
-//                     if(result == true){
-//                          ret = true;
-//                     }
-//                  }
-//                }
-//            }
-//        }
+        if (hasTrigger == true) {
+          strTriggerParameter = strTriggerParameter + action + "-";
+           if(hasGPIo == true){
+               int index = action.indexOf("On");
+                if (index >= 0) {
+                   bool result = turnOnRelay(action);
+                   if(result == true){
+                        ret = true;
+                   }
+                } else {
+                  index = action.indexOf("Off");
+                  if (index >= 0) {
+                      bool result = turnOffRelay(action);
+                     if(result == true){
+                          ret = true;
+                     }
+                  }
+                }
+            }
+        }
         //  -- End hasTrigger----------------
       }
     }
@@ -731,22 +732,23 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature +   "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=VL53L0X &distance=" + distance +   "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature    + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=VL53L0X_Controller&distance=" + distance    + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature +   +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&distance=" + distance +   +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=VL53L0X&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+          serverPath = error_url + "?sensorName=VL53L0X_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
      }
   }
+  
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -775,8 +777,7 @@ bool sendReport(bool hasReport) {
         int intervalTime = doc["intervalTime"];
         Serial.print("deserializeJson intervalTime=");
         Serial.println(intervalTime);
-        if (intervalTime >= 30) {
-
+        if (intervalTime >= 5) {
           if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
             time_to_sleep_mode = intervalTime;
             EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
