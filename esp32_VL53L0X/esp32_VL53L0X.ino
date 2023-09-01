@@ -598,7 +598,7 @@ bool sendReport(bool hasReport) {
         // phase failures have incorrect data
         Serial.print("Distance (mm): ");
         Serial.println(measure.RangeMilliMeter);
-        fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMete;
+        fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMeter;
         count = count +1;
     } else {
          Serial.println(" out of range ");
