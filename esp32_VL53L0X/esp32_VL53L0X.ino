@@ -591,6 +591,7 @@ bool sendReport(bool hasReport) {
     
     float fRangeMilliMeter = 0.0;
     int count = 0;
+    hasError = true;
    for( int i = 0; i < 6; i++){
          VL53L0X_RangingMeasurementData_t measure;
       lox.rangingTest(&measure, false);
@@ -607,6 +608,7 @@ bool sendReport(bool hasReport) {
    }  
 
    if(count > 0){
+      hasError = false;
      float result = (fRangeMilliMeter/count);
      fRangeMilliMeter =result; 
      distance = String(result, 2);
