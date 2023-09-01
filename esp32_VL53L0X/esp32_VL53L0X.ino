@@ -59,7 +59,7 @@ unsigned long intervalLocalWeb = 30000;
 
  
 // the LED is connected to GPIO 5
-bool hasGPIo = false;
+bool hasGPIo = true;
 const int ledRelay01 = 17 ; 
 const int ledRelay02 =  5; 
 const int ledAlarm =  19; 
@@ -604,7 +604,7 @@ bool sendReport(bool hasReport) {
     } else {
          Serial.println(" out of range ");
     }
-       delay(500);
+       delay(250);
    }  
 
    if(count > 0){
