@@ -1,4 +1,4 @@
-{"serialNumber":"0108-7874-63","wiFi":"Telua_Shtx_Gpio_0108-7874-63", "password":"12345678"}
+{"serialNumber":"0108-7874-63","wiFi":"Telua_Sht40_Gpio_0108-7874-63", "password":"12345678"}
 
 
 0108-7874-63
