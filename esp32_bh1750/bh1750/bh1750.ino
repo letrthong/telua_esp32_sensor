@@ -3,8 +3,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include "Adafruit_SHT4x.h"
-
+#include <BH1750.h>
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -44,10 +43,10 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+BH1750 lightMeter;
 
-const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Sht40_Gpio_"; 
+const char * ssid = "Telua_BH1750_";
+const char * ssid_gpio = "Telua_BH1750_Gpio_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -57,11 +56,9 @@ unsigned long interval = 30000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
 
-
-
-
+ 
 // the LED is connected to GPIO 5
-bool hasGPIo = true;
+bool hasGPIo = false;
 const int ledRelay01 = 17 ; 
 const int ledRelay02 =  5; 
 const int ledAlarm =  19; 
@@ -546,52 +543,14 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
-  Serial.println("Telua SHT4x test");
-  if (!sht4.begin()) {
-    Serial.println("Couldn't find SHT4x");
-  } else {
-    hasSensor = true;
-    Serial.println("Found SHT4x sensor");
-    Serial.print("Serial number 0x");
-    Serial.println(sht4.readSerial(), HEX);
-    if (bootCount < 2) {
-      // You can have 3 different precisions, higher precision takes longer
-      sht4.setPrecision(SHT4X_HIGH_PRECISION);
-      switch (sht4.getPrecision()) {
-      case SHT4X_HIGH_PRECISION:
-        Serial.println("High precision");
-        break;
-      case SHT4X_MED_PRECISION:
-        Serial.println("Med precision");
-        break;
-      case SHT4X_LOW_PRECISION:
-        Serial.println("Low precision");
-        break;
-      }
-      switch (sht4.getHeater()) {
-      case SHT4X_NO_HEATER:
-        Serial.println("No heater");
-        break;
-      case SHT4X_HIGH_HEATER_1S:
-        Serial.println("High heat for 1 second");
-        break;
-      case SHT4X_HIGH_HEATER_100MS:
-        Serial.println("High heat for 0.1 second");
-        break;
-      case SHT4X_MED_HEATER_1S:
-        Serial.println("Medium heat for 1 second");
-        break;
-      case SHT4X_MED_HEATER_100MS:
-        Serial.println("Medium heat for 0.1 second");
-        break;
-      case SHT4X_LOW_HEATER_1S:
-        Serial.println("Low heat for 1 second");
-        break;
-      case SHT4X_LOW_HEATER_100MS:
-        Serial.println("Low heat for 0.1 second");
-        break;
-      }
-    }
+     Wire.begin(21,22);
+    
+    if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
+      Serial.println(F("BH1750 Advanced begin"));
+       hasSensor = true;
+   } else {
+      Serial.println(F("Error initialising BH1750"));
+      
   }
 }
 
@@ -630,31 +589,23 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  String temperature = "0";
-  String relative_humidity = "0";
-  float fHumidity = 0.0;
-  float fTemperature = 0.0;
+ 
+  String lux= "0";
+  float fLux = 0.0;
+  hasError = true;
   if (hasSensor == true) {
-    for (int i = 0; i < 3; i++) {
-      sensors_event_t humidity, temp;
-      sht4.getEvent( & humidity, & temp);
-
-      //      Serial.print("Temperature: ");
-      //      Serial.print(temp.temperature);
-      //      Serial.println(" degrees C");
-      //      Serial.print("Humidity: "); 
-      //      Serial.print(humidity.relative_humidity);
-      //      Serial.println("% rH");
-      fHumidity = humidity.relative_humidity;
-      fTemperature = temp.temperature;
-      temperature = String(fTemperature, 2);
-      relative_humidity = String(fHumidity, 2);
-      if (fHumidity > 0) {
-        hasError = false;
-        break;
-      }
-      delay(500);
-    }
+     for(int i = 0; i< 10; i++){
+          if(   lightMeter.measurementReady()){
+            fLux = lightMeter.readLightLevel();
+            Serial.print("Light: ");
+            Serial.print(fLux);
+            Serial.println(" lx");
+            lux = String(fLux, 2);
+             hasError = false;
+            break;
+          }
+          delay(100);
+       }
   }
 
    String strTriggerParameter = "";
@@ -692,14 +643,8 @@ bool sendReport(bool hasReport) {
 
         hasTrigger = false;
         float currentValue = 0;
-        if (property == "temperature") {
-          currentValue = fTemperature;
-        } else if (property == "tem") {
-          currentValue = fTemperature;
-        } else if (property == "humidity") {
-          currentValue = fHumidity;
-        }  else if (property == "hum") {
-          currentValue = fHumidity;
+        if (property == "lux") {
+          currentValue = fLux;
         } else if (property == "err"){
           if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
@@ -784,20 +729,20 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=BH1750&lux=" + lux  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=BH1750_Controller&lux=" + lux  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID +  "&lux=" + lux   +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=BH1750&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+          serverPath = error_url + "?sensorName=BH1750_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
      }
   }
   Serial.println(serverPath);
@@ -1006,8 +951,7 @@ void setup() {
   initWiFi();
 
   initSht4x();
-
-  
+ 
   if(hasGPIo == false){
     sendReport(true); 
   }else{
