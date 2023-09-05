@@ -60,8 +60,8 @@ unsigned long intervalLocalWeb = 30000;
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 0;
 const int   daylightOffset_sec = 3600;
-# https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
-# https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
+// https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
+//https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
 
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
@@ -585,52 +585,33 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
-      bool hasTrigger = false;
+      bool hasBtn0 = false;
        
       for (JsonObject v: triggerList) {
- 
-        float valueStart = v["startTimer"];
-        Serial.print("value=");
-        Serial.println(value);
+          float valueStart = v["startTimer"];
+          Serial.print("value=");
+          Serial.println(value);
+  
+          float valueStop = v["stopTimer"];
+          Serial.print("value=");
+          Serial.println(value);
+  
+          float currentTime = 0;
+          String action = v["action"];
+          Serial.print("action=");
+          Serial.println(action);
+   
+          if( valueStart <= currentTime && currentTime <= valueStop){
+               if( action.indexOf("b1"){
+                 hasBtn0 == true;
+               }
+          }
+      }
 
-        float valueStop = v["stopTimer"];
-        Serial.print("value=");
-        Serial.println(value);
-
-        float currentTime = 0;
-        String action = v["action"];
-        Serial.print("action=");
-        Serial.println(action);
-
-        hasTrigger = false;
-        
-
-        if( valueStart <= currentTime && currentTime <= valueStop){
-            hasTrigger == true;
-        }
-        
-        // -- start hasTrigger----------------
-        if (hasTrigger == true) {
-          strTriggerParameter = strTriggerParameter + action + "-";
-           if(hasGPIo == true){
-               int index = action.indexOf("On");
-                if (index >= 0) {
-                   bool result = turnOnRelay(action);
-                   if(result == true){
-                        ret = true;
-                   }
-                } else {
-                  index = action.indexOf("Off");
-                  if (index >= 0) {
-                      bool result = turnOffRelay(action);
-                     if(result == true){
-                          ret = true;
-                     }
-                  }
-                }
-            }
-        }
-        //  -- End hasTrigger----------------
+      if(hasBtn0 == true){
+         turnOnRelay("b1On");
+      }else{
+        turnOnRelay("b1Off");
       }
     }
   }
