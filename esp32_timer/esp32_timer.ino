@@ -14,6 +14,7 @@ RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
 String configTrigger = "";
+String configScheduler = "";
 String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
@@ -61,7 +62,7 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 0;
 const int   daylightOffset_sec = 3600;
 // https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
-//https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
+// https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
 
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
@@ -572,12 +573,13 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
+  String strTriggerParameter = "";
   //process trigger
-  if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
+  if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
 
     // parse a JSON array
-    DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
+    DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
     if (errorTrigger) {
       Serial.println("deserializeJson() failed");
@@ -586,7 +588,9 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasBtn0 = false;
-       
+       bool hasBtn1 = false; 
+       bool hasAl = false; 
+        
       for (JsonObject v: triggerList) {
           float valueStart = v["startTimer"];
           Serial.print("value=");
@@ -604,6 +608,10 @@ bool sendReport(bool hasReport) {
           if( valueStart <= currentTime && currentTime <= valueStop){
                if( action.indexOf("b1"){
                  hasBtn0 == true;
+               } else if( action.indexOf("b2"){
+                 hasBtn1 == true;
+               } else if( action.indexOf("al"){
+                 hasAl == true;
                }
           }
       }
@@ -612,6 +620,18 @@ bool sendReport(bool hasReport) {
          turnOnRelay("b1On");
       }else{
         turnOnRelay("b1Off");
+      }
+
+      if(hasBtn1 == true){
+         turnOnRelay("b2On");
+      }else{
+        turnOnRelay("b2Off");
+      }
+
+      if(hasAl == true){
+         turnOnRelay("alOn");
+      }else{
+        turnOnRelay("alOff");
       }
     }
   }
