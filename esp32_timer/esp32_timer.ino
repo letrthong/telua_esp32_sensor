@@ -1,15 +1,9 @@
 #include <WiFi.h>
-
 #include <EEPROM.h>
-
 #include <WiFiClientSecure.h>
-
 #include <HTTPClient.h>
-
 #include <ArduinoJson.h>
-
-#include "Adafruit_SHT4x.h"
-
+ 
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -32,7 +26,7 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
 int EEPROM_ADDRESS_REOMVE_PASS = 64;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
@@ -45,12 +39,15 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
+RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+ 
 
 const char * ssid = "Telua_Sht40_";
+const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
+
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
@@ -58,6 +55,68 @@ unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
+
+ 
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 3600;
+# https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
+# https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
+
+// the LED is connected to GPIO 5
+bool hasGPIo = false;
+const int ledRelay01 = 17 ; 
+const int ledRelay02 =  5; 
+const int ledAlarm =  19; 
+const int ledFloatSwitch =  4; 
+
+const int btnTop = 18;
+const int btnBot = 16;
+
+void intGpio(){
+    pinMode(ledRelay01, OUTPUT);
+    pinMode(ledRelay02, OUTPUT);
+    pinMode(ledAlarm, OUTPUT);
+  
+   turnOffAll();
+}
+
+void turnOffAll(){
+   digitalWrite(ledRelay01, LOW);
+   digitalWrite(ledRelay02, LOW);
+   digitalWrite(ledAlarm, LOW);
+ 
+}
+
+bool turnOnRelay(String action){
+   bool retCode  = false;
+   
+   if( action =="b1On"){
+       digitalWrite(ledRelay01, HIGH);
+        retCode = true;
+   }else  if( action =="b2On"){
+      digitalWrite(ledRelay02, HIGH);
+       retCode = true;
+   } else  if( action == "alOn"){
+       digitalWrite(ledAlarm, HIGH);
+       retCode = true;
+   } 
+
+   return retCode;
+}
+
+bool turnOffRelay(String action){
+   bool retCode  = false;
+   if( action =="b1Off"){
+       digitalWrite(ledRelay01, LOW);
+   }else  if( action =="b2Off"){
+      digitalWrite(ledRelay02, LOW);
+   } else  if( action =="alOff"){
+       digitalWrite(ledAlarm, LOW);
+   } 
+   return retCode;
+}
+
 
 void startSleepMode() {
   /*
@@ -84,7 +143,12 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  WiFi.softAP(ssid + serialNumber, password);
+  if(hasGPIo == false){
+     WiFi.softAP(ssid + serialNumber, password); 
+  }else{
+     WiFi.softAP(ssid_gpio + serialNumber, password);
+  }
+ 
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -107,11 +171,11 @@ void startLocalWeb() {
       count = count + 1;
       if (hasConnection == true) {
         hasConnection = false;
-        count = 5;
+        count = 9;
       }
     }
 
-    if (count >= 6) {
+    if (count >= 10) {
       server.close();
       WiFi.disconnect();
       delay(100);
@@ -215,7 +279,7 @@ void startLocalWeb() {
               client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
               client.println("<link rel=\"icon\" href=\"data:,\">");
               // Web Page Heading 
-              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform</h4>");
+              client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform - 20-08-2023 </h4>");
               if (serialNumber.length() > 0) {
                 client.println("<p>Serial Number=" + serialNumber + "</p>");
               }
@@ -237,8 +301,8 @@ void startLocalWeb() {
                 client.println("<p>Please recheck SSID and password of Wi-Fi</p>");
               } else {
                 if (privateIpv4.length() > 0) {
-                  client.println("<p  style=\"color:red;\"> Thiet bi co the ket noi Internet voi IPv4=" + privateIpv4 + "</p>");
-                  client.println("<p  style=\"color:red;\"> The device can connect the inernet with IPv4=" + privateIpv4 + "</p>");
+                  client.println("<p  style=\"color:red;\"> Thiet bi co the ket noi toi Internet voi IPv4=" + privateIpv4 + "</p>");
+                  client.println("<p  style=\"color:red;\"> The device can connect the internet with IPv4=" + privateIpv4 + "</p>");
 
                   client.println("<h4> </h4>");
                   client.println("<a href=\"https://telua.co/aiot\"  >https://telua.co/aiot</a>");
@@ -347,7 +411,7 @@ void initWiFi() {
       } else {
         Serial.print(n);
         Serial.println(" networks found");
-        select_html = " <select  id=\"ssid\"  style=\"height:25px;\"   name=\"ssid\">";
+        select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
         for (int i = 0; i < n; ++i) {
           String SSID = WiFi.SSID(i);
           Serial.print("scanNetworks SSID=");
@@ -459,9 +523,9 @@ void initWiFi() {
   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
     startLocalWeb();
   }
-  //  else{
-  //      startLocalWeb();
-  //  }
+//    else{
+//        startLocalWeb();
+//    }
 
 }
 
@@ -470,53 +534,7 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
-  Serial.println("Telua SHT4x test");
-  if (!sht4.begin()) {
-    Serial.println("Couldn't find SHT4x");
-  } else {
-    hasSensor = true;
-    Serial.println("Found SHT4x sensor");
-    Serial.print("Serial number 0x");
-    Serial.println(sht4.readSerial(), HEX);
-    if (bootCount < 2) {
-      // You can have 3 different precisions, higher precision takes longer
-      sht4.setPrecision(SHT4X_HIGH_PRECISION);
-      switch (sht4.getPrecision()) {
-      case SHT4X_HIGH_PRECISION:
-        Serial.println("High precision");
-        break;
-      case SHT4X_MED_PRECISION:
-        Serial.println("Med precision");
-        break;
-      case SHT4X_LOW_PRECISION:
-        Serial.println("Low precision");
-        break;
-      }
-      switch (sht4.getHeater()) {
-      case SHT4X_NO_HEATER:
-        Serial.println("No heater");
-        break;
-      case SHT4X_HIGH_HEATER_1S:
-        Serial.println("High heat for 1 second");
-        break;
-      case SHT4X_HIGH_HEATER_100MS:
-        Serial.println("High heat for 0.1 second");
-        break;
-      case SHT4X_MED_HEATER_1S:
-        Serial.println("Medium heat for 1 second");
-        break;
-      case SHT4X_MED_HEATER_100MS:
-        Serial.println("Medium heat for 0.1 second");
-        break;
-      case SHT4X_LOW_HEATER_1S:
-        Serial.println("Low heat for 1 second");
-        break;
-      case SHT4X_LOW_HEATER_100MS:
-        Serial.println("Low heat for 0.1 second");
-        break;
-      }
-    }
-  }
+   
 }
 
 void initEEPROM() {
@@ -552,56 +570,17 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-void sendReport() {
-
+bool sendReport(bool hasReport) {
+  bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
   float fHumidity = 0.0;
   float fTemperature = 0.0;
-  if (hasSensor == true) {
-    for (int i = 0; i < 3; i++) {
-      sensors_event_t humidity, temp;
-      sht4.getEvent( & humidity, & temp);
+  
 
-      //      Serial.print("Temperature: ");
-      //      Serial.print(temp.temperature);
-      //      Serial.println(" degrees C");
-      //      Serial.print("Humidity: "); 
-      //      Serial.print(humidity.relative_humidity);
-      //      Serial.println("% rH");
-      fHumidity = humidity.relative_humidity;
-      fTemperature = temp.temperature;
-      temperature = String(fTemperature, 2);
-      relative_humidity = String(fHumidity, 2);
-      if (fHumidity > 0) {
-        hasError = false;
-        break;
-      }
-      delay(500);
-    }
-  }
-
-  if (WiFi.status() != WL_CONNECTED) {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    return;
-  }
-
-  String localIP = WiFi.localIP().toString();
-  if (localIP == "0.0.0.0") {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport  localIP= 0.0.0.0");
-    return;
-  }
-
-  WiFiClientSecure * client = new WiFiClientSecure;
-  if (!client) {
-    return;
-  }
-
-  String strTriggerParameter = "";
+   String strTriggerParameter = "";
   //process trigger
-  if (configTrigger.length() > 1 && hasSensor == true) {
+  if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
 
     // parse a JSON array
@@ -614,8 +593,9 @@ void sendReport() {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
+       
       for (JsonObject v: triggerList) {
-        String property = v["property"];
+         String property = v["property"];
         Serial.print("property=");
         Serial.println(property);
 
@@ -635,57 +615,115 @@ void sendReport() {
         float currentValue = 0;
         if (property == "temperature") {
           currentValue = fTemperature;
+        } else if (property == "tem") {
+          currentValue = fTemperature;
         } else if (property == "humidity") {
           currentValue = fHumidity;
-        }
-
-        if (opera == "=") {
-          if (currentValue == value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<") {
-          if (currentValue < value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">") {
-          if (currentValue > value) {
-            hasTrigger = true;
-          }
-        } else if (opera == ">=") {
-          if (currentValue >= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "<=") {
-          if (currentValue <= value) {
-            hasTrigger = true;
-          }
-        } else if (opera == "!=") {
-          if (currentValue != value) {
+        }  else if (property == "hum") {
+          currentValue = fHumidity;
+        } else if (property == "err"){
+          if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
           }
         }
-
+        
+        if (property != "error"){
+            if (opera == "=") {
+                if (currentValue == value) {
+                  hasTrigger = true;
+                }
+              } else if (opera == "<") {
+                if (currentValue < value) {
+                  hasTrigger = true;
+                    }
+            } else if (opera == ">") {
+              if (currentValue > value) {
+                hasTrigger = true;
+              }
+            } else if (opera == ">=") {
+              if (currentValue >= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "<=") {
+              if (currentValue <= value) {
+                hasTrigger = true;
+              }
+            } else if (opera == "!=") {
+              if (currentValue != value) {
+                hasTrigger = true;
+              }
+           }
+        }
+        // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
-          //@Turn on off led
+           if(hasGPIo == true){
+               int index = action.indexOf("On");
+                if (index >= 0) {
+                   bool result = turnOnRelay(action);
+                   if(result == true){
+                        ret = true;
+                   }
+                } else {
+                  index = action.indexOf("Off");
+                  if (index >= 0) {
+                      bool result = turnOffRelay(action);
+                     if(result == true){
+                          ret = true;
+                     }
+                  }
+                }
+            }
         }
+        //  -- End hasTrigger----------------
       }
     }
   }
+  
+   if(hasReport == false){
+      return ret;
+   }
+   
+  if (WiFi.status() != WL_CONNECTED) {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    return false;
+  }
 
+  String localIP = WiFi.localIP().toString();
+  if (localIP == "0.0.0.0") {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport  localIP= 0.0.0.0");
+    return false;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+  if (!client) {
+    return false;
+  }
+
+  
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
+  if(hasGPIo == true){
+    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  }
+  
   if (strTriggerParameter.length() > 0) {
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-    serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      if(hasGPIo == true){
+          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+     }
   }
   Serial.println(serverPath);
 
+  http.setTimeout(60000);
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -784,8 +822,18 @@ void sendReport() {
         serializeJson(triggerList, strTrigger);
         Serial.print("strTrigger=");
         Serial.println(strTrigger);
+        Serial.println("strTrigger.length()=" + String(strTrigger.length()));
         if (configTrigger != strTrigger) {
-          configTrigger = strTrigger;
+         
+           if(hasGPIo == true){
+            if (strTrigger.length() < 256){
+               configTrigger = strTrigger;
+                turnOffAll();
+            } 
+          }else{
+             configTrigger = strTrigger; 
+          }
+          
           if (configTrigger.length() < 256) {
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
@@ -799,15 +847,35 @@ void sendReport() {
         }
       }
     }
-
+    retryTimeout = 0;
   } else {
-    //        Serial.print("Error code: ");
-    //        Serial.println(httpResponseCode);
-    time_to_sleep_mode = TIME_TO_SLEEP;
+     Serial.print("Error code: ");
+     Serial.println(httpResponseCode);
+      time_to_sleep_mode = TIME_TO_SLEEP;
+      retryTimeout = retryTimeout + 1;
+      //Timeout - https://github.com/esp8266/Arduino/issues/5137
+      if(httpResponseCode == -11){
+        http.end();
+        delete client;
+        delay(3000);
+        Serial.println("sendReport retryTimeout=" + String(retryTimeout));
+         if(hasGPIo == true){
+              if(retryTimeout > 3){
+                 ESP.restart();
+              }else{
+                return ret;
+            } 
+         }else{
+              ESP.restart();
+         }
+       
+      }
   }
   // Free resources
   http.end();
   delete client;
+
+  return ret;
 }
 /*
 Method to print the reason by which ESP32
@@ -847,19 +915,42 @@ void setup() {
     bootCount = 0;
     ESP.restart();
   }
-  Serial.println("Ver:6/8/2023");
+  Serial.println("Ver:8/Aug/2023");
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
+  if(hasGPIo == true){
+    intGpio();
+  }
   initEEPROM();
-
   initWiFi();
 
   initSht4x();
 
-  sendReport();
-
+  
+  if(hasGPIo == false){
+    sendReport(true); 
+  }else{
+      for(int i = 0; i< 15; i++){
+        bool ret = sendReport(true);
+        if(ret == true){
+           delay(1000);
+           for(int i = 0; i < time_to_sleep_mode; i++){
+              if (sendReport(false) == false){
+                  break;
+              }
+             
+              Serial.println("sendReport count=" + String(i));
+              delay(1000);
+          }
+        }else{
+          break;
+        }
+      }
+  }
+ 
+  
   turnOffWiFi();
 
   //Print the wakeup reason for ESP32
