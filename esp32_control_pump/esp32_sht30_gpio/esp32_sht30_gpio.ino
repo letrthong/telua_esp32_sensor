@@ -257,7 +257,7 @@ void turnOnLed(){
    String strTriggerParameter = "";
    //process trigger
    if (configTrigger.length() > 1 && hasSensor == true) {
-     StaticJsonDocument < 1024 > docTrigger;
+     StaticJsonDocument < 2048 > docTrigger;
 
      // parse a JSON array
      DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
@@ -385,7 +385,7 @@ void turnOnLed(){
      //      Serial.println(payload);
 
      //https://arduinojson.org/v6/doc/upgrade/
-     DynamicJsonDocument doc(1024);
+     DynamicJsonDocument doc(2048);
 
      DeserializationError error = deserializeJson(doc, payload);
      if (error) {
