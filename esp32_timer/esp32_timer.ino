@@ -55,13 +55,10 @@ unsigned long intervalLocalWeb = 30000;
 
  
 const char* ntpServer = "pool.ntp.org";
-// 25200 = 7*60*60
-
+// 25200 = 7*60*60  +7
 const long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
-// https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
-// https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
-
+ 
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
 const int ledRelay01 = 17 ; 
@@ -592,6 +589,9 @@ bool sendReport(bool hasReport) {
           Serial.println(valueStop);
   
           int currentSeconds= getSeconds();
+          Serial.print("currentSeconds=");
+          Serial.println(currentSeconds);
+          
           String action = v["action"];
           Serial.print("action=");
           Serial.println(action);
