@@ -10,7 +10,7 @@
 #define EEPROM_SIZE 512
 #define TIME_TO_SLEEP 30
 
- 
+RTC_DATA_ATTR int bootCount = 0;
 RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
@@ -594,11 +594,12 @@ bool sendReport(bool hasReport) {
           Serial.println(action);
    
           if( valueStart <= currentSeconds && currentSeconds <= valueStop){
-               if( action.indexOf("b1") > -1){
+               Serial.println("turn on");
+               if( action.indexOf("b1")){
                  hasBtn0 =  true;
-               } else if( action.indexOf("b2") > -1){
+               } else if( action.indexOf("b2")){
                  hasBtn1 =  true;
-               } else if( action.indexOf("al") > -1){
+               } else if( action.indexOf("al")){
                  hasAl =  true;
                }
           }
@@ -859,7 +860,7 @@ void setup() {
  
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  sendReport(true); 
+  
 }
 
 void loop() {
