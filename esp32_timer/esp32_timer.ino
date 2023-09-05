@@ -572,13 +572,6 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  String temperature = "0";
-  String relative_humidity = "0";
-  float fHumidity = 0.0;
-  float fTemperature = 0.0;
-  
-
-   String strTriggerParameter = "";
   //process trigger
   if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
@@ -595,65 +588,27 @@ bool sendReport(bool hasReport) {
       bool hasTrigger = false;
        
       for (JsonObject v: triggerList) {
-         String property = v["property"];
-        Serial.print("property=");
-        Serial.println(property);
-
-        String opera = v["operator"];
-        Serial.print("operator=");
-        Serial.println(opera);
-
-        float value = v["value"];
+ 
+        float valueStart = v["startTimer"];
         Serial.print("value=");
         Serial.println(value);
 
+        float valueStop = v["stopTimer"];
+        Serial.print("value=");
+        Serial.println(value);
+
+        float currentTime = 0;
         String action = v["action"];
         Serial.print("action=");
         Serial.println(action);
 
         hasTrigger = false;
-        float currentValue = 0;
-        if (property == "temperature") {
-          currentValue = fTemperature;
-        } else if (property == "tem") {
-          currentValue = fTemperature;
-        } else if (property == "humidity") {
-          currentValue = fHumidity;
-        }  else if (property == "hum") {
-          currentValue = fHumidity;
-        } else if (property == "err"){
-          if (hasSensor   == false || hasError == true ){
-            hasTrigger = true;
-          }
+        
+
+        if( valueStart <= currentTime && currentTime <= valueStop){
+            hasTrigger == true;
         }
         
-        if (property != "error"){
-            if (opera == "=") {
-                if (currentValue == value) {
-                  hasTrigger = true;
-                }
-              } else if (opera == "<") {
-                if (currentValue < value) {
-                  hasTrigger = true;
-                    }
-            } else if (opera == ">") {
-              if (currentValue > value) {
-                hasTrigger = true;
-              }
-            } else if (opera == ">=") {
-              if (currentValue >= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "<=") {
-              if (currentValue <= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "!=") {
-              if (currentValue != value) {
-                hasTrigger = true;
-              }
-           }
-        }
         // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
