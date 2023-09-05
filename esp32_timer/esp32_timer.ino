@@ -10,6 +10,7 @@
 #define EEPROM_SIZE 512
 #define TIME_TO_SLEEP 30
 
+ 
 RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
