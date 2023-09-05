@@ -608,19 +608,19 @@ bool sendReport(bool hasReport) {
       if(hasBtn0 == true){
          turnOnRelay("b1On");
       }else{
-        turnOnRelay("b1Off");
+        turnOffRelay("b1Off");
       }
 
       if(hasBtn1 == true){
          turnOnRelay("b2On");
       }else{
-        turnOnRelay("b2Off");
+        turnOffRelay("b2Off");
       }
 
       if(hasAl == true){
          turnOnRelay("alOn");
       }else{
-        turnOnRelay("alOff");
+        turnOffRelay("alOff");
       }
     }
   }
