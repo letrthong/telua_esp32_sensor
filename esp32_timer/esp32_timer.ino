@@ -594,11 +594,11 @@ bool sendReport(bool hasReport) {
           Serial.println(action);
    
           if( valueStart <= currentSeconds && currentSeconds <= valueStop){
-               if( action.indexOf("b1")){
+               if( action.indexOf("b1") > -1){
                  hasBtn0 =  true;
-               } else if( action.indexOf("b2")){
+               } else if( action.indexOf("b2") > -1){
                  hasBtn1 =  true;
-               } else if( action.indexOf("al")){
+               } else if( action.indexOf("al") > -1){
                  hasAl =  true;
                }
           }
