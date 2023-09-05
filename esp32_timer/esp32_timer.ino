@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include "time.h"
 #include <EEPROM.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
@@ -19,10 +20,8 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
-String serverName = "https://telua.co/service/v1/esp32/update-sensor";
-String error_url = "https://telua.co/service/v1/esp32/error-sensor";
-String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
-
+String serverName = "https://telua.co/service/v1/esp32/scheduler";
+ 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -43,12 +42,9 @@ bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
-
  
-
-const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
-
+const char * ssid = "Telua_Timer_";
+ 
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
@@ -59,8 +55,10 @@ unsigned long intervalLocalWeb = 30000;
 
  
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;
-const int   daylightOffset_sec = 3600;
+// 25200 = 7*60*60
+
+const long gmtOffset_sec = 25200;
+const int daylightOffset_sec = 0;
 // https://lastminuteengineers.com/esp32-ntp-server-date-time-tutorial/
 // https://randomnerdtutorials.com/esp32-date-time-ntp-client-server-arduino/
 
@@ -144,11 +142,7 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  if(hasGPIo == false){
-     WiFi.softAP(ssid + serialNumber, password); 
-  }else{
-     WiFi.softAP(ssid_gpio + serialNumber, password);
-  }
+  WiFi.softAP(ssid + serialNumber, password); 
  
 
   IPAddress IP = WiFi.softAPIP();
@@ -534,10 +528,7 @@ void turnOffWiFi() {
   WiFi.disconnect();
 }
 
-void initSht4x() {
-   
-}
-
+ 
 void initEEPROM() {
   // Allocate The Memory Size Needed
   EEPROM.begin(EEPROM_SIZE);
@@ -592,26 +583,26 @@ bool sendReport(bool hasReport) {
        bool hasAl = false; 
         
       for (JsonObject v: triggerList) {
-          float valueStart = v["startTimer"];
-          Serial.print("value=");
-          Serial.println(value);
+          int valueStart = v["startTimer"];
+          Serial.print("valueStart=");
+          Serial.println(valueStart);
   
-          float valueStop = v["stopTimer"];
-          Serial.print("value=");
-          Serial.println(value);
+          int valueStop = v["stopTimer"];
+          Serial.print("valueStop=");
+          Serial.println(valueStop);
   
-          float currentTime = 0;
+          int currentSeconds= getSeconds();
           String action = v["action"];
           Serial.print("action=");
           Serial.println(action);
    
-          if( valueStart <= currentTime && currentTime <= valueStop){
-               if( action.indexOf("b1"){
-                 hasBtn0 == true;
-               } else if( action.indexOf("b2"){
-                 hasBtn1 == true;
-               } else if( action.indexOf("al"){
-                 hasAl == true;
+          if( valueStart <= currentSeconds && currentSeconds <= valueStop){
+               if( action.indexOf("b1")){
+                 hasBtn0 =  true;
+               } else if( action.indexOf("b2")){
+                 hasBtn1 =  true;
+               } else if( action.indexOf("al")){
+                 hasAl =  true;
                }
           }
       }
@@ -661,22 +652,9 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-  if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-  }
   
-  if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
-  }
-
-  if (hasError == true) {
-      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-      if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-     }
-  }
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -697,111 +675,120 @@ bool sendReport(bool hasReport) {
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
       Serial.println("deserializeJson() failed");
-
     } else {
-
-      bool hasIntervalTime = doc.containsKey("intervalTime");
-      if (hasIntervalTime == true) {
-        int intervalTime = doc["intervalTime"];
-        Serial.print("deserializeJson intervalTime=");
-        Serial.println(intervalTime);
-        if (intervalTime >= 30) {
-
-          if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
-            time_to_sleep_mode = intervalTime;
-            EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+        bool hasIntervalTime = doc.containsKey("intervalTime");
+        if (hasIntervalTime == true) {
+          int intervalTime = doc["intervalTime"];
+          Serial.print("deserializeJson intervalTime=");
+          Serial.println(intervalTime);
+          if (intervalTime >= 30) {
+  
+            if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
+              time_to_sleep_mode = intervalTime;
+              EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+              EEPROM.commit();
+            }
+          }
+        }
+  
+        // Router info
+        bool hasSSID = doc.containsKey("ssid");
+        bool hasPassword = doc.containsKey("password");
+        if (hasSSID == true && hasPassword == true) {
+          String ssid = doc["ssid"];
+          String password = doc["password"];
+          Serial.print("deserializeJson ssid=");
+          Serial.println(ssid);
+  
+          Serial.print("deserializeJson password=");
+          Serial.println(password);
+          if (ssid.length() > 0 && remote_ssid != ssid) {
+            remote_ssid = ssid;
+            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
+            EEPROM.commit();
+          } else {
+            Serial.println("remote_ssid is the same");
+          }
+  
+          if (remote_pass != password) {
+            remote_pass = password;
+            EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
             EEPROM.commit();
           }
         }
-      }
-
-      // Router info
-      bool hasSSID = doc.containsKey("ssid");
-      bool hasPassword = doc.containsKey("password");
-      if (hasSSID == true && hasPassword == true) {
-        String ssid = doc["ssid"];
-        String password = doc["password"];
-        Serial.print("deserializeJson ssid=");
-        Serial.println(ssid);
-
-        Serial.print("deserializeJson password=");
-        Serial.println(password);
-        if (ssid.length() > 0 && remote_ssid != ssid) {
-          remote_ssid = ssid;
-          EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
-          EEPROM.commit();
+  
+        // Device ID
+        if (deviceID.length() != 32) {
+          bool hasDeviceID = doc.containsKey("deviceID");
+          if (hasDeviceID == true) {
+            String id = doc["deviceID"];
+            Serial.print("deserializeJson deviceID=");
+            Serial.println(id);
+            if (id.length() > 1 && id.length() < 64) {
+              EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
+              EEPROM.commit();
+            }
+          }
+  
+          bool hasSerialNumber = doc.containsKey("serialNumber");
+          if (hasSerialNumber == true) {
+            String serial_number = doc["serialNumber"];
+            if (serial_number.length() > 1 && serial_number.length() < 64) {
+              EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
+              EEPROM.commit();
+            }
+          }
+        }
+  
+        //Process Trigger
+        bool hasTriggers = doc.containsKey("triggers");
+        if (hasTriggers == true) {
+          JsonArray triggerList = doc["triggers"];
+          //            for(JsonObject v : triggerList) {
+          //                String property = v["property"];
+          //                 Serial.print("property=");
+          //                 Serial.println(property);
+          //            }
+  
+          String strTrigger = "";
+          serializeJson(triggerList, strTrigger);
+          Serial.print("strTrigger=");
+          Serial.println(strTrigger);
+          Serial.println("strTrigger.length()=" + String(strTrigger.length()));
+          if (configTrigger != strTrigger) {
+           
+             if(hasGPIo == true){
+              if (strTrigger.length() < 256){
+                 configTrigger = strTrigger;
+                  turnOffAll();
+              } 
+            }else{
+               configTrigger = strTrigger; 
+            }
+            
+            if (configTrigger.length() < 256) {
+              EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
+              EEPROM.commit();
+            }
+          }
         } else {
-          Serial.println("remote_ssid is the same");
-        }
-
-        if (remote_pass != password) {
-          remote_pass = password;
-          EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
-          EEPROM.commit();
-        }
-      }
-
-      // Device ID
-      if (deviceID.length() != 32) {
-        bool hasDeviceID = doc.containsKey("deviceID");
-        if (hasDeviceID == true) {
-          String id = doc["deviceID"];
-          Serial.print("deserializeJson deviceID=");
-          Serial.println(id);
-          if (id.length() > 1 && id.length() < 64) {
-            EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
-            EEPROM.commit();
-          }
-        }
-
-        bool hasSerialNumber = doc.containsKey("serialNumber");
-        if (hasSerialNumber == true) {
-          String serial_number = doc["serialNumber"];
-          if (serial_number.length() > 1 && serial_number.length() < 64) {
-            EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
-            EEPROM.commit();
-          }
-        }
-      }
-
-      //Process Trigger
-      bool hasTriggers = doc.containsKey("triggers");
-      if (hasTriggers == true) {
-        JsonArray triggerList = doc["triggers"];
-        //            for(JsonObject v : triggerList) {
-        //                String property = v["property"];
-        //                 Serial.print("property=");
-        //                 Serial.println(property);
-        //            }
-
-        String strTrigger = "";
-        serializeJson(triggerList, strTrigger);
-        Serial.print("strTrigger=");
-        Serial.println(strTrigger);
-        Serial.println("strTrigger.length()=" + String(strTrigger.length()));
-        if (configTrigger != strTrigger) {
-         
-           if(hasGPIo == true){
-            if (strTrigger.length() < 256){
-               configTrigger = strTrigger;
-                turnOffAll();
-            } 
-          }else{
-             configTrigger = strTrigger; 
-          }
-          
-          if (configTrigger.length() < 256) {
+          if (configTrigger.length() > 1) {
+            configTrigger = "";
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
           }
         }
-      } else {
-        if (configTrigger.length() > 1) {
-          configTrigger = "";
-          EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
-          EEPROM.commit();
+
+        bool hasScheduler = doc.containsKey("schedulers");
+        if (hasScheduler == true) {
+            JsonArray schedulerList = doc["schedulers"];
+            String strSchedulers = "";
+            serializeJson(schedulerList, strSchedulers);
+            Serial.print("strSchedulers=");
+            Serial.println(strSchedulers);
+            Serial.println("strSchedulers.length()=" + String(strSchedulers.length()));
+            configScheduler = strSchedulers;
         }
-      }
     }
     retryTimeout = 0;
   } else {
@@ -864,6 +851,28 @@ void print_wakeup_reason() {
   }
 }
 
+void printLocalTime()
+{
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+}
+
+int getSeconds(){
+  int seconds = 0;
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    return seconds;
+  }
+  seconds = timeinfo.tm_hour*(60*60);
+  seconds = seconds + (timeinfo.tm_min*60);
+  return   seconds ;
+}
+
+
 void setup() {
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
@@ -876,45 +885,25 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
-  if(hasGPIo == true){
-    intGpio();
-  }
+  intGpio();
+  
   initEEPROM();
   initWiFi();
+ 
 
-  initSht4x();
-
-  
-  if(hasGPIo == false){
-    sendReport(true); 
-  }else{
-      for(int i = 0; i< 15; i++){
-        bool ret = sendReport(true);
-        if(ret == true){
-           delay(1000);
-           for(int i = 0; i < time_to_sleep_mode; i++){
-              if (sendReport(false) == false){
-                  break;
-              }
-             
-              Serial.println("sendReport count=" + String(i));
-              delay(1000);
-          }
-        }else{
-          break;
-        }
-      }
-  }
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
  
   
-  turnOffWiFi();
-
-  //Print the wakeup reason for ESP32
-  print_wakeup_reason();
-  startSleepMode();
+//  turnOffWiFi();
+//
+//  //Print the wakeup reason for ESP32
+//  print_wakeup_reason();
+//  startSleepMode();
 
 }
 
 void loop() {
-  //This is not going to be called
+    printLocalTime();
+   sendReport(true); 
+   delay(1000);
 }
