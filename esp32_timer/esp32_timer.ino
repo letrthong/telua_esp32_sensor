@@ -672,7 +672,7 @@ bool sendReport(bool hasReport) {
     //      Serial.println(payload);
 
     //https://arduinojson.org/v6/doc/upgrade/
-    DynamicJsonDocument doc(1024);
+    DynamicJsonDocument doc(2048);
 
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
