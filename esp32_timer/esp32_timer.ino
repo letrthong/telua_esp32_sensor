@@ -10,7 +10,6 @@
 #define EEPROM_SIZE 512
 #define TIME_TO_SLEEP 30
 
-RTC_DATA_ATTR int bootCount = 0;
 RTC_DATA_ATTR bool isCorrectPassword = false;
 String deviceID = "";
 String serialNumber = "";
@@ -40,7 +39,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-
+int g_count = 0;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_Timer_";
@@ -53,7 +52,7 @@ unsigned long interval = 30000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
 
- 
+
 const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 const long gmtOffset_sec = 25200;
@@ -73,7 +72,6 @@ void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
-  
    turnOffAll();
 }
 
@@ -81,7 +79,6 @@ void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
- 
 }
 
 bool turnOnRelay(String action){
@@ -565,7 +562,6 @@ bool sendReport(bool hasReport) {
   //process trigger
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 1024 > docTrigger;
-
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
@@ -634,13 +630,17 @@ bool sendReport(bool hasReport) {
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    delay(1000); 
+    ESP.restart();
     return false;
   }
 
   String localIP = WiFi.localIP().toString();
-  if (localIP == "0.0.0.0") {
+  if (localIP =time_to_sleep_mode= "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
+    delay(1000); 
+    ESP.restart();
     return false;
   }
 
@@ -820,37 +820,7 @@ bool sendReport(bool hasReport) {
 
   return ret;
 }
-/*
-Method to print the reason by which ESP32
-has been awaken from sleep
-*/
-void print_wakeup_reason() {
-  esp_sleep_wakeup_cause_t wakeup_reason;
-
-  wakeup_reason = esp_sleep_get_wakeup_cause();
-
-  switch (wakeup_reason) {
-  case ESP_SLEEP_WAKEUP_EXT0:
-    Serial.println("Wakeup caused by external signal using RTC_IO");
-    break;
-  case ESP_SLEEP_WAKEUP_EXT1:
-    Serial.println("Wakeup caused by external signal using RTC_CNTL");
-    break;
-  case ESP_SLEEP_WAKEUP_TIMER:
-    Serial.println("Wakeup caused by timer");
-    break;
-  case ESP_SLEEP_WAKEUP_TOUCHPAD:
-    Serial.println("Wakeup caused by touchpad");
-    break;
-  case ESP_SLEEP_WAKEUP_ULP:
-    Serial.println("Wakeup caused by ULP program");
-    break;
-  default:
-    Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
-    break;
-  }
-}
-
+ 
 void printLocalTime()
 {
   struct tm timeinfo;
@@ -865,6 +835,8 @@ int getSeconds(){
   int seconds = 0;
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
+    delay(1000); 
+    ESP.restart();
     return seconds;
   }
   seconds = timeinfo.tm_hour*(60*60);
@@ -876,15 +848,9 @@ int getSeconds(){
 void setup() {
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
-  if (bootCount >= 60) {
-    bootCount = 0;
-    ESP.restart();
-  }
+  
   Serial.println("Ver:8/Aug/2023");
-  //Increment boot number and print it every reboot
-  ++bootCount;
-  Serial.println("Boot number: " + String(bootCount));
-
+  
   intGpio();
   
   initEEPROM();
@@ -892,18 +858,18 @@ void setup() {
  
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
- 
   
-//  turnOffWiFi();
-//
-//  //Print the wakeup reason for ESP32
-//  print_wakeup_reason();
-//  startSleepMode();
-
 }
 
 void loop() {
-    printLocalTime();
-   sendReport(true); 
+   // printLocalTime();
+   g_count = g_count +1;
+   if(g_count> 60){
+       sendReport(true); 
+      g_count= 0;
+   }else{
+      sendReport(false); 
+   }
+   
    delay(1000);
 }
