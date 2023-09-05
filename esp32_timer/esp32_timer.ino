@@ -860,7 +860,7 @@ void setup() {
  
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  
+   sendReport(true); 
 }
 
 void loop() {
