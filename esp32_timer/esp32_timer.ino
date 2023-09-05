@@ -562,7 +562,7 @@ bool sendReport(bool hasReport) {
   String strTriggerParameter = "";
   //process trigger
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
-    StaticJsonDocument < 1024 > docTrigger;
+    StaticJsonDocument < 2048 > docTrigger;
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
