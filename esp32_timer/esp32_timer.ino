@@ -637,7 +637,7 @@ bool sendReport(bool hasReport) {
   }
 
   String localIP = WiFi.localIP().toString();
-  if (localIP =time_to_sleep_mode= "0.0.0.0") {
+  if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
     delay(1000); 
