@@ -567,7 +567,7 @@ bool sendReport(bool hasReport) {
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
     if (errorTrigger) {
-      Serial.println("deserializeJson() failed");
+      Serial.println("deserializeJson() failed xxx");
       strTriggerParameter = "ConfigError";
     } else {
       // extract the values
