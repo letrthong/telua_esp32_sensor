@@ -57,7 +57,7 @@ unsigned long intervalLocalWeb = 30000;
 
 const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
-const long gmtOffset_sec = 25200;
+long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
@@ -877,7 +877,7 @@ bool getTimeZone( ) {
           Serial.print("getTimeZone gmtOffset_sec=");
           Serial.println(gmtOffset_sec);
         }
-        
+    }   
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
@@ -888,8 +888,9 @@ bool getTimeZone( ) {
 
   return ret;
 }
-void printLocalTime()
-{
+
+
+void printLocalTime(){
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
     Serial.println("Failed to obtain time");
