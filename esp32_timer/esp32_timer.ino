@@ -594,7 +594,7 @@ bool sendReport(bool hasReport) {
           Serial.print("action=");
           Serial.println(action);
    
-          if( valueStart <= currentSeconds && currentSeconds <= valueStop){
+          if( valueStart <= currentSeconds && currentSeconds < valueStop){
                Serial.println("turn on");
                if( action.indexOf("b1")){
                  hasBtn0 =  true;
