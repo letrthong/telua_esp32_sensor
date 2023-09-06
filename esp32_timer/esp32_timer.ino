@@ -21,7 +21,8 @@ String remote_ssid = "";
 String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
- 
+String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -655,8 +656,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-
-  
+ 
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -822,7 +822,72 @@ bool sendReport(bool hasReport) {
 
   return ret;
 }
- 
+
+bool getTimeZone( ) {
+  bool ret = false;
+  if (WiFi.status() != WL_CONNECTED) {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    delay(1000); 
+    ESP.restart();
+    return ret;
+  }
+
+  String localIP = WiFi.localIP().toString();
+  if (localIP == "0.0.0.0") {
+    time_to_sleep_mode = 60;
+    Serial.println("sendReport  localIP= 0.0.0.0");
+    delay(1000); 
+    ESP.restart();
+    return false;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+  if (!client) {
+    return ret;
+  }
+
+  
+  client -> setInsecure();
+  HTTPClient http;
+  String serverPath = serverOffset + "?deviceID=" + deviceID;
+
+  
+  Serial.println(serverPath);
+
+  http.setTimeout(60000);
+  http.begin( * client, serverPath.c_str());
+
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode == 200) {
+    String payload = http.getString();
+   
+    DynamicJsonDocument doc(256);
+
+    DeserializationError error = deserializeJson(doc, payload);
+    if (error) {
+      Serial.println("deserializeJson() failed");
+    } else {
+        bool hasKey = doc.containsKey("gmtOffset");
+        if (hasKey == true) {
+          int gmtOffset = doc["gmtOffset"];
+          gmtOffset_sec = gmtOffset;
+          Serial.print("getTimeZone gmtOffset_sec=");
+          Serial.println(gmtOffset_sec);
+        }
+        
+  } else {
+     Serial.print("getTimeZone Error code: ");
+     Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+  delete client;
+
+  return ret;
+}
 void printLocalTime()
 {
   struct tm timeinfo;
@@ -857,8 +922,10 @@ void setup() {
   
   initEEPROM();
   initWiFi();
- 
 
+  if(deviceID.length() > 0){
+    getTimeZone();
+  }
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
    sendReport(true); 
 }
