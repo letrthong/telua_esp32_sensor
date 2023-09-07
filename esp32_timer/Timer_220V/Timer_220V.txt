@@ -13,7 +13,7 @@ Bộ điều khiển nhiệt độ, độ ẩm WiFi điện 220V-AC
     - Xuất xứ: Việt Nam
 	- Theo dõi Online qua App, Web
 Tính năng
-    -  Cho phép sử dụng tối đa 24 bộ hẹn giờ
+    - Cho phép sử dụng tối đa 24 bộ hẹn giờ
 	- Bảo hành 12 tháng dựa vào mã QR tích hợp trên thiết bị
 
 
