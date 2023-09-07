@@ -25,6 +25,7 @@ Tài liệu hướng dẫn sử dụng
 Trang web điều khiển thiết bị ở  https://telua.co/aiot 
     Tài khoản: telua
 	Mật Khẩu: 12345678
+	Do đây là tài khoản bị phân quyền nên nhiều chức năng sẽ bị hạn chế 
 
 
 Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí phần mền nếu dưới 3 thiết bị và sẽ thu phí nếu sử dụng trên 3 thiết bị 
