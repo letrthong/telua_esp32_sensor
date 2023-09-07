@@ -6,7 +6,7 @@ Mô tả sản phẩm
     Công nghệ: Wi-Fi
     Xuất xứ: Việt Nam
     Theo dõi Online qua App, Web (https://telua.co/aiot)
-	Cho phép sử dụng tối đa 24 bộ 
+	Cho phép sử dụng tối đa 24 bộ hẹn giờ
    Cảnh báo tin nhắn khi thiết bị mất kết nối
    
 Bộ sản phẩm bao gồm:
@@ -31,7 +31,7 @@ Mô tả sản phẩm
     Công nghệ: Wi-Fi
     Xuất xứ: Việt Nam
     Theo dõi Online qua App, Web (https://telua.co/aiot)
-	Cho phép sử dụng tối đa 24 bộ 
+	Cho phép sử dụng tối đa 24 bộ hẹn giờ
    Cảnh báo tin nhắn khi thiết bị mất kết nối
    
 Bộ sản phẩm bao gồm:
@@ -55,7 +55,7 @@ Mô tả sản phẩm
     Công nghệ: Wi-Fi
     Xuất xứ: Việt Nam
     Theo dõi Online qua App, Web (https://telua.co/aiot)
-	Cho phép sử dụng tối đa 24 bộ 
+	Cho phép sử dụng tối đa 24 bộ hẹn giờ
    Cảnh báo tin nhắn khi thiết bị mất kết nối
    
 Bộ sản phẩm bao gồm:
@@ -79,7 +79,7 @@ Mô tả sản phẩm
     Công nghệ: Wi-Fi
     Xuất xứ: Việt Nam
     Theo dõi Online qua App, Web (https://telua.co/aiot)
-	Cho phép sử dụng tối đa 24 bộ 
+	Cho phép sử dụng tối đa  24 bộ hẹn giờ
    Cảnh báo tin nhắn khi thiết bị mất kết nối
    
 Bộ sản phẩm bao gồm:
