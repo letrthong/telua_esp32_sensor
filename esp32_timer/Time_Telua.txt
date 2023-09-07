@@ -20,28 +20,7 @@ Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí ph�
 	   
 Gia: 490K
 
-------------------------------------------------------------------
 
-Hộp điều khiển tưới cây WiFi Telua tự động 3 kênh
-Mô tả sản phẩm
-    Nguồn cấp: 12VDC - 2A   
-    Có 3 ngõ ra 12V 
-    Công nghệ: Wi-Fi
-    Xuất xứ: Việt Nam
-    Theo dõi Online qua App, Web (https://telua.co/aiot)
-	Cho phép sử dụng tối đa 24 bộ 
-   Cảnh báo tin nhắn khi thiết bị mất kết nối
-   
-Bộ sản phẩm bao gồm:
-    1 mạch điều khiển
-	1 bộ nguồn 12V
-	Bảo hành 12 tháng dựa vào mã QR tích hợp trên thiết bị
-	
- 
-Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí phần mền nếu dưới 3 thiết bị và sẽ thu phí nếu sử dụng trên 3 thiết bị 
-       Để điều khiển thiết bị 220V hay 12V cống suất lớn cần mua thêm relay 
-	   
-Gia: 490K
 
 ---------------------------------------------------------------
 
