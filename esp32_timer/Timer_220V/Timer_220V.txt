@@ -14,8 +14,10 @@ Bộ điều khiển nhiệt độ, độ ẩm WiFi điện 220V-AC
 	- Theo dõi Online qua App, Web
 Tính năng
     - Cho phép sử dụng tối đa 24 bộ hẹn giờ
-	- Bảo hành 12 tháng dựa vào mã QR tích hợp trên thiết bị
 
+Bảo hành điện tử
+	Bảo hành 12 tháng dựa vào mã QR tích hợp trên thiết bị
+	Truy cập website để  có thông tin chi tiết 
 
 Tài liệu hướng dẫn sử dụng	
     https://telua.co/tmonitor#guideline
