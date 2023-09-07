@@ -16,6 +16,10 @@ Tính năng
     -  Cho phép sử dụng tối đa 24 bộ hẹn giờ
 	- Bảo hành 12 tháng dựa vào mã QR tích hợp trên thiết bị
 
+
+Tài liệu hướng dẫn sử dụng	
+    https://telua.co/tmonitor#guideline
+
 Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí phần mền nếu dưới 3 thiết bị và sẽ thu phí nếu sử dụng trên 3 thiết bị 
        Để điều khiển thiết bị 220V hay 12V cống suất lớn cần mua thêm relay 
 	   
