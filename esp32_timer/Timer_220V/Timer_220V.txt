@@ -4,7 +4,7 @@ Bộ điều khiển nhiệt độ, độ ẩm WiFi điện 220V-AC
 	- 1 Aptomat CB BD-63R C20 Panasonic chống giật
 	- 2 CB Tép Panasonic C20 để điều khiển ngõ ra 
 	- 1 Module Điều Khiển Relay Omron 2 Kênh 12V
-	- 1 ESP32 SHT40 GPIO Bộ Điều Khiển Nhiệt Độ Và Độ Ẩm WiFi 12VDCText_id_telua_0100
+	- 1 Bộ hẹn giờ WiFi Telua 12V 
 
 	- Tủ điện nhựa gắn tường HA-24WAY (410x300x140mm) 
 	- Nguồn cấp: 220V 
