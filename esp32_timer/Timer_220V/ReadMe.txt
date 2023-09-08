@@ -1,5 +1,5 @@
 
-Bộ điều khiển nhiệt độ, độ ẩm WiFi điện 220V-AC
+Bộ Hẹn Giờ WiFi điện 220V-AC
 	- Bộ nguồn 12 VDC 2A  để cấp cho mạch điều khiển
 	- 1 Aptomat CB BD-63R C20 Panasonic chống giật
 	- 2 CB Tép Panasonic C20 để điều khiển ngõ ra 
@@ -29,8 +29,7 @@ Trang web điều khiển thiết bị ở  https://telua.co/aiot
 
 
 Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí phần mền nếu dưới 3 thiết bị và sẽ thu phí nếu sử dụng trên 3 thiết bị 
-       Để điều khiển thiết bị 220V hay 12V cống suất lớn cần mua thêm relay 
-	   
+       
  
 Giá: 2tr9 - Bảo hành 1 năm
  	 
