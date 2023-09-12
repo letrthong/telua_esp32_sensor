@@ -54,7 +54,6 @@ unsigned long interval = 30000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
 
-
 const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
@@ -62,8 +61,8 @@ const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
-const int ledRelay01 = 17 ; 
-const int ledRelay02 =  5; 
+const int ledRelay01 = 5; 
+const int ledRelay02 = 17; 
 const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
 
