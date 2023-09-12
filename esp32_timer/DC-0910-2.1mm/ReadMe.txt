@@ -1,7 +1,7 @@
 Dây Cáp Mở Rộng Nguồn DC 12V 5.5x2.1mm  Đực và Cái  2m  
 
 Din x Dout: 2.1 x 5.5mm
-Đường kính kim:  2.1mm
+Đường kính kim: 2.1mm
 Điện áp định mức: 12V
 Dòng định mức: 10A
 Tên kĩ thuật: DC5521
