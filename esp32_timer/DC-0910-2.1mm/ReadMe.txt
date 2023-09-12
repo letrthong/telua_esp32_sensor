@@ -13,4 +13,4 @@ Màu vỏ: Đen
 
 Ứng dụng: Dùng để kết nối ngõ ra Bộ Hẹn Giờ Telua 12V 3 Kênh
 
-Giá: 25K
+Giá: 25K- Số lượng 5
