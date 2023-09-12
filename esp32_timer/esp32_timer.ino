@@ -61,8 +61,8 @@ const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
-const int ledRelay01 = 5; 
-const int ledRelay02 = 17; 
+const int ledRelay01 = 17; 
+const int ledRelay02 = 5; 
 const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
 
@@ -86,12 +86,15 @@ bool turnOnRelay(String action){
    bool retCode  = false;
    
    if( action =="b1On"){
+       Serial.println("turnOnRelay b1On");
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
    }else  if( action =="b2On"){
+      Serial.println("turnOnRelay b2On");
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( action == "alOn"){
+       Serial.println("turnOnRelay alOn");
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
@@ -105,7 +108,7 @@ bool turnOffRelay(String action){
        digitalWrite(ledRelay01, LOW);
    }else  if( action =="b2Off"){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alOff"){
+   } else  if( action == "alOff"){
        digitalWrite(ledAlarm, LOW);
    } 
    return retCode;
@@ -595,11 +598,11 @@ bool sendReport(bool hasReport) {
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                Serial.println("turn on");
-               if( action.indexOf("b1")){
+               if( action.indexOf("b1") > -1){
                  hasBtn0 =  true;
-               } else if( action.indexOf("b2")){
+               } else if( action.indexOf("b2") > -1){
                  hasBtn1 =  true;
-               } else if( action.indexOf("al")){
+               } else if( action.indexOf("al") > -1){
                  hasAl =  true;
                }
           }
