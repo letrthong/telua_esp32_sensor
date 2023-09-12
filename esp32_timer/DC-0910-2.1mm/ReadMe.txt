@@ -1,4 +1,4 @@
-Dây Cáp Mở Rộng Nguồn DC 12V 5.5 * 2.1mm  Đực và Cái  2m  
+Dây Cáp Mở Rộng Nguồn DC 12V 5.5x2.1mm  Đực và Cái  2m  
 
 Din x Dout: 2.1 x 5.5mm
 Đường kính kim:  2.1mm
