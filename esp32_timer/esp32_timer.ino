@@ -632,7 +632,7 @@ bool sendReport(bool hasReport) {
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    delay(1000); 
+    delay(5000); 
     ESP.restart();
     return false;
   }
@@ -641,7 +641,7 @@ bool sendReport(bool hasReport) {
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
-    delay(1000); 
+    delay(5000); 
     ESP.restart();
     return false;
   }
