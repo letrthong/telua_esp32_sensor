@@ -35,5 +35,5 @@ Chú ý: Telua IoT platform (https://telua.co/) sẽ cung cấp miễn phí ph�
 	 
 	 
 Giá: 849K
-	 
+Floatless Level Switch	 
 	
