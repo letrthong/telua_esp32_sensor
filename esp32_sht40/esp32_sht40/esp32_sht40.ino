@@ -129,6 +129,16 @@ bool turnOffRelay(String action){
    return retCode;
 }
 
+bool hasTrigger(){
+    bool retCode  = false;
+   if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
+      if(hasGPIo == true){
+          retCode = true;
+      }
+   }
+   return retCode;
+}
+
 
 void startSleepMode() {
   /*
@@ -192,6 +202,9 @@ void startLocalWeb() {
       WiFi.disconnect();
       delay(100);
       time_to_sleep_mode = 30;
+      if(hasTrigger() == true){
+        return;
+      }
       startSleepMode();
       return;
     }
@@ -766,6 +779,9 @@ bool sendReport(bool hasReport) {
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    if(hasTrigger() == true){
+      return ret;
+    }
     return false;
   }
 
@@ -773,6 +789,9 @@ bool sendReport(bool hasReport) {
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
+    if(hasTrigger() == true){
+      return ret;
+    }
     return false;
   }
 
