@@ -593,14 +593,14 @@ bool sendReport(bool hasReport) {
     int count = 0;
     hasError = true;
    for( int i = 0; i < 6; i++){
-         VL53L0X_RangingMeasurementData_t measure;
+      VL53L0X_RangingMeasurementData_t measure;
       lox.rangingTest(&measure, false);
-       if (measure.RangeStatus != 4) {  
-        // phase failures have incorrect data
-        Serial.print("Distance (mm): ");
-        Serial.println(measure.RangeMilliMeter);
-        fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMeter;
-        count = count +1;
+      if (measure.RangeStatus != 4) {  
+      // phase failures have incorrect data
+      Serial.print("Distance (mm): ");
+      Serial.println(measure.RangeMilliMeter);
+      fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMeter;
+      count = count +1;
     } else {
          Serial.println(" out of range ");
     }
