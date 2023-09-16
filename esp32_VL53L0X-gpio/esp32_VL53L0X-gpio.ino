@@ -127,6 +127,13 @@ bool turnOffRelay(String action){
    return retCode;
 }
 
+bool hasConfig(){
+    bool retCode  = false;
+   if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
+      retCode = true;
+   }
+   return retCode;
+}
 
 void startSleepMode() {
   /*
@@ -696,7 +703,7 @@ bool sendReport(bool hasReport) {
                 } else {
                   index = action.indexOf("Off");
                   if (index >= 0) {
-                      bool result = turnOffRelay(action);
+                     bool result = turnOffRelay(action);
                      if(result == true){
                           ret = true;
                      }
