@@ -557,6 +557,7 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
+  hasSensor = false;
   Serial.println("Telua  VL53L0X test");
   if (!lox.begin()) {
     Serial.println("Couldn't find VL53L0X");
@@ -605,29 +606,30 @@ bool sendReport(bool hasReport) {
     float fRangeMilliMeter = 0.0;
     int count = 0;
     hasError = true;
-   for( int i = 0; i < 6; i++){
-      VL53L0X_RangingMeasurementData_t measure;
-      lox.rangingTest(&measure, false);
-      if (measure.RangeStatus != 4) {  
-      // phase failures have incorrect data
-      Serial.print("Distance (mm): ");
-      Serial.println(measure.RangeMilliMeter);
-      fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMeter;
-      count = count +1;
-    } else {
-         Serial.println(" out of range ");
+    if(hasSensor == true){
+       for( int i = 0; i < 6; i++){
+          VL53L0X_RangingMeasurementData_t measure;
+          lox.rangingTest(&measure, false);
+          if (measure.RangeStatus != 4) {  
+          // phase failures have incorrect data
+          Serial.print("Distance (mm): ");
+          Serial.println(measure.RangeMilliMeter);
+          fRangeMilliMeter = fRangeMilliMeter + measure.RangeMilliMeter;
+          count = count +1;
+        } else {
+             Serial.println(" out of range ");
+        }
+           delay(250);
+       }  
+    
+       if(count > 0){
+          hasError = false;
+         float result = (fRangeMilliMeter/count);
+         fRangeMilliMeter =result; 
+         distance = String(result, 2);
+       }
     }
-       delay(250);
-   }  
-
-   if(count > 0){
-      hasError = false;
-     float result = (fRangeMilliMeter/count);
-     fRangeMilliMeter =result; 
-     distance = String(result, 2);
-   }
-  
-   
+ 
    String strTriggerParameter = "";
   //process trigger
   if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
