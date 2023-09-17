@@ -559,6 +559,7 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
+  hasSensor = false;
   Serial.println("Telua SHT4x test");
   if (!sht4.begin()) {
     Serial.println("Couldn't find SHT4x");
@@ -707,12 +708,24 @@ bool sendReport(bool hasReport) {
         float currentValue = 0;
         if (property == "temperature") {
           currentValue = fTemperature;
+           if(hasSensor== false){
+             continue;
+          }
         } else if (property == "tem") {
           currentValue = fTemperature;
+          if(hasSensor== false){
+             continue;
+          }
         } else if (property == "humidity") {
           currentValue = fHumidity;
+           if(hasSensor== false){
+             continue;
+          }
         }  else if (property == "hum") {
           currentValue = fHumidity;
+          if(hasSensor== false){
+             continue;
+          }
         } else if (property == "err"){
           if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
