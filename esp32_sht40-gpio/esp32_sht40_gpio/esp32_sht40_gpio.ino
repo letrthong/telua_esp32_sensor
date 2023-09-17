@@ -708,22 +708,22 @@ bool sendReport(bool hasReport) {
         float currentValue = 0;
         if (property == "temperature") {
           currentValue = fTemperature;
-           if(hasSensor== false){
+           if(hasSensor== false || hasError == true  ){
              continue;
           }
         } else if (property == "tem") {
           currentValue = fTemperature;
-          if(hasSensor== false){
+          if(hasSensor== false || hasError == true ){
              continue;
           }
         } else if (property == "humidity") {
           currentValue = fHumidity;
-           if(hasSensor== false){
+           if(hasSensor== false || hasError == true ){
              continue;
           }
         }  else if (property == "hum") {
           currentValue = fHumidity;
-          if(hasSensor== false){
+          if(hasSensor== false || hasError == true ){
              continue;
           }
         } else if (property == "err"){
