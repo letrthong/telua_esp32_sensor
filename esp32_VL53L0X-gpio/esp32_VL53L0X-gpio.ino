@@ -46,8 +46,8 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
-const char * ssid = "Telua_Distance_";
-const char * ssid_gpio = "Telua_Distance_Gpio_"; 
+const char * ssid = "Telua_Dist_";
+const char * ssid_gpio = "Telua_Dist_Gpio_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
