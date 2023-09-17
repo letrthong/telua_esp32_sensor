@@ -669,6 +669,9 @@ bool sendReport(bool hasReport) {
           currentValue = fRangeMilliMeter;
         } else if (property == "dis") {
           currentValue = fRangeMilliMeter;
+          if(hasSensor== false){
+             continue;
+          }
         } 
         
         if (property != "error"){
