@@ -667,9 +667,12 @@ bool sendReport(bool hasReport) {
         float currentValue = 0;
         if (property == "distance") {
           currentValue = fRangeMilliMeter;
+          if(hasSensor== false || hasError == true){
+             continue;
+          }
         } else if (property == "dis") {
           currentValue = fRangeMilliMeter;
-          if(hasSensor== false){
+          if(hasSensor== false || hasError == true){
              continue;
           }
         } 
