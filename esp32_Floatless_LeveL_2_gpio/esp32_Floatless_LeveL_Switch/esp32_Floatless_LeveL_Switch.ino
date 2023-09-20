@@ -53,10 +53,7 @@ unsigned long interval = 30000;
 
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 30000;
-
-
-
-
+ 
 // the LED is connected to GPIO 5
 bool hasGPIo = true;
 const int ledRelay01 = 17 ; 
@@ -583,8 +580,8 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  String  btnTop = "0";
-  String btnBot = "0";
+  String  strTop = "0";
+  String strBot = "0";
   float fbtnTop = 0.0 ;
   float fbtnBot = 0.0 ;
   if (hasSensor == true) {
@@ -599,8 +596,8 @@ bool sendReport(bool hasReport) {
     }
 
     hasError = false;
-    btnTop = String(fbtnTop, 1);
-    btnBot = String(fbtnBot, 1);
+   strTop = String(fbtnTop, 1);
+   strBot = String(fbtnBot, 1);
   }
 
    String strTriggerParameter = "";
@@ -642,7 +639,7 @@ bool sendReport(bool hasReport) {
           currentValue = fbtnBot;
           
         } else if (property == "level02") {
-          currentValue = fTemperature;
+          currentValue = fbtnBot;
           
         } 
         
@@ -728,14 +725,14 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=FloatlessLevel&Top=" + btnTop + "&Bot=" + btnBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=FloatlessLevel&Top=" +  strTop + "&Bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=FloatlessLevel&Top=" + btnTop + "&Bot=" + btnBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=FloatlessLevel&Top=" +  strTop + "&Bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + btnTop + "&Botity=" + btnBot + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + strTop + "&Botity=" + strBot + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
