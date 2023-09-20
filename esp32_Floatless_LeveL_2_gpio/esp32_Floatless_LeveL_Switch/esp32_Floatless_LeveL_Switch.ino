@@ -3,9 +3,8 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include "Adafruit_SHT4x.h"
-
-
+ 
+ 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
 #define TIME_TO_SLEEP 30
@@ -44,10 +43,8 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
-
 const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Sht40_Gpio_"; 
+const char * ssid_gpio = "Telua_Floatless_Level_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -73,11 +70,7 @@ const int btnBot = 16;
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
-//  pinMode(ledFloatSwitch, OUTPUT);  
-
-//  pinMode(btnTop, INPUT); 
-//  pinMode(btnBot, INPUT);  
+ 
    turnOffAll();
 }
 
@@ -85,19 +78,6 @@ void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
-   
-//   digitalWrite(ledFloatSwitch, LOW);
-//
-//   
-//   int buttonState = digitalRead(btnTop);
-//    if (buttonState == HIGH) {
-//        digitalWrite(ledRelay01, HIGH);
-//    }
-//
-//     buttonState = digitalRead(btnBot);
-//    if (buttonState == HIGH) {
-//        digitalWrite(ledRelay02, HIGH);
-//    }
 }
 
 bool turnOnRelay(String action){
@@ -559,54 +539,13 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
-  hasSensor = false;
-  Serial.println("Telua SHT4x test");
-  if (!sht4.begin()) {
-    Serial.println("Couldn't find SHT4x");
-  } else {
-    hasSensor = true;
-    Serial.println("Found SHT4x sensor");
-    Serial.print("Serial number 0x");
-    Serial.println(sht4.readSerial(), HEX);
-    if (bootCount < 2) {
-      // You can have 3 different precisions, higher precision takes longer
-      sht4.setPrecision(SHT4X_HIGH_PRECISION);
-      switch (sht4.getPrecision()) {
-      case SHT4X_HIGH_PRECISION:
-        Serial.println("High precision");
-        break;
-      case SHT4X_MED_PRECISION:
-        Serial.println("Med precision");
-        break;
-      case SHT4X_LOW_PRECISION:
-        Serial.println("Low precision");
-        break;
-      }
-      switch (sht4.getHeater()) {
-      case SHT4X_NO_HEATER:
-        Serial.println("No heater");
-        break;
-      case SHT4X_HIGH_HEATER_1S:
-        Serial.println("High heat for 1 second");
-        break;
-      case SHT4X_HIGH_HEATER_100MS:
-        Serial.println("High heat for 0.1 second");
-        break;
-      case SHT4X_MED_HEATER_1S:
-        Serial.println("Medium heat for 1 second");
-        break;
-      case SHT4X_MED_HEATER_100MS:
-        Serial.println("Medium heat for 0.1 second");
-        break;
-      case SHT4X_LOW_HEATER_1S:
-        Serial.println("Low heat for 1 second");
-        break;
-      case SHT4X_LOW_HEATER_100MS:
-        Serial.println("Low heat for 0.1 second");
-        break;
-      }
-    }
-  }
+  hasSensor = true;
+  pinMode(ledFloatSwitch, OUTPUT);  
+  pinMode(btnTop, INPUT); 
+  pinMode(btnBot, INPUT);  
+  digitalWrite(ledFloatSwitch, HIGH);
+  delay(5000);
+
 }
 
 void initEEPROM() {
@@ -644,31 +583,24 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  String temperature = "0";
-  String relative_humidity = "0";
-  float fHumidity = 0.0;
-  float fTemperature = 0.0;
+  String  btnTop = "0";
+  String btnBot = "0";
+  float fbtnTop = 0.0 ;
+  float fbtnBot = 0.0 ;
   if (hasSensor == true) {
-    for (int i = 0; i < 3; i++) {
-      sensors_event_t humidity, temp;
-      sht4.getEvent( & humidity, & temp);
-
-      //      Serial.print("Temperature: ");
-      //      Serial.print(temp.temperature);
-      //      Serial.println(" degrees C");
-      //      Serial.print("Humidity: "); 
-      //      Serial.print(humidity.relative_humidity);
-      //      Serial.println("% rH");
-      fHumidity = humidity.relative_humidity;
-      fTemperature = temp.temperature;
-      temperature = String(fTemperature, 2);
-      relative_humidity = String(fHumidity, 2);
-      if (fHumidity > 0) {
-        hasError = false;
-        break;
-      }
-      delay(500);
+    int buttonState = digitalRead(btnTop);
+    if (buttonState == HIGH) {
+        fbtnTop = 1.0;
     }
+
+     buttonState = digitalRead(btnBot);
+    if (buttonState == HIGH) {
+        fbtnBot = 1.0;
+    }
+
+    hasError = false;
+    btnTop = String(fbtnTop, 1);
+    btnBot = String(fbtnBot, 1);
   }
 
    String strTriggerParameter = "";
@@ -706,59 +638,39 @@ bool sendReport(bool hasReport) {
 
         hasTrigger = false;
         float currentValue = 0;
-        if (property == "temperature") {
+        if (property == "level01") {
+          currentValue = fbtnBot;
+          
+        } else if (property == "level02") {
           currentValue = fTemperature;
-           if(hasSensor == false || hasError == true  ){
-             continue;
-          }
-        } else if (property == "tem") {
-          currentValue = fTemperature;
-          if(hasSensor == false || hasError == true ){
-             continue;
-          }
-        } else if (property == "humidity") {
-          currentValue = fHumidity;
-           if(hasSensor == false || hasError == true ){
-             continue;
-          }
-        }  else if (property == "hum") {
-          currentValue = fHumidity;
-          if(hasSensor == false || hasError == true ){
-             continue;
-          }
-        } else if (property == "err"){
-          if (hasSensor   == false || hasError == true ){
-            hasTrigger = true;
-          }
-        }
+          
+        } 
         
-        if (property != "error"){
-            if (opera == "=") {
-                if (currentValue == value) {
-                  hasTrigger = true;
-                }
-              } else if (opera == "<") {
-                if (currentValue < value) {
-                  hasTrigger = true;
-                    }
-            } else if (opera == ">") {
-              if (currentValue > value) {
+          if (opera == "=") {
+              if (currentValue == value) {
                 hasTrigger = true;
               }
-            } else if (opera == ">=") {
-              if (currentValue >= value) {
+          } else if (opera == "<") {
+              if (currentValue < value) {
                 hasTrigger = true;
               }
-            } else if (opera == "<=") {
-              if (currentValue <= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "!=") {
-              if (currentValue != value) {
-                hasTrigger = true;
-              }
-           }
-        }
+          } else if (opera == ">") {
+            if (currentValue > value) {
+              hasTrigger = true;
+            }
+          } else if (opera == ">=") {
+            if (currentValue >= value) {
+              hasTrigger = true;
+            }
+          } else if (opera == "<=") {
+            if (currentValue <= value) {
+              hasTrigger = true;
+            }
+          } else if (opera == "!=") {
+            if (currentValue != value) {
+              hasTrigger = true;
+            }
+         }  
         // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
@@ -816,20 +728,20 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=FloatlessLevel&Top=" + btnTop + "&Bot=" + btnBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=FloatlessLevel&Top=" + btnTop + "&Bot=" + btnBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + btnTop + "&Botity=" + btnBot + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=FloatlessLevel&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+          serverPath = error_url + "?sensorName=FloatlessLevel&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
      }
   }
   Serial.println(serverPath);
