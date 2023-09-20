@@ -67,7 +67,7 @@ const int btnBot = 16;
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
- 
+   digitalWrite(ledAlarm, OUTPUT);  
    turnOffAll();
 }
 
