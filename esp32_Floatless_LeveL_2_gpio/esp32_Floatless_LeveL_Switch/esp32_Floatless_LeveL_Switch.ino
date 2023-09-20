@@ -43,7 +43,7 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-const char * ssid = "Telua_Sht40_";
+const char * ssid = "Telua_Floatless_Level_";
 const char * ssid_gpio = "Telua_Floatless_Level_"; 
 
 const char * password = "12345678";
