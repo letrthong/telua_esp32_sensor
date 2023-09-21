@@ -588,12 +588,18 @@ bool sendReport(bool hasReport) {
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
         fbtnTop = 1.0;
+         Serial.println("digitalRead fbtnTop HIGH");
+    }else{
+      Serial.println("digitalRead fbtnTop LOW");
     }
-     Serial.println("digitalRead(btnTop)");
+    
 
      buttonState = digitalRead(btnBot);
     if (buttonState == HIGH) {
         fbtnBot = 1.0;
+         Serial.println("digitalRead fbtnBot HIGH");
+    }else{
+      Serial.println("digitalRead fbtnBot LOW");
     }
 
     hasError = false;
@@ -618,7 +624,8 @@ bool sendReport(bool hasReport) {
       bool hasTrigger = false;
        
       for (JsonObject v: triggerList) {
-         String property = v["property"];
+        Serial.println("");
+        String property = v["property"];
         Serial.print("property=");
         Serial.println(property);
 
@@ -636,11 +643,13 @@ bool sendReport(bool hasReport) {
 
         hasTrigger = false;
         float currentValue = 0;
-        if (property == "level01") {
+        if (property == "lev1") {
           currentValue = fbtnTop;
-        } else if (property == "level02") {
+        } else if (property == "lev2") {
           currentValue = fbtnBot;
         } 
+        Serial.print("currentValue=");
+        Serial.println(currentValue);
         
           if (opera == "=") {
               if (currentValue == value) {
@@ -731,7 +740,7 @@ bool sendReport(bool hasReport) {
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + strTop + "&Botity=" + strBot + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + strTop + "&Bot=" + strBot + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
