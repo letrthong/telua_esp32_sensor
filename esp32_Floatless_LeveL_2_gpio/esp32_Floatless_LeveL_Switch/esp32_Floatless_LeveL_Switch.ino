@@ -589,6 +589,7 @@ bool sendReport(bool hasReport) {
     if (buttonState == HIGH) {
         fbtnTop = 1.0;
     }
+     Serial.println("digitalRead(btnTop)");
 
      buttonState = digitalRead(btnBot);
     if (buttonState == HIGH) {
@@ -637,10 +638,8 @@ bool sendReport(bool hasReport) {
         float currentValue = 0;
         if (property == "level01") {
           currentValue = fbtnBot;
-          
         } else if (property == "level02") {
           currentValue = fbtnBot;
-          
         } 
         
           if (opera == "=") {
