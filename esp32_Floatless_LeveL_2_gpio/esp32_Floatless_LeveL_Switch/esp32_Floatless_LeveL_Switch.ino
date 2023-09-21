@@ -637,7 +637,7 @@ bool sendReport(bool hasReport) {
         hasTrigger = false;
         float currentValue = 0;
         if (property == "level01") {
-          currentValue = fbtnBot;
+          currentValue = fbtnTop;
         } else if (property == "level02") {
           currentValue = fbtnBot;
         } 
