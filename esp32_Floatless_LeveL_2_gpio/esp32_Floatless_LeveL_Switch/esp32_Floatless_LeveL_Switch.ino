@@ -733,14 +733,14 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=FloatlessLevel&Top=" +  strTop + "&Bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=FloatlessLevel&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=FloatlessLevel&Top=" +  strTop + "&Bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=FloatlessLevel&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&btnTop=" + strTop + "&Bot=" + strBot + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&top=" + strTop + "&bot=" + strBot + +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
