@@ -587,7 +587,7 @@ bool sendReport(bool hasReport) {
   if (hasSensor == true) {
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
-        fbtnTop = 1.0;
+        fbtnTop = 3.3;
          Serial.println("digitalRead fbtnTop HIGH");
     }else{
       Serial.println("digitalRead fbtnTop LOW");
@@ -596,7 +596,7 @@ bool sendReport(bool hasReport) {
 
      buttonState = digitalRead(btnBot);
     if (buttonState == HIGH) {
-        fbtnBot = 1.0;
+        fbtnBot = 3.3;
          Serial.println("digitalRead fbtnBot HIGH");
     }else{
       Serial.println("digitalRead fbtnBot LOW");
