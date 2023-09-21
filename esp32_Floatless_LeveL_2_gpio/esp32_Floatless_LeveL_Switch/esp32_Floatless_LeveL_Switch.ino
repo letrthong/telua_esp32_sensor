@@ -61,8 +61,8 @@ const int ledRelay02 =  5;
 const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
 
-const int btnTop = 18;
-const int btnBot = 16;
+const int btnTop = 16;
+const int btnBot = 18 ;
 
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
