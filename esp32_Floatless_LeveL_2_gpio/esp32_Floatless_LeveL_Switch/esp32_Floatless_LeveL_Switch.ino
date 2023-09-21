@@ -43,8 +43,8 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-const char * ssid = "Telua_Floatless_Level_";
-const char * ssid_gpio = "Telua_Floatless_Level_"; 
+const char * ssid = "Telua_Level_Switch_";
+const char * ssid_gpio = "Telua_Level_Switch_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -733,10 +733,10 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=FloatlessLevel&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=LevelSwitch&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=FloatlessLevel&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=LevelSwitch&top=" +  strTop + "&bot=" +  strBot + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
@@ -744,9 +744,9 @@ bool sendReport(bool hasReport) {
   }
 
   if (hasError == true) {
-      serverPath = error_url + "?sensorName=FloatlessLevel&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      serverPath = error_url + "?sensorName=LevelSwitch&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=FloatlessLevel&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+          serverPath = error_url + "?sensorName=LevelSwitch&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
      }
   }
   Serial.println(serverPath);
