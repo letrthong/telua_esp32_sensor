@@ -731,6 +731,7 @@ bool sendReport(bool hasReport) {
             if (id.length() > 1 && id.length() < 64) {
               EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
               EEPROM.commit();
+			  deviceID = id;
             }
           }
   
