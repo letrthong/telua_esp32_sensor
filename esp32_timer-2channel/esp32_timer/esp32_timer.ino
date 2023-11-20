@@ -741,6 +741,7 @@ bool sendReport(bool hasReport) {
             if (serial_number.length() > 1 && serial_number.length() < 64) {
               EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
               EEPROM.commit();
+              serialNumber = serial_number;
             }
           }
         }
