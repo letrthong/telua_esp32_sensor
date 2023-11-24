@@ -25,7 +25,7 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
-String serverName = "https://telua.co/service/v1/esp32/scheduler";
+String serverName = "https://telua.co/service/v1/esp32/pmw";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 
 int EEPROM_ADDRESS_SSID = 0;
@@ -80,6 +80,12 @@ void intGpio(){
     pinMode(ledAlarm, OUTPUT);
    turnOffAll();
 }
+
+void initSensor(){
+   // The I2C Address of my module 
+  MCP4725.begin(0x60);
+}
+
 
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
