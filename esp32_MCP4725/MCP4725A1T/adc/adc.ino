@@ -27,7 +27,10 @@ void loop(void)
     if(ret == false){
       Serial.print("\t Can not write MCP4725");
     }
-    delay(5000);
+    for(int i = 0; i< 60; i++){
+      delay(1000);
+    }
+
     Serial.println("");
     Serial.print("Expected Voltage: ");
     Serial.print(MCP4725_reading,max_Voltage);
