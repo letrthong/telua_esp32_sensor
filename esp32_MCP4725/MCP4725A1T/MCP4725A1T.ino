@@ -90,7 +90,7 @@ void createTrianglewave(){
         Serial.print("createTrianglewave counter=");
         Serial.println(counter);
         MCP4725.setVoltage(counter, false);
-        delay(100); 
+        delay(50); 
     }
 
     for (counter = 4095; counter > 0; counter--)
@@ -98,7 +98,7 @@ void createTrianglewave(){
       Serial.print("createTrianglewave counter=");
       Serial.println(counter);
       MCP4725.setVoltage(counter, false);
-      delay(100); 
+      delay(50); 
     }
 }
  
