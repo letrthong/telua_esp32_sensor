@@ -63,7 +63,7 @@ const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
- String currentPercent  = ""
+String currentPercent  = "";
   
 bool hasSensorError = false;
  //3.3 is your supply voltage
@@ -97,12 +97,12 @@ void setSpeed(String percent){
 
     if(ret == false){
         Serial.print("\t Can not write MCP4725");
+        currentPercent = "";
         hasSensorError = true;
-    } else {
-        sendError();
+         sendError();
         delay(3000); 
         ESP.restart();
-    }
+    }  
 
     if(currentPercent != percent){
         currentPercent = percent;
