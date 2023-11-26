@@ -4,10 +4,8 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-
-#include <Wire.h>
+ 
 #include <Adafruit_MCP4725.h>
-#define MCP4725In A0
 Adafruit_MCP4725 MCP4725;
 // http://www.esp32learning.com/code/esp32-and-mcp4725-digital-to-analog-converter-example.php
 
@@ -25,8 +23,10 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
-String serverName = "https://telua.co/service/v1/esp32/pmw";
+String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
+String serverError = "https://telua.co/service/v1/esp32/gmtOffset";
+
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -64,67 +64,51 @@ const char* ntpServer = "pool.ntp.org";
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
  
-// the LED is connected to GPIO 5
-bool hasGPIo = false;
-const int ledRelay01 = 17; 
-const int ledRelay02 = 5; 
-const int ledAlarm =  19; 
-const int ledFloatSwitch =  4; 
-
-const int btnTop = 18;
-const int btnBot = 16;
-
-void intGpio(){
-    pinMode(ledRelay01, OUTPUT);
-    pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
-   turnOffAll();
-}
+  
+bool hasSensorError = false;
+ //3.3 is your supply voltage
+const float max_Voltage = 1.0;
 
 void initSensor(){
-   // The I2C Address of my module 
-  MCP4725.begin(0x60);
+  // MCP4725_I2CADDR_DEFAULT = 0x62
+    bool ret = MCP4725.begin(MCP4725_I2CADDR_DEFAULT); // The I2C Address of my module  
+    if(ret == false){
+      Serial.println("  Can not detect MCP4725 ");
+      hasSensorError = true;
+    }else{
+        bool writeEEPROM  = false;
+       ret = MCP4725.setVoltage(0.0, writeEEPROM);
+        if(ret == false){
+            Serial.print("\t Can not write MCP4725");
+            hasSensorError = true;
+        }
+    }
 }
 
+ 
 
-void turnOffAll(){
-   digitalWrite(ledRelay01, LOW);
-   digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
+void setSpeed(String action){
+ 
+     float MCP4725_reading = (max_Voltage/4096.0) * 0; 
+      bool writeEEPROM  = false;
+      uint32_t MCP4725_value = 0;
+      bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
+    
+      Serial.println("");
+      Serial.print("setSpeed Expected Voltage: ");
+      Serial.print(MCP4725_reading,max_Voltage);
+
+      if(ret == false){
+          Serial.print("\t Can not write MCP4725");
+          hasSensorError = true;
+      }else{
+          sendError();
+          delay(3000); 
+          ESP.restart();
+      }
 }
 
-bool turnOnRelay(String action){
-   bool retCode  = false;
-   
-   if( action =="b1On"){
-       Serial.println("turnOnRelay b1On");
-       digitalWrite(ledRelay01, HIGH);
-        retCode = true;
-   }else  if( action =="b2On"){
-      Serial.println("turnOnRelay b2On");
-      digitalWrite(ledRelay02, HIGH);
-       retCode = true;
-   } else  if( action == "alOn"){
-       Serial.println("turnOnRelay alOn");
-       digitalWrite(ledAlarm, HIGH);
-       retCode = true;
-   } 
-
-   return retCode;
-}
-
-bool turnOffRelay(String action){
-   bool retCode  = false;
-   if( action =="b1Off"){
-       digitalWrite(ledRelay01, LOW);
-   }else  if( action =="b2Off"){
-      digitalWrite(ledRelay02, LOW);
-   } else  if( action == "alOff"){
-       digitalWrite(ledAlarm, LOW);
-   } 
-   return retCode;
-}
-
+ 
 
 void startSleepMode() {
   /*
@@ -586,10 +570,7 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
-      bool hasBtn0 = false;
-       bool hasBtn1 = false; 
-       bool hasAl = false; 
-        
+      bool  hasSpeed = false;
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
           Serial.print("valueStart=");
@@ -608,33 +589,14 @@ bool sendReport(bool hasReport) {
           Serial.println(action);
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
-               Serial.println("turn on");
-               if( action.indexOf("b1") > -1){
-                 hasBtn0 =  true;
-               } else if( action.indexOf("b2") > -1){
-                 hasBtn1 =  true;
-               } else if( action.indexOf("al") > -1){
-                 hasAl =  true;
-               }
+            setSpeed(action);
+            hasSpeed = true;
+            break;
           }
       }
 
-      if(hasBtn0 == true){
-         turnOnRelay("b1On");
-      }else{
-        turnOffRelay("b1Off");
-      }
-
-      if(hasBtn1 == true){
-         turnOnRelay("b2On");
-      }else{
-        turnOffRelay("b2Off");
-      }
-
-      if(hasAl == true){
-         turnOnRelay("alOn");
-      }else{
-        turnOffRelay("alOff");
+      if(hasSpeed == false){
+        setSpeed("0");
       }
     }
   }
@@ -668,7 +630,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=Timer2Channels&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
  
   Serial.println(serverPath);
 
@@ -774,15 +736,7 @@ bool sendReport(bool hasReport) {
           Serial.println("strTrigger.length()=" + String(strTrigger.length()));
           if (configTrigger != strTrigger) {
            
-             if(hasGPIo == true){
-              if (strTrigger.length() < 256){
-                 configTrigger = strTrigger;
-                  turnOffAll();
-              } 
-            }else{
-               configTrigger = strTrigger; 
-            }
-            
+            configTrigger = strTrigger;  
             if (configTrigger.length() < 256) {
               EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
               EEPROM.commit();
@@ -819,16 +773,9 @@ bool sendReport(bool hasReport) {
         delete client;
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
-         if(hasGPIo == true){
-              if(retryTimeout > 3){
-                 ESP.restart();
-              }else{
-                return ret;
-            } 
-         }else{
+        if(retryTimeout > 3){
               ESP.restart();
-         }
-       
+        }
       }
   }
   // Free resources
@@ -842,7 +789,7 @@ bool getTimeZone( ) {
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
-    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    Serial.println("getTimeZone WiFi.status() != WL_CONNECTED");
     delay(1000); 
     ESP.restart();
     return ret;
@@ -851,7 +798,7 @@ bool getTimeZone( ) {
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
-    Serial.println("sendReport  localIP= 0.0.0.0");
+    Serial.println("getTimeZone  localIP= 0.0.0.0");
     delay(1000); 
     ESP.restart();
     return false;
@@ -905,6 +852,58 @@ bool getTimeZone( ) {
 }
 
 
+bool sendError( ) {
+  bool ret = false;
+  if (WiFi.status() != WL_CONNECTED) {
+    time_to_sleep_mode = 60;
+    Serial.println("getTimeZone WiFi.status() != WL_CONNECTED");
+    delay(1000); 
+    ESP.restart();
+    return ret;
+  }
+
+  String localIP = WiFi.localIP().toString();
+  if (localIP == "0.0.0.0") {
+    time_to_sleep_mode = 60;
+    Serial.println("getTimeZone  localIP= 0.0.0.0");
+    delay(1000); 
+    ESP.restart();
+    return false;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+  if (!client) {
+    return ret;
+  }
+
+  
+  client -> setInsecure();
+  HTTPClient http;
+  String serverPath = serverError + "?deviceID=" + deviceID;
+
+  
+  Serial.println(serverPath);
+
+  http.setTimeout(60000);
+  http.begin( * client, serverPath.c_str());
+
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
+ 
+  if (httpResponseCode == 200) {
+    String payload = http.getString();
+  } else {
+     Serial.print("getTimeZone Error code: ");
+     Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+  delete client;
+
+  return ret;
+}
+
+
 void printLocalTime(){
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
@@ -934,7 +933,7 @@ void setup() {
   
   Serial.println("Ver:8/Aug/2023");
   
-  intGpio();
+  initSensor()
   
   initEEPROM();
   initWiFi();
