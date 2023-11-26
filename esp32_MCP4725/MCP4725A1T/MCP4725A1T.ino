@@ -67,7 +67,7 @@ String currentPercent  = "";
   
 bool hasSensorError = false;
  //3.3 is your supply voltage
-const float max_Voltage = 1.0;
+const float max_Voltage = 3.3;
 
 void initSensor(){
   // MCP4725_I2CADDR_DEFAULT = 0x62
@@ -94,7 +94,7 @@ void setSpeed(String percent){
 
    
     bool writeEEPROM  = false;
-    uint32_t MCP4725_value =  ( (4096/3.3)/100 ) * intPercent;
+    uint32_t MCP4725_value =  ( (4096/max_Voltage)/100 ) * intPercent;
     bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
 
     float  MCP4725_reading = (max_Voltage/4096.0) * MCP4725_value; 
