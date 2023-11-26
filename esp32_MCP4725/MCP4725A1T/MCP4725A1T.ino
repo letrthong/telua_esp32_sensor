@@ -76,17 +76,16 @@ void initSensor(){
       Serial.println("  Can not detect MCP4725 ");
       hasSensorError = true;
     } else {
-        setSpeed("100");
-        delay(3000); 
-        setSpeed("50");
-         delay(3000); 
         setSpeed("0");
     }
 }
  
 void setSpeed(String percent){
     if(currentPercent == percent){
+
         Serial.println("setSpeed same percent");
+        Serial.print("percent=");
+        Serial.println(percent);
         return;
     }
 
