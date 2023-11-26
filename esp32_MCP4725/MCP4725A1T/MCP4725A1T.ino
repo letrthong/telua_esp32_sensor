@@ -77,6 +77,28 @@ void initSensor(){
       hasSensorError = true;
     } else {
         setSpeed("0");
+        createTrianglewave();
+    }
+}
+
+
+void createTrianglewave(){
+    uint32_t counter;
+    // Run through the full 12-bit scale for a triangle wave
+    for (counter = 0; counter < 4095; counter++)
+    {
+        Serial.print("createTrianglewave counter=");
+        Serial.println(counter);
+      MCP4725.setVoltage(counter, false);
+      delay(1000); 
+    }
+
+    for (counter = 4095; counter > 0; counter--)
+    {
+       Serial.print("createTrianglewave counter=");
+        Serial.println(counter);
+      MCP4725.setVoltage(counter, false);
+      delay(1000); 
     }
 }
  
