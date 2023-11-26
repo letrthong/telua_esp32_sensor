@@ -96,10 +96,13 @@ void setSpeed(String percent){
     bool writeEEPROM  = false;
     uint32_t MCP4725_value =  ( (4096/3.3)/100 ) * intPercent;
     bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
-  
+
+    float  MCP4725_reading = (max_Voltage/4096.0) * MCP4725_value; 
+
+
     Serial.println("");
     Serial.print("setSpeed Expected Voltage: ");
-    Serial.print(MCP4725_value);
+    Serial.print(MCP4725_reading, max_Voltage);
 
     if(ret == false){
         Serial.print("\t Can not write MCP4725");
