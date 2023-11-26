@@ -85,7 +85,7 @@ void initSensor(){
 void createTrianglewave(){
     uint32_t counter;
     // Run through the full 12-bit scale for a triangle wave
-    for (counter = 0; counter < 4095; counter++)
+    for (counter = 0; counter < 4095/max_Voltage; counter++)
     {
         Serial.print("createTrianglewave counter=");
         Serial.println(counter);
@@ -93,7 +93,7 @@ void createTrianglewave(){
         delay(10); 
     }
 
-    for (counter = 4095; counter > 0; counter--)
+    for (counter = 4095/max_Voltage; counter > 0; counter--)
     {
       Serial.print("createTrianglewave counter=");
       Serial.println(counter);
