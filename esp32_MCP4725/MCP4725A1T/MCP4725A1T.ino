@@ -82,9 +82,7 @@ void initSensor(){
  
 void setSpeed(String percent){
     if(currentPercent == percent){
-
-        Serial.println("setSpeed same percent");
-        Serial.print("percent=");
+        Serial.print("setSpeedsame percent=");
         Serial.println(percent);
         return;
     }
