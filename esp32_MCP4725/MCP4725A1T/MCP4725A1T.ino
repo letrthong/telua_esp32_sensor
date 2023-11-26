@@ -63,7 +63,7 @@ const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
- 
+ String currentPercent  = ""
   
 bool hasSensorError = false;
  //3.3 is your supply voltage
@@ -75,37 +75,38 @@ void initSensor(){
     if(ret == false){
       Serial.println("  Can not detect MCP4725 ");
       hasSensorError = true;
-    }else{
-        bool writeEEPROM  = false;
-       ret = MCP4725.setVoltage(0.0, writeEEPROM);
-        if(ret == false){
-            Serial.print("\t Can not write MCP4725");
-            hasSensorError = true;
-        }
+    } else {
+        setSpeed("0");
     }
 }
-
  
+void setSpeed(String percent){
+    if(currentPercent == percent){
+        Serial.println("setSpeed same percent");
+        return;
+    }
 
-void setSpeed(String action){
- 
-     float MCP4725_reading = (max_Voltage/4096.0) * 0; 
-      bool writeEEPROM  = false;
-      uint32_t MCP4725_value = 0;
-      bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
-    
-      Serial.println("");
-      Serial.print("setSpeed Expected Voltage: ");
-      Serial.print(MCP4725_reading,max_Voltage);
+    float MCP4725_reading = (max_Voltage/4096.0) * 0; 
+    bool writeEEPROM  = false;
+    uint32_t MCP4725_value = 0;
+    bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
+  
+    Serial.println("");
+    Serial.print("setSpeed Expected Voltage: ");
+    Serial.print(MCP4725_reading,max_Voltage);
 
-      if(ret == false){
-          Serial.print("\t Can not write MCP4725");
-          hasSensorError = true;
-      }else{
-          sendError();
-          delay(3000); 
-          ESP.restart();
-      }
+    if(ret == false){
+        Serial.print("\t Can not write MCP4725");
+        hasSensorError = true;
+    } else {
+        sendError();
+        delay(3000); 
+        ESP.restart();
+    }
+
+    if(currentPercent != percent){
+        currentPercent = percent;
+    }
 }
 
  
@@ -933,7 +934,7 @@ void setup() {
   
   Serial.println("Ver:8/Aug/2023");
   
-  initSensor()
+  initSensor();
   
   initEEPROM();
   initWiFi();
