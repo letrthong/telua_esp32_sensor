@@ -76,6 +76,10 @@ void initSensor(){
       Serial.println("  Can not detect MCP4725 ");
       hasSensorError = true;
     } else {
+        setSpeed("100");
+        delay(3000); 
+        setSpeed("50");
+         delay(3000); 
         setSpeed("0");
     }
 }
@@ -86,9 +90,11 @@ void setSpeed(String percent){
         return;
     }
 
-    float MCP4725_reading = (max_Voltage/4096.0) * 0; 
+    int intPercent = percent.toInt();
+
+   
     bool writeEEPROM  = false;
-    uint32_t MCP4725_value = 0;
+    uint32_t MCP4725_value =  ((( 4096/3.3))/100)*intPercent;
     bool ret = MCP4725.setVoltage(MCP4725_value, writeEEPROM);
   
     Serial.println("");
