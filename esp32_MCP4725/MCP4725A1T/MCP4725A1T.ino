@@ -764,7 +764,7 @@ bool sendReport(bool hasReport) {
     }
     retryTimeout = 0;
   } else {
-     Serial.print("Error code: ");
+     Serial.print("sendReport Error code: ");
      Serial.println(httpResponseCode);
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
