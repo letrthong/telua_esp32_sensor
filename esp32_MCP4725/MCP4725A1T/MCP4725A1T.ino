@@ -127,7 +127,8 @@ void setSpeed(String percent){
         Serial.print("\t Can not write MCP4725");
         currentPercent = "";
         hasSensorError = true;
-         sendError();
+        sendError();
+        
         delay(3000); 
         ESP.restart();
     }  
