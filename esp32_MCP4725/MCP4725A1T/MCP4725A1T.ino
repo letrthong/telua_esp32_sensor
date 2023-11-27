@@ -77,7 +77,7 @@ void initSensor(){
       hasSensorError = true;
     } else {
         setSpeed("0");
-        createTrianglewave();
+        //createTrianglewave();
     }
 }
 
