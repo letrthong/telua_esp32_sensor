@@ -712,24 +712,27 @@ bool sendReport(bool hasReport) {
               if(hasKey == true){
                 hasTemp = true;
                 M2MTemp = M2MObjectt["temperature"];
+                 Serial.println("deserializeJson M2MSensor M2MTemp=" + String(M2MTemp));
               }
              
-             Serial.println("deserializeJson M2MSensor M2MTemp=" + String(M2MTemp));
+            
       
                 hasKey = M2MObjectt.containsKey("humidity");
               if(hasKey == true){
                 M2MHum = M2MObjectt["humidity"];
                 hasHum = true;
+                 Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
               }
-               Serial.println("deserializeJson M2MSensor M2MHum=" + String(M2MHum));
+              
 
 
               hasKey = M2MObjectt.containsKey("distance");
               if(hasKey == true){
                 M2MDistance = M2MObjectt["distance"];
                 hasDistance = true;
+                Serial.println("deserializeJson M2MSensor M2MDistance=" + String(M2MDistance));
               }
-               Serial.println("deserializeJson M2MSensor M2MDistance=" + String(M2MDistance));
+               
 
                
 
