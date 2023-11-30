@@ -716,7 +716,7 @@ bool sendReport(bool hasReport) {
               hasLevel1 = false;
               hasLevel2 = false;
               hasCorrectData = false;
-              
+
               M2MTemp = 0.0;
               M2MHum = 0.0;
               M2MDistance = 0.0; 
@@ -767,9 +767,7 @@ bool sendReport(bool hasReport) {
                 Serial.println("deserializeJson M2MSensor M2MLevel2=" + String(M2MLevel1));
               }
                
-
                
-
               hasKey = M2MObjectt.containsKey("pollingInterval");
               if(hasKey == true){
                 int value = M2MObjectt["pollingInterval"];
