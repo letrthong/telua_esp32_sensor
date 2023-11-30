@@ -618,7 +618,7 @@ bool sendReport(bool hasReport) {
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
      } else if (reportDistance == true){
         sensorInfo = "&distance=" + String(M2MDistance);
-      } else  if (reportLevel1 == true || eportLevel2 == true){
+      } else  if (reportLevel1 == true || reportLevel2 == true){
         sensorInfo = "&top=" + String(M2MLevel1) + "&bot" + String(M2MLevel2) ;
       }
 
