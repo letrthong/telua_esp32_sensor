@@ -574,8 +574,18 @@ bool sendReport(bool hasReport) {
   if( hasReport == true){
       hasTemp = false;
       hasHum = false;
+      hasDistance = false;
+      hasLevel1 = false;
+      hasLevel2 = false;
       hasM2M = false;
       hasCorrectData = false;
+
+      M2MTemp = 0.0;
+      M2MHum = 0.0;
+      M2MDistance = 0.0; 
+      M2MLevel1 = 0.0;  
+      M2MLevel2 = 0.0; 
+
           
       if (WiFi.status() != WL_CONNECTED) {
         time_to_sleep_mode = 10;
@@ -709,20 +719,7 @@ bool sendReport(bool hasReport) {
           bool hasM2MSensor = doc.containsKey("M2MSensor");
           if (hasM2MSensor == true) {
               hasM2M = true;
-              
-              hasTemp = false;
-              hasHum = false;
-              hasDistance = false;
-              hasLevel1 = false;
-              hasLevel2 = false;
-              hasCorrectData = false;
-
-              M2MTemp = 0.0;
-              M2MHum = 0.0;
-              M2MDistance = 0.0; 
-              M2MLevel1 = 0.0;  
-              M2MLevel2 = 0.0; 
-
+  
               JsonObject M2MObjectt = doc["M2MSensor"];
               
               bool hasKey = M2MObjectt.containsKey("temperature");
@@ -767,7 +764,7 @@ bool sendReport(bool hasReport) {
                 Serial.println("deserializeJson M2MSensor M2MLevel2=" + String(M2MLevel1));
               }
                
-               
+
               hasKey = M2MObjectt.containsKey("pollingInterval");
               if(hasKey == true){
                 int value = M2MObjectt["pollingInterval"];
