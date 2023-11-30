@@ -613,11 +613,11 @@ bool sendReport(bool hasReport) {
       
       client -> setInsecure();
       HTTPClient http;
-      String sensorInfo = "temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum)"
+      String sensorInfo = "temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
       if (reportDistance == true){
-        sensorInfo = "distance=" + String(M2MDistance)
+        sensorInfo = "distance=" + String(M2MDistance);
       } else  if (reportLevel1 == true){
-        sensorInfo = "top=" + String(M2MLevel1) + "&bot" + String(M2MLevel2) 
+        sensorInfo = "top=" + String(M2MLevel1) + "&bot" + String(M2MLevel2) ;
       }
 
       String serverPath = serverName  + "?sensorName=M2M&" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
