@@ -58,12 +58,16 @@ RTC_DATA_ATTR  bool hasM2M  = false;
 RTC_DATA_ATTR  bool hasTemp = false;
 RTC_DATA_ATTR  bool hasHum = false;
 RTC_DATA_ATTR  bool hasDistance = false;
+RTC_DATA_ATTR  bool hasLevel1 = false;
+RTC_DATA_ATTR  bool hasLevel2 = false;
 RTC_DATA_ATTR  bool hasCorrectData = false;
 RTC_DATA_ATTR  bool pollingInterval = 3;
 
 RTC_DATA_ATTR  float  M2MTemp = 0.0;
 RTC_DATA_ATTR  float  M2MHum = 0.0;
 RTC_DATA_ATTR  float  M2MDistance = 0.0; 
+RTC_DATA_ATTR  float  M2MLevel1 = 0.0;  
+RTC_DATA_ATTR  float  M2MLevel2 = 0.0; 
 
 // the LED is connected to GPIO 5
  
@@ -705,6 +709,20 @@ bool sendReport(bool hasReport) {
           bool hasM2MSensor = doc.containsKey("M2MSensor");
           if (hasM2MSensor == true) {
               hasM2M = true;
+              
+              hasTemp = false;
+              hasHum = false;
+              hasDistance = false;
+              hasLevel1 = false;
+              hasLevel2 = false;
+              hasCorrectData = false;
+              
+              M2MTemp = 0.0;
+              M2MHum = 0.0;
+              M2MDistance = 0.0; 
+              M2MLevel1 = 0.0;  
+              M2MLevel2 = 0.0; 
+
               JsonObject M2MObjectt = doc["M2MSensor"];
               
               bool hasKey = M2MObjectt.containsKey("temperature");
@@ -731,6 +749,22 @@ bool sendReport(bool hasReport) {
                 M2MDistance = M2MObjectt["distance"];
                 hasDistance = true;
                 Serial.println("deserializeJson M2MSensor M2MDistance=" + String(M2MDistance));
+              }
+
+
+              hasKey = M2MObjectt.containsKey("lev1");
+              if(hasKey == true){
+                M2MLevel1 = M2MObjectt["lev1"];
+                hasLevel1 = true;
+                Serial.println("deserializeJson M2MSensor M2MLevel1=" + String(M2MLevel1));
+              }
+
+
+              hasKey = M2MObjectt.containsKey("lev2");
+              if(hasKey == true){
+                M2MLevel2 = M2MObjectt["lev2"];
+                hasLevel2 = true;
+                Serial.println("deserializeJson M2MSensor M2MLevel2=" + String(M2MLevel1));
               }
                
 
