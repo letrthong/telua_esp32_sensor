@@ -577,21 +577,7 @@ bool sendReport(bool hasReport) {
   bool ret = false;
  
   if( hasReport == true){
-      hasTemp = false;
-      hasHum = false;
-      hasDistance = false;
-      hasLevel1 = false;
-      hasLevel2 = false;
-      hasM2M = false;
-      hasCorrectData = false;
-
-      M2MTemp = 0.0;
-      M2MHum = 0.0;
-      M2MDistance = 0.0; 
-      M2MLevel1 = 0.0;  
-      M2MLevel2 = 0.0; 
-
-          
+       
       if (WiFi.status() != WL_CONNECTED) {
         time_to_sleep_mode = 10;
         Serial.println("sendReport WiFi.status() != WL_CONNECTED");
@@ -623,7 +609,21 @@ bool sendReport(bool hasReport) {
       }
 
       String serverPath = serverName  + "?sensorName=M2M" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-       
+      
+      hasTemp = false;
+      hasHum = false;
+      hasDistance = false;
+      hasLevel1 = false;
+      hasLevel2 = false;
+      hasM2M = false;
+      hasCorrectData = false;
+
+      M2MTemp = 0.0;
+      M2MHum = 0.0;
+      M2MDistance = 0.0; 
+      M2MLevel1 = 0.0;  
+      M2MLevel2 = 0.0; 
+
       Serial.println(serverPath);
     
       http.setTimeout(60000);
