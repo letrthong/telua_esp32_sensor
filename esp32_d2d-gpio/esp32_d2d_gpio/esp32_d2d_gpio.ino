@@ -39,9 +39,7 @@ bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
-
  
-
 const char * ssid = "Telua_M2M_";
 const char * ssid_gpio = "Telua_M2M_"; 
 
@@ -68,6 +66,13 @@ RTC_DATA_ATTR  float  M2MHum = 0.0;
 RTC_DATA_ATTR  float  M2MDistance = 0.0; 
 RTC_DATA_ATTR  float  M2MLevel1 = 0.0;  
 RTC_DATA_ATTR  float  M2MLevel2 = 0.0; 
+
+ 
+RTC_DATA_ATTR  bool reportTemp = false;
+RTC_DATA_ATTR  bool reportHum = false;
+RTC_DATA_ATTR  bool reportDistance = false;
+RTC_DATA_ATTR  bool reportLevel1 = false;
+RTC_DATA_ATTR  bool reportLevel2 = false;
 
 // the LED is connected to GPIO 5
  
@@ -608,7 +613,14 @@ bool sendReport(bool hasReport) {
       
       client -> setInsecure();
       HTTPClient http;
-      String serverPath = serverName  + "?sensorName=M2M&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      String sensorInfo = "temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum)"
+      if (reportDistance == true){
+        sensorInfo = "distance=" + String(M2MDistance)
+      } else  if (reportLevel1 == true){
+        sensorInfo = "top=" + String(M2MLevel1) + "&bot" + String(M2MLevel2) 
+      }
+
+      String serverPath = serverName  + "?sensorName=M2M&" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
        
       Serial.println(serverPath);
     
@@ -826,7 +838,12 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasTrigger = false;
-       
+
+  reportTemp = false;
+  reportHum = false;
+  reportDistance = false;
+  reportLevel1 = false;
+  reportLevel2 = false;     
   for (JsonObject v: triggerList) {
      String property = v["property"];
     Serial.print("property=");
@@ -848,16 +865,28 @@ bool sendReport(bool hasReport) {
     float currentValue = 0;
     if (property == "temperature") {
       currentValue = M2MTemp;
+      reportTemp = true;
     } else if (property == "tem") {
       currentValue = M2MTemp;
+       reportTemp = true;
     } else if (property == "humidity") {
       currentValue = M2MHum;
+      reportHum = true;
     }  else if (property == "hum") {
       currentValue = M2MHum;
+      reportHum = true;
     }  else if (property == "distance") {
       currentValue = M2MDistance;
+      reportDistance = true;
     }  else if (property == "dis") {
       currentValue = M2MDistance;
+      reportDistance = true;
+    }  else if (property == "lev1") {
+      currentValue = M2MLevel1;
+      reportLevel1 = true;
+    }  else if (property == "lev2") {
+      currentValue = M2MLevel2;
+       reportLevel2 = true;
     }  
     
     if (opera == "=") {
