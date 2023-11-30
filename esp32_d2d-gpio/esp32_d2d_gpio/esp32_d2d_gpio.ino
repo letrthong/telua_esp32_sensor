@@ -42,8 +42,8 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 
  
 
-const char * ssid = "Telua_SHTx_M2M_";
-const char * ssid_gpio = "Telua_SHTx_M2M_"; 
+const char * ssid = "Telua_M2M_";
+const char * ssid_gpio = "Telua_M2M_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -594,7 +594,7 @@ bool sendReport(bool hasReport) {
       
       client -> setInsecure();
       HTTPClient http;
-      String serverPath = serverName  + "?sensorName=SHTx_M2M&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      String serverPath = serverName  + "?sensorName=M2M&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
        
       Serial.println(serverPath);
     
