@@ -927,17 +927,20 @@ bool sendReport(bool hasReport) {
          Serial.println("hasTrigger action="+ action);
         int index = action.indexOf("b1On");
         if (index >= 0 && hasCorrectData == true) {
+           Serial.println(  "hasBtn0");
            hasBtn0 = true;
         }  
 
         index = action.indexOf("b2On");
         if (index >= 0 && hasCorrectData == true) {
            hasBtn1 = true;
+            Serial.println( "hasBtn1");
         } 
 
          index = action.indexOf("alOn");
         if (index >= 0 && hasCorrectData == true) {
            hasAl = true;
+            Serial.println( "hasAl");
         }  
      }
     //  -- End hasTrigger----------------
@@ -946,18 +949,21 @@ bool sendReport(bool hasReport) {
 
   if(hasBtn0 == true){
         turnOnRelay("b1On");
+        ret = true;
     }else{
       turnOffRelay("b1Off");
     }
 
     if(hasBtn1 == true){
         turnOnRelay("b2On");
+        ret = true;
     }else{
       turnOffRelay("b2Off");
     }
 
     if(hasAl == true){
         turnOnRelay("alOn");
+        ret = true;
     }else{
       turnOffRelay("alOff");
     }
