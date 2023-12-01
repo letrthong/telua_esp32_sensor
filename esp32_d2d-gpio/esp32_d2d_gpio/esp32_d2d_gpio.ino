@@ -37,8 +37,9 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
+RTC_DATA_ATTR int g_cycle_minutes = 30;
+RTC_DATA_ATTR int time_to_sleep_mode = TIME_TO_SLEEP;
 
-int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_M2M_";
 const char * ssid_gpio = "Telua_M2M_"; 
@@ -661,6 +662,17 @@ bool sendReport(bool hasReport) {
               }
             }
           }
+
+
+           bool hasKey = doc.containsKey("cycleMinutes");
+          if (hasKey == true) {
+            int value = doc["cycleMinutes"];
+            Serial.print("deserializeJson cycleMinutes=");
+            Serial.println(value);
+            if (value >= 1 ) {
+              g_cycle_minutes = value;
+            }
+          }
     
           // Router info
           bool hasSSID = doc.containsKey("ssid");
@@ -1046,8 +1058,9 @@ void setup() {
   initEEPROM();
   initWiFi();
   
-   // 30minutes = 60*30
-  for(int i = 0; i< 60*30; i++){
+   // 30minutes = 60*30  
+   int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
+  for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
       delay(pollingInterval*1000);
