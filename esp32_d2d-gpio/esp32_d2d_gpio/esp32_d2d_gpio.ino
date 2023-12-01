@@ -851,6 +851,9 @@ bool sendReport(bool hasReport) {
   bool hasBtn1 = false; 
   bool hasAl = false; 
 
+    bool offBtn0 = false;
+  bool offBtn1 = false; 
+  bool offAl = false; 
   for (JsonObject v: triggerList) {
      String property = v["property"];
     Serial.print("property=");
@@ -927,9 +930,16 @@ bool sendReport(bool hasReport) {
          Serial.println("hasTrigger action="+ action);
         int index = action.indexOf("b1On");
         if (index >= 0 && hasCorrectData == true) {
-           Serial.println(  "hasBtn0");
+           Serial.println( "hasBtn0");
            hasBtn0 = true;
         }  
+
+        index = action.indexOf("b1Off");
+        if (index >= 0 && hasCorrectData == true) {
+           offBtn0 = true;
+            Serial.println( "offBtn0");
+        } 
+
 
         index = action.indexOf("b2On");
         if (index >= 0 && hasCorrectData == true) {
@@ -937,10 +947,22 @@ bool sendReport(bool hasReport) {
             Serial.println( "hasBtn1");
         } 
 
+         index = action.indexOf("b2Off");
+        if (index >= 0 && hasCorrectData == true) {
+           offBtn1 = true;
+            Serial.println( "offBtn1");
+        } 
+
          index = action.indexOf("alOn");
         if (index >= 0 && hasCorrectData == true) {
            hasAl = true;
             Serial.println( "hasAl");
+        } 
+
+         index = action.indexOf("alOff");
+        if (index >= 0 && hasCorrectData == true) {
+          offAl = true;
+          Serial.println( "hasAl");
         }  
      }
     //  -- End hasTrigger----------------
@@ -950,21 +972,27 @@ bool sendReport(bool hasReport) {
   if(hasBtn0 == true){
         turnOnRelay("b1On");
         ret = true;
-    }else{
+    }
+    
+    if(offBtn0 == true){
       turnOffRelay("b1Off");
     }
 
     if(hasBtn1 == true){
         turnOnRelay("b2On");
         ret = true;
-    }else{
+    }
+    
+    if(offBtn1 == true){
       turnOffRelay("b2Off");
     }
 
     if(hasAl == true){
         turnOnRelay("alOn");
         ret = true;
-    }else{
+    } 
+    
+    if(offAl == true){
       turnOffRelay("alOff");
     }
  
@@ -1018,7 +1046,7 @@ void setup() {
   initEEPROM();
   initWiFi();
   
-   // 30minutes*3
+   // 30minutes = 60*30
   for(int i = 0; i< 60*30; i++){
     bool ret = sendReport(true);
     if(ret == true){
