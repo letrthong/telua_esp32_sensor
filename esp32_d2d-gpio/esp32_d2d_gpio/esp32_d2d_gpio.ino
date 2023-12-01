@@ -669,7 +669,8 @@ bool sendReport(bool hasReport) {
             int value = doc["cycleMinutes"];
             Serial.print("deserializeJson cycleMinutes=");
             Serial.println(value);
-            if (value >= 1 ) {
+            // 12h = 12*60 = 720
+            if (value >= 1 &&  value<= 720) {
               g_cycle_minutes = value;
             }
           }
