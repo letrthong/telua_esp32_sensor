@@ -845,7 +845,12 @@ bool sendReport(bool hasReport) {
   reportHum = false;
   reportDistance = false;
   reportLevel1 = false;
-  reportLevel2 = false;     
+  reportLevel2 = false;   
+
+  bool hasBtn0 = false;
+  bool hasBtn1 = false; 
+  bool hasAl = false; 
+
   for (JsonObject v: triggerList) {
      String property = v["property"];
     Serial.print("property=");
@@ -920,24 +925,42 @@ bool sendReport(bool hasReport) {
     // -- start hasTrigger----------------
     if (hasTrigger == true) {
          Serial.println("hasTrigger action="+ action);
-        int index = action.indexOf("On");
-            if (index >= 0 && hasCorrectData == true) {
-               bool result = turnOnRelay(action);
-               if(result == true){
-                    ret = true;
-               }
-            } else {
-              index = action.indexOf("Off" && hasCorrectData == true);
-              if (index >= 0) {
-                  bool result = turnOffRelay(action);
-                 if(result == true){
-                      ret = true;
-                 }
-              }
-            }
+        int index = action.indexOf("b1On");
+        if (index >= 0 && hasCorrectData == true) {
+           hasBtn0 = true;
+        }  
+
+        index = action.indexOf("b2On");
+        if (index >= 0 && hasCorrectData == true) {
+           hasBtn1 = true;
+        } 
+
+         index = action.indexOf("alOn");
+        if (index >= 0 && hasCorrectData == true) {
+           hasAl = true;
+        }  
      }
     //  -- End hasTrigger----------------
   }
+
+
+  if(hasBtn0 == true){
+        turnOnRelay("b1On");
+    }else{
+      turnOffRelay("b1Off");
+    }
+
+    if(hasBtn1 == true){
+        turnOnRelay("b2On");
+    }else{
+      turnOffRelay("b2Off");
+    }
+
+    if(hasAl == true){
+        turnOnRelay("alOn");
+    }else{
+      turnOffRelay("alOff");
+    }
  
   return ret;
 }
