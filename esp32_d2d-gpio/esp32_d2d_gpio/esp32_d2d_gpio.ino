@@ -950,7 +950,7 @@ bool sendReport(bool hasReport) {
          index = action.indexOf("b2Off");
         if (index >= 0 && hasCorrectData == true) {
            offBtn1 = true;
-            Serial.println( "offBtn1");
+            Serial.println("offBtn1");
         } 
 
          index = action.indexOf("alOn");
@@ -962,7 +962,7 @@ bool sendReport(bool hasReport) {
          index = action.indexOf("alOff");
         if (index >= 0 && hasCorrectData == true) {
           offAl = true;
-          Serial.println( "hasAl");
+          Serial.println("offAl");
         }  
      }
     //  -- End hasTrigger----------------
