@@ -103,15 +103,13 @@ void turnOffMcp23017(){
   Wire.write(0x12); // address bank A
   Wire.write((byte)0x00);  
   Wire.endTransmission();
-  delay(500);
-
-
-
+  delay(100);
+ 
   Wire.beginTransmission(0x20);
   Wire.write(0x13); // address bank B
   Wire.write((byte)0x00);  
   Wire.endTransmission();
-  delay(500);
+  delay(100);
   Serial.println("turnOffMcp23017 end");
 }
 
@@ -119,30 +117,31 @@ void setMcp23017(String action){
   Serial.println("setMcp23017");
 
   if(action == "11111111"){
+       Serial.println("setMcp23017 11111111");
       Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
       Wire.write((byte)0xAA);  
       Wire.endTransmission();
-      delay(500);
+      delay(100);
 
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
       Wire.write((byte)0x55);  
       Wire.endTransmission();
-      delay(500);
+      delay(100);
   } else{
 
        Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
       Wire.write((byte)0x00);  
       Wire.endTransmission();
-      delay(500);
+      delay(100);
 
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
       Wire.write((byte)0x00);  
       Wire.endTransmission();
-      delay(500);
+      delay(100);
   }
   
 }
