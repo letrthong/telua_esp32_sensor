@@ -632,7 +632,7 @@ bool sendReport(bool hasReport) {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
       bool hasConfig = false;
-      
+      String configGPIO ="";
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
           Serial.print("valueStart=");
@@ -653,12 +653,13 @@ bool sendReport(bool hasReport) {
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                Serial.println("turn on");
                hasConfig = true;
+               configGPIO = action;
                
           }
       }
 
       if(hasConfig == true){
-         setMcp23017(action);
+         setMcp23017(configGPIO);
       } else{
         turnOffMcp23017();
       }
