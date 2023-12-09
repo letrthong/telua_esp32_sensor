@@ -69,6 +69,62 @@ const int ledFloatSwitch =  4;
 const int btnTop = 18;
 const int btnBot = 16;
 
+ #define IODIRA 0x00
+ #define IODIRB 0x01
+ #define GPIOA 0x12
+ #define GPIOB 0x13
+
+int initMcp23017(){
+    Wire.begin(); // wake up I2C bus
+    // set I/O pins to outputs
+    Wire.beginTransmission(0x20);
+    Wire.write(0x00); // IODIRA register
+    Wire.write(0x00); // set all of port A to outputs
+    Wire.endTransmission();
+
+
+    Wire.beginTransmission(0x20);
+    Wire.write(0x01); // IODIRB register
+    Wire.write(0x00); // set all of port B to outputs
+    Wire.endTransmission();
+
+    turnOffMcp23017();
+}
+
+void turnOffMcp23017(){
+  Wire.beginTransmission(0x20);
+  Wire.write(0x12); // address bank A
+  Wire.write((byte)0x00);  
+  Wire.endTransmission();
+  delay(500);
+
+  
+
+  Wire.beginTransmission(0x20);
+  Wire.write(0x13); // address bank B
+  Wire.write((byte)0x00);  
+  Wire.endTransmission();
+  delay(500);
+ 
+}
+
+void setMcp23017(String action){
+
+    Wire.beginTransmission(0x20);
+    Wire.write(0x12); // address bank A
+    Wire.write((byte)0xAA);  
+    Wire.endTransmission();
+    delay(500);
+
+    
+
+    Wire.beginTransmission(0x20);
+    Wire.write(0x13); // address bank B
+    Wire.write((byte)0x55);  
+    Wire.endTransmission();
+    delay(500);
+}
+
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
@@ -575,10 +631,8 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
-      bool hasBtn0 = false;
-       bool hasBtn1 = false; 
-       bool hasAl = false; 
-        
+      bool hasConfig = false;
+      
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
           Serial.print("valueStart=");
@@ -598,32 +652,15 @@ bool sendReport(bool hasReport) {
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                Serial.println("turn on");
-               if( action.indexOf("b1") > -1){
-                 hasBtn0 =  true;
-               } else if( action.indexOf("b2") > -1){
-                 hasBtn1 =  true;
-               } else if( action.indexOf("al") > -1){
-                 hasAl =  true;
-               }
+               hasConfig = true;
+               
           }
       }
 
-      if(hasBtn0 == true){
-         turnOnRelay("b1On");
-      }else{
-        turnOffRelay("b1Off");
-      }
-
-      if(hasBtn1 == true){
-         turnOnRelay("b2On");
-      }else{
-        turnOffRelay("b2Off");
-      }
-
-      if(hasAl == true){
-         turnOnRelay("alOn");
-      }else{
-        turnOffRelay("alOff");
+      if(hasConfig == true){
+         setMcp23017(action);
+      } else{
+        turnOffMcp23017();
       }
     }
   }
@@ -924,6 +961,7 @@ void setup() {
   Serial.println("Ver:8/Aug/2023");
   
   intGpio();
+  initMcp23017();
   
   initEEPROM();
   initWiFi();
