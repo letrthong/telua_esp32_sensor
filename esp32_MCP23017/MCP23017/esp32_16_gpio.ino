@@ -141,7 +141,7 @@ void turnOffAll(){
 }
 
 bool turnOnRelay(String action){
-  //  bool retCode  = false;
+    bool retCode  = false;
    
   //  if( action =="b1On"){
   //      Serial.println("turnOnRelay b1On");
@@ -157,7 +157,7 @@ bool turnOnRelay(String action){
   //      retCode = true;
   //  } 
 
-  //  return retCode;
+   return retCode;
 }
 
 bool turnOffRelay(String action){
