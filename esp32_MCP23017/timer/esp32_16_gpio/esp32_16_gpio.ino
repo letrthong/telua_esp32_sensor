@@ -74,6 +74,8 @@ const int btnBot = 16;
  #define GPIOA 0x12
  #define GPIOB 0x13
 
+ 
+// https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
     Serial.println("initMcp23017 start");
     Wire.begin(); // wake up I2C bus
@@ -88,8 +90,9 @@ int initMcp23017(){
     Wire.write(0x01); // IODIRB register
     Wire.write(0x00); // set all of port B to outputs
     Wire.endTransmission();
- 
+
     Serial.println("initMcp23017 end");
+    return 0;
 }
 
 void turnOffMcp23017(){
@@ -100,76 +103,75 @@ void turnOffMcp23017(){
   Wire.endTransmission();
   delay(500);
 
-  
+
 
   Wire.beginTransmission(0x20);
   Wire.write(0x13); // address bank B
   Wire.write((byte)0x00);  
   Wire.endTransmission();
   delay(500);
-   Serial.println("turnOffMcp23017 end");
- 
+  Serial.println("turnOffMcp23017 end");
 }
 
 void setMcp23017(String action){
-   Serial.println("setMcp23017");
+  Serial.println("setMcp23017");
 
-    Wire.beginTransmission(0x20);
-    Wire.write(0x12); // address bank A
-    Wire.write((byte)0xAA);  
-    Wire.endTransmission();
-    delay(500);
- 
-    Wire.beginTransmission(0x20);
-    Wire.write(0x13); // address bank B
-    Wire.write((byte)0x55);  
-    Wire.endTransmission();
-    delay(500);
+  Wire.beginTransmission(0x20);
+  Wire.write(0x12); // address bank A
+  Wire.write((byte)0xAA);  
+  Wire.endTransmission();
+  delay(500);
+
+  Wire.beginTransmission(0x20);
+  Wire.write(0x13); // address bank B
+  Wire.write((byte)0x55);  
+  Wire.endTransmission();
+  delay(500);
 }
 
 void intGpio(){
-    // pinMode(ledRelay01, OUTPUT);
-    // pinMode(ledRelay02, OUTPUT);
-    // pinMode(ledAlarm, OUTPUT);
-    // turnOffAll();
+    pinMode(ledRelay01, OUTPUT);
+    pinMode(ledRelay02, OUTPUT);
+    pinMode(ledAlarm, OUTPUT);
+    turnOffAll();
 }
 
 void turnOffAll(){
-  //  digitalWrite(ledRelay01, LOW);
-  //  digitalWrite(ledRelay02, LOW);
-  //  digitalWrite(ledAlarm, LOW);
+   digitalWrite(ledRelay01, LOW);
+   digitalWrite(ledRelay02, LOW);
+   digitalWrite(ledAlarm, LOW);
 }
 
 bool turnOnRelay(String action){
     bool retCode  = false;
    
-  //  if( action =="b1On"){
-  //      Serial.println("turnOnRelay b1On");
-  //      digitalWrite(ledRelay01, HIGH);
-  //       retCode = true;
-  //  }else  if( action =="b2On"){
-  //     Serial.println("turnOnRelay b2On");
-  //     digitalWrite(ledRelay02, HIGH);
-  //      retCode = true;
-  //  } else  if( action == "alOn"){
-  //      Serial.println("turnOnRelay alOn");
-  //      digitalWrite(ledAlarm, HIGH);
-  //      retCode = true;
-  //  } 
+   if( action =="b1On"){
+       Serial.println("turnOnRelay b1On");
+       digitalWrite(ledRelay01, HIGH);
+        retCode = true;
+   }else  if( action =="b2On"){
+      Serial.println("turnOnRelay b2On");
+      digitalWrite(ledRelay02, HIGH);
+       retCode = true;
+   } else  if( action == "alOn"){
+       Serial.println("turnOnRelay alOn");
+       digitalWrite(ledAlarm, HIGH);
+       retCode = true;
+   } 
 
    return retCode;
 }
 
 bool turnOffRelay(String action){
-  //  bool retCode  = false;
-  //  if( action =="b1Off"){
-  //      digitalWrite(ledRelay01, LOW);
-  //  }else  if( action =="b2Off"){
-  //     digitalWrite(ledRelay02, LOW);
-  //  } else  if( action == "alOff"){
-  //      digitalWrite(ledAlarm, LOW);
-  //  } 
-  //  return retCode;
+   bool retCode  = false;
+   if( action =="b1Off"){
+       digitalWrite(ledRelay01, LOW);
+   }else  if( action =="b2Off"){
+      digitalWrite(ledRelay02, LOW);
+   } else  if( action == "alOff"){
+       digitalWrite(ledAlarm, LOW);
+   } 
+   return retCode;
 }
 
 
