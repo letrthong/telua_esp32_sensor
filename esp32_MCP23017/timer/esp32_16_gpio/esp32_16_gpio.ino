@@ -91,6 +91,8 @@ int initMcp23017(){
     Wire.write(0x00); // set all of port B to outputs
     Wire.endTransmission();
 
+    turnOffMcp23017();
+    
     Serial.println("initMcp23017 end");
     return 0;
 }
