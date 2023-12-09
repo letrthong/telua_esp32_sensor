@@ -1,6 +1,6 @@
 //http://www.esp32learning.com/code/esp32-and-mcp23017-flashy-led-example.php
 // https://github.com/keriszafir/mcp23017-demo/blob/master/simple-on-off.c
-
+/*
 #include "Wire.h"
  
  //#define IODIRA 0x00
@@ -50,4 +50,4 @@ void loop()
   Wire.write((byte)0x55); // value to send - all HIGH
   Wire.endTransmission();
   delay(5000);
-}
+}*/
