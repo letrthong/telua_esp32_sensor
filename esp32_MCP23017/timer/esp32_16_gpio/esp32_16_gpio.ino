@@ -113,20 +113,37 @@ void turnOffMcp23017(){
   Serial.println("turnOffMcp23017 end");
 }
 
-void setMcp23017(String action){
-    Serial.print("setMcp23017 action");
+int setMcp23017(String action){
+    Serial.print("setMcp23017 action=");
     Serial.print(action);
     Serial.println("");
     String data = action;
     data.replace("-", "");
     data.replace("-", "");
 
-    Serial.print("setMcp23017 data");
+    Serial.print("setMcp23017 data=");
     Serial.print(data);
     Serial.println("");
+    if(data. length() != 16){
+      return 1;
+    }
 
-`  
-  if(action == "11111111"){
+    String portA = data;
+    String portB = data;
+
+    portA.substring(0,8);
+    portB.substring(8,8);
+    
+    Serial.print("setMcp23017 portA=");
+    Serial.print(portA);
+    Serial.println("");
+
+    Serial.print("setMcp23017 portB=");
+    Serial.print(portB);
+    Serial.println("");
+
+
+  if(portA == "11111111"){
       Serial.println("setMcp23017 11111111");
       Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
@@ -154,6 +171,7 @@ void setMcp23017(String action){
       delay(100);
   }
   
+   return 0;
 }
 
 void intGpio(){
