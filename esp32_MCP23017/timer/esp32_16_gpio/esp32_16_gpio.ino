@@ -22,6 +22,7 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
+String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -137,7 +138,7 @@ byte convertBinaryStringToByte(String binaryString){
   return ret;
 }
 
-int setMcp23017(String action){
+bool setMcp23017(String action){
     Serial.print("setMcp23017 action=");
     Serial.print(action);
     Serial.println("");
@@ -149,7 +150,7 @@ int setMcp23017(String action){
     Serial.print(data);
     Serial.println("");
     if(data.length() != 16){
-      return 1;
+      return false;
     }
 
     String portA = data.substring(0,8);
@@ -169,11 +170,18 @@ int setMcp23017(String action){
         gAction = action;
         byte byteA = convertBinaryStringToByte(portA);
         byte byteB = convertBinaryStringToByte(portB);
+        size_t result = 0;
 
         Wire.beginTransmission(0x20);
         Serial.println("address bank A");
-        Wire.write(0x12); // address bank A
-        Wire.write(byteA);  
+        result = Wire.write(0x12); // address bank A
+        if(result <1){
+          Serial.println("setMcp23017 byteA write failed");
+        }
+        result = Wire.write(byteA);  
+         if(result <1){
+          Serial.println("setMcp23017 byteA write failed");
+        }
         Wire.endTransmission();
         delay(100);
 
@@ -189,7 +197,7 @@ int setMcp23017(String action){
       }
   }  
  
-   return 0;
+   return true;
 }
 
 void intGpio(){
