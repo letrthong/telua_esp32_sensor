@@ -126,7 +126,7 @@ void setMcp23017(String action){
 
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
-      Wire.write((byte)0x55);  
+      Wire.write((byte)0xFF);  
       Wire.endTransmission();
       delay(100);
   } else{
