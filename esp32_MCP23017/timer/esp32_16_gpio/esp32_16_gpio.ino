@@ -170,33 +170,18 @@ bool setMcp23017(String action){
         gAction = action;
         byte byteA = convertBinaryStringToByte(portA);
         byte byteB = convertBinaryStringToByte(portB);
-        size_t result = 0;
-
+        
         Wire.beginTransmission(0x20);
         Serial.println("address bank A");
-        result = Wire.write(0x12); // address bank A
-        if(result <1){
-          Serial.println("setMcp23017 byteA write failed");
-        }
-
-        result = Wire.write(byteA);  
-         if(result <1){
-          Serial.println("setMcp23017 byteA write failed");
-        }
+        Wire.write(0x12); // address bank A
+       Wire.write(byteA);  
         Wire.endTransmission();
         delay(100);
 
         Wire.beginTransmission(0x20);
         Serial.println("address bank B");
-        result = Wire.write(0x13); // address bank B
-        if(result <1){
-          Serial.println("setMcp23017 byteB write failed");
-        }
-
-        result = Wire.write(byteB);  
-        if(result <1){
-          Serial.println("setMcp23017 byteB write failed");
-        }
+        Wire.write(0x13); // address bank B
+        Wire.write(byteB);  
         Wire.endTransmission();
 
         delay(100);
