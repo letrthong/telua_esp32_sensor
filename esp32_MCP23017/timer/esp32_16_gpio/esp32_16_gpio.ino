@@ -114,10 +114,20 @@ void turnOffMcp23017(){
 }
 
 void setMcp23017(String action){
-  Serial.println("setMcp23017");
+    Serial.print("setMcp23017 action");
+    Serial.print(action);
+    Serial.println("");
+    String data = action;
+    data.replace("-", "");
+    data.replace("-", "");
 
+    Serial.print("setMcp23017 data");
+    Serial.print(data);
+    Serial.println("");
+
+`  
   if(action == "11111111"){
-       Serial.println("setMcp23017 11111111");
+      Serial.println("setMcp23017 11111111");
       Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
       Wire.write((byte)0xAA);  
