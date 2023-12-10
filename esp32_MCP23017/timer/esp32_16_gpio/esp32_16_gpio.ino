@@ -22,7 +22,8 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String error_url = "https://telua.co/service/v1/esp32/error-sensor";
+String serverError = "https://telua.co/service/v1/esp32/error-sensor";
+
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -187,7 +188,12 @@ bool setMcp23017(String action){
         delay(100);
       }else {
          Serial.println("setMcp23017 the same");
-         detectI2c();
+         bool ret = detectI2c();
+         if(ret  == false){
+            sendError();
+            delay(3000); 
+            ESP.restart();
+         }
       }
   }  
  
@@ -1036,6 +1042,58 @@ int getSeconds(){
   seconds = timeinfo.tm_hour*(60*60);
   seconds = seconds + (timeinfo.tm_min*60);
   return   seconds ;
+}
+
+
+bool sendError( ) {
+  bool ret = false;
+  if (WiFi.status() != WL_CONNECTED) {
+    time_to_sleep_mode = 60;
+    Serial.println("getTimeZone WiFi.status() != WL_CONNECTED");
+    delay(1000); 
+    ESP.restart();
+    return ret;
+  }
+
+  String localIP = WiFi.localIP().toString();
+  if (localIP == "0.0.0.0") {
+    time_to_sleep_mode = 60;
+    Serial.println("getTimeZone  localIP= 0.0.0.0");
+    delay(1000); 
+    ESP.restart();
+    return false;
+  }
+
+  WiFiClientSecure * client = new WiFiClientSecure;
+  if (!client) {
+    return ret;
+  }
+
+  
+  client -> setInsecure();
+  HTTPClient http;
+  String serverPath = serverError + "?deviceID=" + deviceID;
+
+  
+  Serial.println(serverPath);
+
+  http.setTimeout(60000);
+  http.begin( * client, serverPath.c_str());
+
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
+ 
+  if (httpResponseCode == 200) {
+    String payload = http.getString();
+  } else {
+     Serial.print("getTimeZone Error code: ");
+     Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+  delete client;
+
+  return ret;
 }
 
 
