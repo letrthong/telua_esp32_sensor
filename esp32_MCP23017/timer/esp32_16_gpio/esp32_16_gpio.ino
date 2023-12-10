@@ -210,18 +210,18 @@ bool setMcp23017(String action){
 }
 
 bool detectI2c(){
-  bool ret = fasle;
+  bool ret = false;
   byte address = 0x20;
   WIRE.beginTransmission(address);
   byte  error = WIRE.endTransmission();
-   if (error == 0){
+  if (error == 0){
      Serial.println("I2C device found at address 0x20");
      ret = true;
-   }else{
+   } else {
        Serial.println("I2C device NOT found at address 0x20");
-   }
+  }
 
-   return ret
+  return ret;
 }
 
 void intGpio(){
