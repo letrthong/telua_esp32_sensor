@@ -74,6 +74,8 @@ const int btnBot = 16;
  #define GPIOA 0x12
  #define GPIOB 0x13
 
+String gPortA = "";
+String gPortB = "";
  
 // https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
@@ -164,21 +166,29 @@ int setMcp23017(String action){
 
 
   if(portA.length() == 8){
-      byte gpio = convertBinaryStringToByte(portA);
-      Wire.beginTransmission(0x20);
-      Wire.write(0x12); // address bank A
-      Wire.write(gpio);  
-      Wire.endTransmission();
-      delay(100);
+      if(gPortA == portA ){
+        gPortA = portA;
+        byte gpio = convertBinaryStringToByte(portA);
+        Wire.beginTransmission(0x20);
+        Wire.write(0x12); // address bank A
+        Wire.write(gpio);  
+        Wire.endTransmission();
+        delay(100);
+      }
+     
   } 
 
   if(portB.length() == 8){
-      byte gpio = convertBinaryStringToByte(portB);
-      Wire.beginTransmission(0x20);
-      Wire.write(0x13); // address bank B
-      Wire.write(gpio);  
-      Wire.endTransmission();
-      delay(100);
+      if(gPortB == portB ){
+          gPortB = portB;
+          byte gpio = convertBinaryStringToByte(portB);
+          Wire.beginTransmission(0x20);
+          Wire.write(0x13); // address bank B
+          Wire.write(gpio);  
+          Wire.endTransmission();
+          delay(100);
+      }
+     
   } 
   
    return 0;
