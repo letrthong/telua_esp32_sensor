@@ -187,8 +187,14 @@ bool setMcp23017(String action){
 
         Wire.beginTransmission(0x20);
         Serial.println("address bank B");
-        Wire.write(0x13); // address bank B
-        Wire.write(byteB);  
+        result = Wire.write(0x13); // address bank B
+        if(result <1){
+          Serial.println("setMcp23017 byteB write failed");
+        }
+        result = Wire.write(byteB);  
+        if(result <1){
+          Serial.println("setMcp23017 byteB write failed");
+        
         Wire.endTransmission();
 
         delay(100);
