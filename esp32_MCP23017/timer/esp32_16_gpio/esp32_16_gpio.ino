@@ -175,9 +175,10 @@ int setMcp23017(String action){
         Wire.write(0x12); // address bank A
         Wire.write(byteA);  
         Wire.endTransmission();
-
+        delay(100);
+        
         Wire.beginTransmission(0x20);
-        Serial.println(" address bank B");
+        Serial.println("address bank B");
         Wire.write(0x13); // address bank B
         Wire.write(byteB);  
         Wire.endTransmission();
