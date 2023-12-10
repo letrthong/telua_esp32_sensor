@@ -120,11 +120,13 @@ byte convertBinaryStringToByte(String binaryString){
       char character = binaryString.charAt(index);
       if(character == '1'){
            Serial.print("1");
-           ret = ret | 0x01 ;
-           ret = ret << 1;
-      }else  if(character == '0'){
-          Serial.print("0");
-           ret = ret << 1;
+           ret = ret | 0x01 ;   
+      } else  if(character == '0'){
+          Serial.print("0");  
+      }
+
+      if(index +1 < binaryString.length() ){
+        ret = ret << 1;
       }
   }
 
@@ -169,8 +171,8 @@ int setMcp23017(String action){
       delay(100);
   } 
 
-  if(portA.length() == 8){
-      byte gpio = convertBinaryStringToByte(portA);
+  if(portB.length() == 8){
+      byte gpio = convertBinaryStringToByte(portB);
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
       Wire.write(gpio);  
