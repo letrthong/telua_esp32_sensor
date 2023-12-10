@@ -74,8 +74,7 @@ const int btnBot = 16;
  #define GPIOA 0x12
  #define GPIOB 0x13
 
-String gPortA = "";
-String gPortB = "";
+String gAction = "";
  
 // https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
@@ -153,8 +152,8 @@ int setMcp23017(String action){
       return 1;
     }
 
-    String portA = data.substring(0,8);
-    String portB = data.substring(8);
+    String portA = data.substring(0,7);
+    String portB = data.substring(8,15 );
  
     Serial.print("setMcp23017 portA=");
     Serial.print(portA);
@@ -165,35 +164,28 @@ int setMcp23017(String action){
     Serial.println("");
 
 
-  if(portA.length() == 8){
-      if( portA != gPortA ){
-        gPortA = portA;
-        byte gpio = convertBinaryStringToByte(portA);
+  if(portA.length() == 8 && portB.length() == 8){
+      if( action != gAction ){
+        gAction = action;
+        byte byteA = convertBinaryStringToByte(portA);
+        byte byteB = convertBinaryStringToByte(portB);
+
         Wire.beginTransmission(0x20);
         Serial.println("address bank A");
         Wire.write(0x12); // address bank A
-        Wire.write(gpio);  
+        Wire.write(byteA);  
         Wire.endTransmission();
+
+        Wire.beginTransmission(0x20);
+        Serial.println(" address bank B");
+        Wire.write(0x13); // address bank B
+        Wire.write(byteB);  
+        Wire.endTransmission();
+
         delay(100);
       }
-  } 
-
-  if(portB.length() == 8){
-      if(  portB != gPortB ){
-          gPortB = portB;
-          byte gpio = convertBinaryStringToByte(portB);
-          Wire.beginTransmission(0x20);
-          Serial.println(" address bank B");
-          Wire.write(0x13); // address bank B
-          Wire.write(gpio);  
-          Wire.endTransmission();
-          delay(100);
-      } else{
-        
-      }
-     
-  } 
-  
+  }  
+ 
    return 0;
 }
 
