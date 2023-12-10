@@ -168,7 +168,7 @@ bool setMcp23017(String action){
 
   if(portA.length() == 8 && portB.length() == 8){
       if( action != gAction ){
-        gAction = action;
+      
         byte byteA = convertBinaryStringToByte(portA);
         byte byteB = convertBinaryStringToByte(portB);
         
@@ -186,6 +186,7 @@ bool setMcp23017(String action){
         Wire.endTransmission();
 
         delay(100);
+        gAction = action;
       }else {
          Serial.println("setMcp23017 the same");
          bool ret = detectI2c();
