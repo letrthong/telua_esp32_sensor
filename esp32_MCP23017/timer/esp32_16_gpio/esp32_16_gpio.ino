@@ -175,7 +175,6 @@ int setMcp23017(String action){
         Wire.endTransmission();
         delay(100);
       }
-     
   } 
 
   if(portB.length() == 8){
