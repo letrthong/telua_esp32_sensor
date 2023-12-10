@@ -178,6 +178,7 @@ bool setMcp23017(String action){
         if(result <1){
           Serial.println("setMcp23017 byteA write failed");
         }
+        
         result = Wire.write(byteA);  
          if(result <1){
           Serial.println("setMcp23017 byteA write failed");
@@ -191,6 +192,7 @@ bool setMcp23017(String action){
         if(result <1){
           Serial.println("setMcp23017 byteB write failed");
         }
+
         result = Wire.write(byteB);  
         if(result <1){
           Serial.println("setMcp23017 byteB write failed");
