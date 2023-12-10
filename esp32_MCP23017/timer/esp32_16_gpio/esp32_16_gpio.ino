@@ -166,10 +166,11 @@ int setMcp23017(String action){
 
 
   if(portA.length() == 8){
-      if(gPortA != portA ){
+      if( portA != gPortA ){
         gPortA = portA;
         byte gpio = convertBinaryStringToByte(portA);
         Wire.beginTransmission(0x20);
+        Serial.println("address bank A");
         Wire.write(0x12); // address bank A
         Wire.write(gpio);  
         Wire.endTransmission();
@@ -178,10 +179,11 @@ int setMcp23017(String action){
   } 
 
   if(portB.length() == 8){
-      if(gPortB != portB ){
+      if(  portB != gPortB ){
           gPortB = portB;
           byte gpio = convertBinaryStringToByte(portB);
           Wire.beginTransmission(0x20);
+          Serial.println(" address bank B");
           Wire.write(0x13); // address bank B
           Wire.write(gpio);  
           Wire.endTransmission();
