@@ -113,19 +113,22 @@ void turnOffMcp23017(){
   Serial.println("turnOffMcp23017 end");
 }
 
+// 1111 0001
 byte convertBinaryStringToByte(String binaryString){
   Serial.println("convertBinaryStringToByte ");
   byte ret = 0x00;
   for(int index = 0; index< binaryString.length();index++ ){
       char character = binaryString.charAt(index);
+      if(index != 0){
+        ret = ret << 1;
+      }
+
       if(character == '1'){
            Serial.print("1");
            ret = ret | 0x01 ;   
       } else  if(character == '0'){
           Serial.print("0");  
       }
-
-      ret = ret << 1;
   }
 
   Serial.println(" ");
