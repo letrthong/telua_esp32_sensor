@@ -113,6 +113,8 @@ void turnOffMcp23017(){
   Wire.write((byte)0x00);  
   Wire.endTransmission();
   delay(100);
+
+  gAction = "";
   Serial.println("turnOffMcp23017 end");
 }
 
