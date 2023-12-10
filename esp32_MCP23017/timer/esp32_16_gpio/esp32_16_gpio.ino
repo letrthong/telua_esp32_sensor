@@ -712,7 +712,7 @@ bool sendReport(bool hasReport) {
   String strTriggerParameter = "";
   //process trigger
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
-    StaticJsonDocument < 2048 > docTrigger;
+    StaticJsonDocument < 3072 > docTrigger;
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
@@ -803,7 +803,7 @@ bool sendReport(bool hasReport) {
     //      Serial.println(payload);
 
     //https://arduinojson.org/v6/doc/upgrade/
-    DynamicJsonDocument doc(2048);
+    DynamicJsonDocument doc(3072);
 
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
