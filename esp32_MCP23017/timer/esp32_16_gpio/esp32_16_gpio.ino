@@ -128,7 +128,7 @@ byte convertBinaryStringToByte(String binaryString){
       }
   }
 
-  Serial.println(" ")
+  Serial.println(" ");
 
   return ret;
 }
