@@ -152,8 +152,8 @@ int setMcp23017(String action){
       return 1;
     }
 
-    String portA = data.substring(0,7);
-    String portB = data.substring(8,15 );
+    String portA = data.substring(0,8);
+    String portB = data.substring(8,16);
  
     Serial.print("setMcp23017 portA=");
     Serial.print(portA);
