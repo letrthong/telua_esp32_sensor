@@ -188,6 +188,8 @@ int setMcp23017(String action){
           Wire.write(gpio);  
           Wire.endTransmission();
           delay(100);
+      } else{
+        
       }
      
   } 
