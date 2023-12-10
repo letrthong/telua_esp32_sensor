@@ -124,16 +124,13 @@ int setMcp23017(String action){
     Serial.print("setMcp23017 data=");
     Serial.print(data);
     Serial.println("");
-    if(data. length() != 16){
+    if(data.length() != 16){
       return 1;
     }
 
-    String portA = data;
-    String portB = data;
-
-    portA.substring(0,8);
-    portB.substring(8,8);
-    
+    String portA = data.substring(0,8);
+    String portB = data.substring(8);
+ 
     Serial.print("setMcp23017 portA=");
     Serial.print(portA);
     Serial.println("");
