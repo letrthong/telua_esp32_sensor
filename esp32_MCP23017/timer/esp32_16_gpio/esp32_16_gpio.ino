@@ -113,6 +113,21 @@ void turnOffMcp23017(){
   Serial.println("turnOffMcp23017 end");
 }
 
+byte convertBinaryStringToByte(String binaryString){
+  Serial.println("convertBinaryStringToByte");
+  byte ret = 0x00;
+  for(int index = 0; index< binaryString.length();index++ ){
+      char character = binaryStrig.charAt(index);
+      if(character == '1'){
+           Serial.print("1");
+      }else  if(character == '0'){
+          Serial.print("0");
+      }
+  }
+
+  return ret;
+}
+
 int setMcp23017(String action){
     Serial.print("setMcp23017 action=");
     Serial.print(action);
@@ -140,34 +155,23 @@ int setMcp23017(String action){
     Serial.println("");
 
 
-  if(portA == "11111111"){
-      Serial.println("setMcp23017 11111111");
+  if(portA.length() == 8){
+      byte gpio = convertBinaryStringToByte(portA);
       Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
-      Wire.write((byte)0xAA);  
+      Wire.write(gpio);  
       Wire.endTransmission();
       delay(100);
-  } else{
-      Wire.beginTransmission(0x20);
-      Wire.write(0x12); // address bank A
-      Wire.write((byte)0x00);  
-      Wire.endTransmission();
-      delay(100);
-  }
+  } 
 
-  if(portB == "11111111"){
+  if(portA.length() == 8){
+      byte gpio = convertBinaryStringToByte(portA);
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
-      Wire.write((byte)0xFF);  
+      Wire.write(gpio);  
       Wire.endTransmission();
       delay(100);
-  } else{
-      Wire.beginTransmission(0x20);
-      Wire.write(0x13); // address bank B
-      Wire.write((byte)0x00);  
-      Wire.endTransmission();
-      delay(100);
-  }
+  } 
   
    return 0;
 }
