@@ -147,19 +147,21 @@ int setMcp23017(String action){
       Wire.write((byte)0xAA);  
       Wire.endTransmission();
       delay(100);
-
-      Wire.beginTransmission(0x20);
-      Wire.write(0x13); // address bank B
-      Wire.write((byte)0xFF);  
-      Wire.endTransmission();
-      delay(100);
   } else{
       Wire.beginTransmission(0x20);
       Wire.write(0x12); // address bank A
       Wire.write((byte)0x00);  
       Wire.endTransmission();
       delay(100);
+  }
 
+  if(portB == "11111111"){
+      Wire.beginTransmission(0x20);
+      Wire.write(0x13); // address bank B
+      Wire.write((byte)0xFF);  
+      Wire.endTransmission();
+      delay(100);
+  } else{
       Wire.beginTransmission(0x20);
       Wire.write(0x13); // address bank B
       Wire.write((byte)0x00);  
