@@ -178,7 +178,7 @@ bool setMcp23017(String action){
         if(result <1){
           Serial.println("setMcp23017 byteA write failed");
         }
-        
+
         result = Wire.write(byteA);  
          if(result <1){
           Serial.println("setMcp23017 byteA write failed");
@@ -202,10 +202,26 @@ bool setMcp23017(String action){
         delay(100);
       }else {
          Serial.println("setMcp23017 the same");
+         detectI2c();
       }
   }  
  
    return true;
+}
+
+bool detectI2c(){
+  bool ret = fasle;
+  byte address = 0x20;
+  WIRE.beginTransmission(address);
+  byte  error = WIRE.endTransmission();
+   if (error == 0){
+     Serial.println("I2C device found at address 0x20");
+     ret = true;
+   }else{
+       Serial.println("I2C device NOT found at address 0x20");
+   }
+
+   return ret
 }
 
 void intGpio(){
