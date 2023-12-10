@@ -166,7 +166,7 @@ int setMcp23017(String action){
 
 
   if(portA.length() == 8){
-      if(gPortA == portA ){
+      if(gPortA != portA ){
         gPortA = portA;
         byte gpio = convertBinaryStringToByte(portA);
         Wire.beginTransmission(0x20);
@@ -178,7 +178,7 @@ int setMcp23017(String action){
   } 
 
   if(portB.length() == 8){
-      if(gPortB == portB ){
+      if(gPortB != portB ){
           gPortB = portB;
           byte gpio = convertBinaryStringToByte(portB);
           Wire.beginTransmission(0x20);
