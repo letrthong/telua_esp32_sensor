@@ -120,8 +120,11 @@ byte convertBinaryStringToByte(String binaryString){
       char character = binaryStrig.charAt(index);
       if(character == '1'){
            Serial.print("1");
+           ret = ret | 0x01 
+           ret = ret << 1
       }else  if(character == '0'){
           Serial.print("0");
+           ret = ret << 1
       }
   }
 
