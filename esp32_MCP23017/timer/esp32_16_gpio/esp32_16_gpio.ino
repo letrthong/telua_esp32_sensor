@@ -117,7 +117,7 @@ byte convertBinaryStringToByte(String binaryString){
   Serial.println("convertBinaryStringToByte ");
   byte ret = 0x00;
   for(int index = 0; index< binaryString.length();index++ ){
-      char character = binaryStrig.charAt(index);
+      char character = binaryString.charAt(index);
       if(character == '1'){
            Serial.print("1");
            ret = ret | 0x01 ;
