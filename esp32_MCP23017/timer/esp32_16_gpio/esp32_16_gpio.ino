@@ -194,7 +194,7 @@ bool setMcp23017(String action){
         result = Wire.write(byteB);  
         if(result <1){
           Serial.println("setMcp23017 byteB write failed");
-        
+        }
         Wire.endTransmission();
 
         delay(100);
