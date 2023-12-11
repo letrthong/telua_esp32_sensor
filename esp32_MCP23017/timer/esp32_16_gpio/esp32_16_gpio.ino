@@ -140,6 +140,15 @@ byte convertBinaryStringToByte(String binaryString){
 
   return ret;
 }
+ 
+String reverseString(String input){
+  String ouput  = "";
+  for(int index = 0; index< input.length();index++ ){
+      char character = input.charAt(index);
+      ouput =  String(character) + ouput;
+  }
+  return ouput;
+}
 
 bool setMcp23017(String action){
     Serial.print("setMcp23017 action=");
@@ -170,21 +179,24 @@ bool setMcp23017(String action){
 
   if(portA.length() == 8 && portB.length() == 8){
       if( action != gAction ){
-      
-        byte byteA = convertBinaryStringToByte(portA);
+        
+        String revertPortA = reverseString(portA);
+        byte byteA = convertBinaryStringToByte(revertPortA);
+
+       
         byte byteB = convertBinaryStringToByte(portB);
         
         Wire.beginTransmission(0x20);
         Serial.println("address bank A");
         Wire.write(0x12); // address bank A
-       Wire.write(byteA);  
+        Wire.write(byteB);  
         Wire.endTransmission();
         delay(100);
 
         Wire.beginTransmission(0x20);
         Serial.println("address bank B");
         Wire.write(0x13); // address bank B
-        Wire.write(byteB);  
+        Wire.write(byteA);  
         Wire.endTransmission();
 
         delay(100);
