@@ -77,19 +77,21 @@ const int btnBot = 16;
  #define GPIOB 0x13
 
 String gAction = "";
+
+ #define I2C_ADDRESS 0x20
  
 // https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
     Serial.println("initMcp23017 start");
     Wire.begin(); // wake up I2C bus
     // set I/O pins to outputs
-    Wire.beginTransmission(0x20);
+    Wire.beginTransmission(I2C_ADDRESS);
     Wire.write(0x00); // IODIRA register
     Wire.write(0x00); // set all of port A to outputs
     Wire.endTransmission();
 
 
-    Wire.beginTransmission(0x20);
+    Wire.beginTransmission(I2C_ADDRESS);
     Wire.write(0x01); // IODIRB register
     Wire.write(0x00); // set all of port B to outputs
     Wire.endTransmission();
@@ -102,13 +104,13 @@ int initMcp23017(){
 
 void turnOffMcp23017(){
   Serial.println("turnOffMcp23017 start");
-  Wire.beginTransmission(0x20);
+  Wire.beginTransmission(I2C_ADDRESS);
   Wire.write(0x12); // address bank A
   Wire.write((byte)0x00);  
   Wire.endTransmission();
   delay(100);
  
-  Wire.beginTransmission(0x20);
+  Wire.beginTransmission(I2C_ADDRESS);
   Wire.write(0x13); // address bank B
   Wire.write((byte)0x00);  
   Wire.endTransmission();
@@ -186,14 +188,14 @@ bool setMcp23017(String action){
        
         byte byteB = convertBinaryStringToByte(portB);
         
-        Wire.beginTransmission(0x20);
+        Wire.beginTransmission(I2C_ADDRESS);
         Serial.println("address bank A");
         Wire.write(0x12); // address bank A
         Wire.write(byteB);  
         Wire.endTransmission();
         delay(100);
 
-        Wire.beginTransmission(0x20);
+        Wire.beginTransmission(I2C_ADDRESS);
         Serial.println("address bank B");
         Wire.write(0x13); // address bank B
         Wire.write(byteA);  
