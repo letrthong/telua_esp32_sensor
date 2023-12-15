@@ -69,6 +69,8 @@ bool hasSensorError = false;
  //3.3 is your supply voltage
 const float max_Voltage = 3.3;
 
+int gCount = 0;
+
 void initSensor(){
   // MCP4725_I2CADDR_DEFAULT = 0x62
     bool ret = MCP4725.begin(MCP4725_I2CADDR_DEFAULT); // The I2C Address of my module  
@@ -103,11 +105,19 @@ void createTrianglewave(){
 }
  
 void setSpeed(String percent){
+
+    if(gCount > 100){
+      currentPercent  ="";
+    }
+
     if(currentPercent == percent){
         Serial.print("setSpeedsame percent=");
         Serial.println(percent);
+        gCount = gCount +1;
         return;
     }
+    gCount = 0;
+    
 
     int intPercent = percent.toInt();
 
