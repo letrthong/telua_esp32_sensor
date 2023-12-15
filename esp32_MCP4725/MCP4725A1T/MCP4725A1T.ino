@@ -934,7 +934,7 @@ bool sendError( ) {
   if (httpResponseCode == 200) {
     String payload = http.getString();
   } else {
-     Serial.print("getTimeZone Error code: ");
+     Serial.print("sendError Error code: ");
      Serial.println(httpResponseCode);
   }
   // Free resources
