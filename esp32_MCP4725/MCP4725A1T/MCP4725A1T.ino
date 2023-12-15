@@ -893,6 +893,7 @@ bool getTimeZone( ) {
 
 
 bool sendError( ) {
+   Serial.println("sendError  ");
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
@@ -905,7 +906,7 @@ bool sendError( ) {
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
-    Serial.println("getTimeZone  localIP= 0.0.0.0");
+   
     delay(1000); 
     ESP.restart();
     return false;
