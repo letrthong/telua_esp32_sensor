@@ -20,9 +20,9 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
-String serverName = "https://telua.co/service/v1/esp32/scheduler";
+String serverName = "https://telua.co/service/v1/esp32/ioExpander/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String serverError = "https://telua.co/service/v1/esp32/error-sensor";
+String serverError = "https://telua.co/service/v1/esp32/ioExpander/error";
 
 
 int EEPROM_ADDRESS_SSID = 0;
