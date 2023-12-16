@@ -24,7 +24,7 @@ String serverName = "https://telua.co/service/v1/esp32/ioExpander/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String serverError = "https://telua.co/service/v1/esp32/ioExpander/status";
  
-
+ 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -1098,7 +1098,7 @@ bool sendError( bool hasError ) {
   if(hasError == true){
     errorCode = "errorCode=1";
   }
-  String serverPath = serverError + "?deviceID=" + deviceID + "?" + errorCode;
+  String serverPath = serverError + "?deviceID=" + deviceID + "&" + errorCode;
 
   
   Serial.println(serverPath);
