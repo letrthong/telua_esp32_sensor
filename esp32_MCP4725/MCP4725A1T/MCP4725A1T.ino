@@ -139,7 +139,7 @@ void setSpeed(String percent){
         hasSensorError = true;
         sendError();
         
-        delay(3000); 
+        delay(10000); 
         ESP.restart();
     }  
 
