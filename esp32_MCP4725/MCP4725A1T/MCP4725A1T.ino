@@ -24,7 +24,7 @@ String remote_ssid = "";
 String remote_pass = "";
 
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
-String serverError = "https://telua.co/service/v1/esp32/pmw/error";
+String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 
 
