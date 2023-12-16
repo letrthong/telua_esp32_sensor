@@ -138,7 +138,7 @@ void setSpeed(String percent){
         Serial.print("\t Can not write MCP4725");
         currentPercent = "";
         hasSensorError = true;
-        sendError();
+        sendError(true);
         
         delay(10000); 
         ESP.restart();
@@ -146,6 +146,7 @@ void setSpeed(String percent){
 
     if(currentPercent != percent){
         currentPercent = percent;
+        sendError(false);
     }
 }
 
@@ -893,7 +894,7 @@ bool getTimeZone( ) {
 }
 
 
-bool sendError( ) {
+bool sendError( bool hasError) {
    Serial.println("sendError  ");
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
@@ -921,7 +922,11 @@ bool sendError( ) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverError + "?deviceID=" + deviceID;
+   String errorCode = "errorCode=0";
+   if(hasError == true){
+    errorCode = "errorCode=1";
+  }
+  String serverPath = serverError + "?deviceID=" + deviceID + "&" + errorCode;
 
   
   Serial.println(serverPath);
