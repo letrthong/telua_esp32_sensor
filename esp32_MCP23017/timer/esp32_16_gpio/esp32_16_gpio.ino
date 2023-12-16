@@ -22,8 +22,8 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/ioExpander/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String serverError = "https://telua.co/service/v1/esp32/ioExpander/error";
-
+String serverError = "https://telua.co/service/v1/esp32/ioExpander/status";
+ 
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -203,11 +203,13 @@ bool setMcp23017(String action){
 
         delay(100);
         gAction = action;
+
+         sendError(false);
       }else {
          Serial.println("setMcp23017 the same");
          bool ret = detectI2c();
          if(ret  == false){
-            sendError();
+            sendError(true);
             delay(3000); 
             ESP.restart();
          }
@@ -1062,7 +1064,7 @@ int getSeconds(){
 }
 
 
-bool sendError( ) {
+bool sendError( bool hasError ) {
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
@@ -1089,7 +1091,11 @@ bool sendError( ) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverError + "?deviceID=" + deviceID;
+  String errorCode = "Error=0";
+  if(hasError == true){
+    errorCode = " Error=1";
+  }
+  String serverPath = serverError + "?deviceID=" + deviceID + "?" + errorCode;
 
   
   Serial.println(serverPath);
