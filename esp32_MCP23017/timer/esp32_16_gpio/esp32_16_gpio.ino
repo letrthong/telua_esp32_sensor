@@ -203,8 +203,11 @@ bool setMcp23017(String action){
 
         delay(100);
         gAction = action;
-
-         sendError(false);
+           bool ret = detectI2c();
+           if(ret == true){
+               sendError(false);
+           }
+        
       }else {
          Serial.println("setMcp23017 the same");
          bool ret = detectI2c();
