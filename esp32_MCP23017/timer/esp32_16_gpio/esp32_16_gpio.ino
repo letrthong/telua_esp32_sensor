@@ -1094,9 +1094,9 @@ bool sendError( bool hasError ) {
   
   client -> setInsecure();
   HTTPClient http;
-  String errorCode = "Error=0";
+  String errorCode = "errorCode=0";
   if(hasError == true){
-    errorCode = " Error=1";
+    errorCode = "errorCode=1";
   }
   String serverPath = serverError + "?deviceID=" + deviceID + "?" + errorCode;
 
