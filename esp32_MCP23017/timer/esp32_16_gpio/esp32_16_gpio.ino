@@ -228,10 +228,10 @@ bool detectI2c(){
   Wire.beginTransmission(address);
   byte  error = Wire.endTransmission();
   if (error == 0){
-     Serial.println("I2C device found at address 0x20");
+     Serial.println("I2C device found at address 0x21");
      ret = true;
    } else {
-       Serial.println("I2C device NOT found at address 0x20");
+       Serial.println("I2C device NOT found at address 0x21");
   }
 
   return ret;
