@@ -79,7 +79,7 @@ void initSensor(){
       Serial.println("  Can not detect MCP4725 ");
       hasSensorError = true;
     } else {
-        setSpeed("0");
+        setSpeed("0", false);
         //createTrianglewave();
     }
 }
@@ -105,7 +105,7 @@ void createTrianglewave(){
     }
 }
  
-void setSpeed(String percent){
+void setSpeed(String percent,  bool hasRestat){
 
     if(gCount > 100){
       currentPercent  ="";
@@ -138,15 +138,21 @@ void setSpeed(String percent){
         Serial.print("\t Can not write MCP4725");
         currentPercent = "";
         hasSensorError = true;
-        sendError(true);
-        
-        delay(10000); 
-        ESP.restart();
+
+        if(hasRestat == true){
+             sendError(true);
+          
+          delay(10000); 
+          ESP.restart();
+        }
+       
     }  
 
     if(currentPercent != percent){
         currentPercent = percent;
-        sendError(false);
+        if(hasRestat == true){
+            sendError(false);
+        }
     }
 }
 
@@ -631,14 +637,14 @@ bool sendReport(bool hasReport) {
           Serial.println(action);
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
-            setSpeed(action);
+            setSpeed(action, true);
             hasSpeed = true;
             break;
           }
       }
 
       if(hasSpeed == false){
-        setSpeed("0");
+        setSpeed("0", true);
       }
     }
   }
