@@ -1049,7 +1049,7 @@ void setup() {
     bootCount = 0;
     ESP.restart();
   }
-  Serial.println("Ver:8/Aug/2023");
+  Serial.println("Ver:26/Dec/2023");
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
