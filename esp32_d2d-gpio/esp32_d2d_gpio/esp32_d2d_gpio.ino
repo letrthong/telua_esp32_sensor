@@ -607,6 +607,11 @@ bool sendReport(bool hasReport) {
         sensorInfo = "&distance=" + String(M2MDistance);
       } else  if (reportLevel1 == true || reportLevel2 == true){
         sensorInfo = "&top=" + String(M2MLevel1) + "&bot=" + String(M2MLevel2) ;
+      } else {
+          if (configTrigger.length() < 256){
+                  sensorInfo = "&top=" + String(M2MLevel1) + "&bot=" + String(M2MLevel2) ; 
+           }  
+        
       }
 
       String serverPath = serverName  + "?sensorName=M2M" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
