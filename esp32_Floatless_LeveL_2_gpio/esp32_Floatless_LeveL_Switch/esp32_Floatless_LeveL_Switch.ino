@@ -740,7 +740,7 @@ bool sendReport(bool hasReport) {
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&top=" + strTop + "&bot=" + strBot + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&top=" + strTop + "&bot=" + strBot + "&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
