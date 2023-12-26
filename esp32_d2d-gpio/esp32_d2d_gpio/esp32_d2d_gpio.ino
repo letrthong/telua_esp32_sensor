@@ -59,6 +59,7 @@ RTC_DATA_ATTR  bool hasHum = false;
 RTC_DATA_ATTR  bool hasDistance = false;
 RTC_DATA_ATTR  bool hasLevel1 = false;
 RTC_DATA_ATTR  bool hasLevel2 = false;
+RTC_DATA_ATTR  bool hasLux = false; 
 RTC_DATA_ATTR  bool hasCorrectData = false;
 RTC_DATA_ATTR  bool pollingInterval = 3;
 
@@ -67,13 +68,14 @@ RTC_DATA_ATTR  float  M2MHum = 0.0;
 RTC_DATA_ATTR  float  M2MDistance = 0.0; 
 RTC_DATA_ATTR  float  M2MLevel1 = 0.0;  
 RTC_DATA_ATTR  float  M2MLevel2 = 0.0; 
-
+RTC_DATA_ATTR  float  M2MLux = 0.0; 
  
 RTC_DATA_ATTR  bool reportTemp = false;
 RTC_DATA_ATTR  bool reportHum = false;
 RTC_DATA_ATTR  bool reportDistance = false;
 RTC_DATA_ATTR  bool reportLevel1 = false;
 RTC_DATA_ATTR  bool reportLevel2 = false;
+RTC_DATA_ATTR  bool reportLux = false;
 
 // the LED is connected to GPIO 5
  
@@ -607,6 +609,8 @@ bool sendReport(bool hasReport) {
         sensorInfo = "&distance=" + String(M2MDistance);
       } else  if (reportLevel1 == true || reportLevel2 == true){
         sensorInfo = "&top=" + String(M2MLevel1) + "&bot=" + String(M2MLevel2) ;
+      }  else  if (reportLux == true){
+        sensorInfo = "&lux=" + String(M2MLux)  ;
       }  
 
       String serverPath = serverName  + "?sensorName=M2M" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
@@ -616,6 +620,7 @@ bool sendReport(bool hasReport) {
       hasDistance = false;
       hasLevel1 = false;
       hasLevel2 = false;
+      hasLux = false;
       hasM2M = false;
       hasCorrectData = false;
 
@@ -624,7 +629,7 @@ bool sendReport(bool hasReport) {
       M2MDistance = 0.0; 
       M2MLevel1 = 0.0;  
       M2MLevel2 = 0.0; 
-
+      M2MLux =  0.0; 
       Serial.println(serverPath);
     
       http.setTimeout(60000);
@@ -790,6 +795,13 @@ bool sendReport(bool hasReport) {
                 hasLevel2 = true;
                 Serial.println("deserializeJson M2MSensor M2MLevel2=" + String(M2MLevel1));
               }
+
+               hasKey = M2MObjectt.containsKey("lux");
+              if(hasKey == true){
+                M2MLux = M2MObjectt["lux"];
+                hasLux = true;
+                Serial.println("deserializeJson M2MSensor M2MLux=" + String(M2MLux));
+              }
                
 
               hasKey = M2MObjectt.containsKey("pollingInterval");
@@ -910,6 +922,9 @@ bool sendReport(bool hasReport) {
     }  else if (property == "lev2") {
       currentValue = M2MLevel2;
        reportLevel2 = true;
+    }   else if (property == "lux") {
+      currentValue = M2MLux;
+       reportLux = true;
     }  
     
     if (opera == "=") {
