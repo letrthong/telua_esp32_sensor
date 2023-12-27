@@ -809,10 +809,10 @@ bool sendReport(bool hasReport) {
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true){
-              if(retryTimeout > 3){
-                 ESP.restart();
-              }else{
-                return ret;
+            if(retryTimeout > 3){
+              ESP.restart();
+            }else{
+              return ret;
             } 
          }else{
               ESP.restart();
@@ -885,6 +885,7 @@ bool getTimeZone( ) {
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
+     ESP.restart();
   }
   // Free resources
   http.end();
