@@ -135,6 +135,10 @@ void startSleepMode() {
    First we configure the wake up source
    We set our ESP32 to wake up every 5 seconds
    */
+  
+  if( bootCount == 1){
+    time_to_sleep_mode=  60;
+  }
   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
 
