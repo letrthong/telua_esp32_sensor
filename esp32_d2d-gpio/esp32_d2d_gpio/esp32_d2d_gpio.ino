@@ -624,12 +624,12 @@ bool sendReport(bool hasReport) {
       hasM2M = false;
       hasCorrectData = false;
 
-      M2MTemp = 0.0;
-      M2MHum = 0.0;
-      M2MDistance = 0.0; 
-      M2MLevel1 = 0.0;  
-      M2MLevel2 = 0.0; 
-      M2MLux =  0.0; 
+      M2MTemp = -1.0;
+      M2MHum = -1.0;
+      M2MDistance =  -1.0; 
+      M2MLevel1 =  -1.0;  
+      M2MLevel2 =  -1.0; 
+      M2MLux =   -1.0; 
       Serial.println(serverPath);
     
       http.setTimeout(60000);
