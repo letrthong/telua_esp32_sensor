@@ -64,11 +64,11 @@ RTC_DATA_ATTR  bool hasCorrectData = false;
 RTC_DATA_ATTR  bool pollingInterval = 3;
 
 RTC_DATA_ATTR  float  M2MTemp = 0.0;
-RTC_DATA_ATTR  float  M2MHum = 0.0;
-RTC_DATA_ATTR  float  M2MDistance = 0.0; 
-RTC_DATA_ATTR  float  M2MLevel1 = 0.0;  
-RTC_DATA_ATTR  float  M2MLevel2 = 0.0; 
-RTC_DATA_ATTR  float  M2MLux = 0.0; 
+RTC_DATA_ATTR  float  M2MHum = -1.0;
+RTC_DATA_ATTR  float  M2MDistance = -1.0; 
+RTC_DATA_ATTR  float  M2MLevel1 = -1.0;  
+RTC_DATA_ATTR  float  M2MLevel2 = -1.0; 
+RTC_DATA_ATTR  float  M2MLux = -1.0; 
  
 RTC_DATA_ATTR  bool reportTemp = false;
 RTC_DATA_ATTR  bool reportHum = false;
@@ -603,7 +603,7 @@ bool sendReport(bool hasReport) {
       client -> setInsecure();
       HTTPClient http;
       String sensorInfo = "";
-      if(reportHum == true || reportTemp == true){
+      if(reportHum == true || reportTemp == true || M2MHum >=0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
      } else if (reportDistance == true || M2MDistance >= 0){
         sensorInfo = "&distance=" + String(M2MDistance);
