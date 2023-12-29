@@ -137,7 +137,7 @@ void startSleepMode() {
    */
   
   if( bootCount == 1){
-    time_to_sleep_mode=  60;
+    time_to_sleep_mode=  30;
   }
   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
