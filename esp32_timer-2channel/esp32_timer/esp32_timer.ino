@@ -885,6 +885,8 @@ bool getTimeZone( ) {
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
+    delay(1000); 
+    ESP.restart();
   }
   // Free resources
   http.end();
