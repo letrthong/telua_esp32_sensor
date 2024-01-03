@@ -91,6 +91,11 @@ void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
+
+
+    digitalWrite(ledRelay02, HIGH);
+    delay(100);
+    digitalWrite(ledRelay02, LOW);
 }
 
 void turnOffAll(){
