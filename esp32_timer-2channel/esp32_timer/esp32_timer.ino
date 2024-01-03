@@ -79,6 +79,7 @@ void intGpio(){
     digitalWrite(ledRelay02, HIGH);
     delay(1000);
     digitalWrite(ledRelay02, LOW);
+    delay(1000);
     turnOffAll();
 }
 
@@ -927,10 +928,12 @@ int getSeconds(){
 
 void setup() {
 
-  intGpio();
-
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
+  
+
+  intGpio();
+
   
   Serial.println("Ver:8/Aug/2023");
   initEEPROM();
