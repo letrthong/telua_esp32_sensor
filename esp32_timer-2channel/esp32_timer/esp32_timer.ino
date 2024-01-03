@@ -70,10 +70,16 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 void intGpio(){
+    delay(1000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
-   turnOffAll();
+    delay(1000);
+   
+    digitalWrite(ledRelay02, HIGH);
+    delay(1000);
+    digitalWrite(ledRelay02, LOW);
+    turnOffAll();
 }
 
 void turnOffAll(){
@@ -920,14 +926,13 @@ int getSeconds(){
 
 
 void setup() {
+
+  intGpio();
+
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
   
   Serial.println("Ver:8/Aug/2023");
-  
-  intGpio();
-  delay(1000);
-  
   initEEPROM();
   initWiFi();
 
