@@ -926,6 +926,7 @@ void setup() {
   Serial.println("Ver:8/Aug/2023");
   
   intGpio();
+  delay(1000);
   
   initEEPROM();
   initWiFi();
