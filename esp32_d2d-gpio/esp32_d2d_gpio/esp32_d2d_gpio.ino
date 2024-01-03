@@ -88,18 +88,16 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 void intGpio(){
+    delay(3000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
    
    // WiFi is ready
+    digitalWrite(ledRelay02, HIGH);
     delay(1000);
-    digitalWrite(ledAlarm, HIGH);
-    delay(1000);
-    digitalWrite(ledAlarm, LOW);
-    delay(1000);
+    digitalWrite(ledRelay02, LOW);
     turnOffAll();
-    delay(1000);
 }
 
 void turnOffAll(){
@@ -1071,6 +1069,7 @@ void print_wakeup_reason() {
 }
 
 void setup() {
+  delay(1000);
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
   if (bootCount >= 60) {
