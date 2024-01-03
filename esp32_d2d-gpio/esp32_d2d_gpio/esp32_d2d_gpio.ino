@@ -92,6 +92,7 @@ void intGpio(){
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
    
+   // WiFi is ready
     delay(1000);
     digitalWrite(ledAlarm, HIGH);
     delay(1000);
