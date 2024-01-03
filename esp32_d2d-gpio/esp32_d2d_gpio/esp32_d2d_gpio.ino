@@ -94,8 +94,11 @@ void intGpio(){
 
 
     digitalWrite(ledRelay02, HIGH);
-    delay(100);
+    delay(1000);
     digitalWrite(ledRelay02, LOW);
+    delay(1000);
+    turnOffAll();
+    delay(1000);
 }
 
 void turnOffAll(){
