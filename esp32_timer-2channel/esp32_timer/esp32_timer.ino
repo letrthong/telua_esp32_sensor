@@ -70,13 +70,14 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 void intGpio(){
-    delay(1000);
+   delay(1000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
-     
+    
+    
     delay(1000);
-    digitalWrite(ledAlarm, HIGH);
+    digitalWrite(ledRelay02, HIGH);
     delay(1000);
     digitalWrite(ledAlarm, LOW);
     delay(1000);
@@ -936,6 +937,7 @@ void setup() {
   
   Serial.println("Ver:8/Aug/2023");
   initEEPROM();
+  //digitalWrite(ledRelay02, HIGH);
   initWiFi();
 
   if(deviceID.length() > 0){
@@ -943,6 +945,7 @@ void setup() {
   }
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
    sendReport(true); 
+  
 }
 
 void loop() {
