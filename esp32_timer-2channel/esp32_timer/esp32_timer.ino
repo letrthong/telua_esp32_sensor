@@ -79,7 +79,7 @@ void intGpio(){
     delay(1000);
     digitalWrite(ledRelay02, HIGH);
     delay(1000);
-    digitalWrite(ledAlarm, LOW);
+    digitalWrite(ledRelay02, LOW);
     delay(1000);
 }
 
@@ -930,14 +930,11 @@ void setup() {
 
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
-  
 
   intGpio();
 
-  
   Serial.println("Ver:8/Aug/2023");
   initEEPROM();
-  //digitalWrite(ledRelay02, HIGH);
   initWiFi();
 
   if(deviceID.length() > 0){
