@@ -81,7 +81,7 @@ void intGpio(){
     delay(1000);
     digitalWrite(ledAlarm, LOW);
     delay(1000);
-}
+} 
 
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
