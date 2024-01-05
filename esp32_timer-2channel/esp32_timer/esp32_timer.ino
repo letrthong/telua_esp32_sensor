@@ -77,9 +77,9 @@ void intGpio(){
     
     
     delay(1000);
-    digitalWrite(ledAlarm, HIGH);
+    digitalWrite(ledRelay02, HIGH);
     delay(1000);
-    digitalWrite(ledAlarm, LOW);
+    digitalWrite(ledRelay02, LOW);
     delay(1000);
 } 
 
@@ -929,6 +929,7 @@ int getSeconds(){
 void setup() {
 
   Serial.begin(115200);
+  Serial.println("Serial baudRate=115200");
   delay(1000); //Take some time to open up the Serial Monitor
   Serial.println("Ver:8/Aug/2023");
   
