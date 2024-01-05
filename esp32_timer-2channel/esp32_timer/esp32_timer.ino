@@ -77,9 +77,9 @@ void intGpio(){
     
     
     delay(1000);
-    digitalWrite(ledRelay02, HIGH);
+    digitalWrite(ledAlarm, HIGH);
     delay(1000);
-    digitalWrite(ledRelay02, LOW);
+    digitalWrite(ledAlarm, LOW);
     delay(1000);
 } 
 
