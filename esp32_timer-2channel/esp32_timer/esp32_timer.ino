@@ -929,7 +929,7 @@ int getSeconds(){
 void setup() {
 
   Serial.begin(115200);
-  delay(2000); 
+  delay(1000); 
   Serial.println("Serial baudRate=115200");
   delay(1000); //Take some time to open up the Serial Monitor
   Serial.println("Ver:8/Aug/2023");
