@@ -41,6 +41,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
+RTC_DATA_ATTR int hasInit = 0;
 int g_count = 0;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
@@ -69,18 +70,24 @@ const int ledFloatSwitch =  4;
 const int btnTop = 18;
 const int btnBot = 16;
 
+void powerLed(int led){
+  digitalWrite(led, HIGH);
+  delay(1000);
+  digitalWrite(led, LOW);
+  delay(1000);
+  digitalWrite(led, HIGH);
+  delay(1000);
+  digitalWrite(led, LOW);
+}
+
 void intGpio(){
     delay(1000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
     
-    
-    delay(1000);
-    digitalWrite(ledRelay02, HIGH);
-    delay(1000);
-    digitalWrite(ledRelay02, LOW);
-    delay(1000);
+    powerLed(ledRelay02);
+ 
 } 
 
 void turnOffAll(){
@@ -933,22 +940,25 @@ void setup() {
   Serial.println("Serial baudRate=115200");
   delay(1000); //Take some time to open up the Serial Monitor
   Serial.println("Ver:8/Aug/2023");
-  
   intGpio();
-
-  
-  initEEPROM();
-  initWiFi();
-
-  if(deviceID.length() > 0){
-    getTimeZone();
-  }
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-   sendReport(true); 
-  
 }
 
 void loop() {
+   if(hasInit == 0){
+      hasInit = 1;
+      delay(1000); 
+      
+      
+      initEEPROM();
+      initWiFi();
+
+      if(deviceID.length() > 0){
+        getTimeZone();
+      }
+      configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+      sendReport(true); 
+   }
+
    // printLocalTime();
    g_count = g_count +1;
    if(g_count> 60){
