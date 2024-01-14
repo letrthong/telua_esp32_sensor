@@ -635,10 +635,6 @@ bool sendReport(bool hasReport) {
                   Serial.print("Error trying to execute readMeasurement(): ");
                   errorToString(error, errorMessage, 256);
                   Serial.println(errorMessage);
-                  retryCollect = retryCollect+ 1;
-                  if(retryCollect < 10){
-                      hasError  = false;
-                  }
               } else if (fCo2 == 0) {
                   Serial.println("Invalid sample detected, skipping.");
                   retryCollect = retryCollect+ 1;
@@ -995,7 +991,7 @@ bool sendReport(bool hasReport) {
     }
     
    
-    if(hasSensor == false || retryCollect > 10){
+    if(hasSensor == false){
        delay(1000);  
        ESP.restart();
     }
