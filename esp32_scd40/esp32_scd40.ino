@@ -631,7 +631,7 @@ bool sendReport(bool hasReport) {
             if(index > 98){
                 Serial.println("sendReport isDataReady");
             }
-            delay(200);  
+            delay(100);  
             continue;
           }
 
