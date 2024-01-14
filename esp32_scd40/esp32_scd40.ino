@@ -617,7 +617,7 @@ bool sendReport(bool hasReport) {
     char errorMessage[256];
     // Read Measurement
     bool  isDataReady = false;
-    for(int index = 0; index< 100; index++){
+    for(int index = 0; index < 100; index++){
         error = scd4x.getDataReadyFlag(isDataReady);
         if (error) {
           Serial.print("Error trying to execute getDataReadyFlag(): ");
@@ -629,7 +629,7 @@ bool sendReport(bool hasReport) {
 
           if (!isDataReady) {
             Serial.println("sendReport isDataReady");
-            delay(100);  
+            delay(200);  
             continue;
           }
 
