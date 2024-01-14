@@ -46,6 +46,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
+int retryCollect = 0;
 RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
@@ -637,7 +638,13 @@ bool sendReport(bool hasReport) {
           Serial.println(errorMessage);
       } else if (fCo2 == 0) {
           Serial.println("Invalid sample detected, skipping.");
+          retryCollect = retryCollect+ 1;
+          if(retryCollect < 10){
+             hasError  = false;
+          }
+
       } else {
+          retryCollect =0;
           Serial.print("Co2:");
           Serial.print(fCo2);
           Serial.print("\t");
@@ -967,6 +974,9 @@ bool sendReport(bool hasReport) {
  
 
  void loop() {
+    for(int i = 0; i < time_to_sleep_mode; i++){
+         sendReport(false);
+         delay(1000);
+    }
     sendReport(true);
-    delay(100);
  }
