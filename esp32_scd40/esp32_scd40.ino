@@ -643,7 +643,7 @@ bool sendReport(bool hasReport) {
             hasError  = false;
           }
       } else {
-          retryCollect =0;
+          retryCollect = 0;
           Serial.print("Co2:");
           Serial.print(fCo2);
           Serial.print("\t");
