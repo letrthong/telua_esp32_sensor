@@ -656,7 +656,6 @@ bool sendReport(bool hasReport) {
           strTemp = String(temperature, 2);
           strHumx = String(humidity, 2);
           hasError  = false;
-    
           break;
       }
       delay(100);  
@@ -990,8 +989,14 @@ bool sendReport(bool hasReport) {
     }
     
    
-    if(hasError == true || hasSensor == false){
-       Serial.println("restart");
+    if(hasError == true ){
+       Serial.println("loop restart hasError=true");
+       delay(1000);  
+       ESP.restart();
+    }
+    
+    if( hasSensor == false){
+       Serial.println("loop restart hasSensor =true");
        delay(1000);  
        ESP.restart();
     }
