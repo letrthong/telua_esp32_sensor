@@ -611,64 +611,62 @@ bool sendReport(bool hasReport) {
   float humidity = 0.0f;
 
   hasError = true;
-  if (hasSensor == true) {
-      uint16_t error;
-      char errorMessage[256];
- 
-      // Read Measurement
-    
-      
+    if (hasSensor == true) {
+        uint16_t error;
+        char errorMessage[256];
+        // Read Measurement
       bool  isDataReady = false;
-      error = scd4x.getDataReadyFlag(isDataReady);
-      if (error) {
-          Serial.print("Error trying to execute getDataReadyFlag(): ");
-          errorToString(error, errorMessage, 256);
-          Serial.println(errorMessage);
-
-          //return true;
-      }
-
-      if (isDataReady) {
-          for(int index = 0; index< 10; index++){
-              error = scd4x.readMeasurement(fCo2, temperature, humidity);
-              if (error) {
-                  Serial.print("Error trying to execute readMeasurement(): ");
-                  errorToString(error, errorMessage, 256);
-                  Serial.println(errorMessage);
-              } else if (fCo2 == 0) {
-                  Serial.println("Invalid sample detected, skipping.");
-                  retryCollect = retryCollect+ 1;
-                  if(retryCollect < 10){
-                    hasError  = false;
-                  }
-
-              } else {
-                  retryCollect =0;
-                  Serial.print("Co2:");
-                  Serial.print(fCo2);
-                  Serial.print("\t");
-                  Serial.print("Temperature:");
-                  Serial.print(temperature);
-                  Serial.print("\t");
-                  Serial.print("Humidity:");
-                  Serial.println(humidity);
-                  strCo2 = String( float(fCo2), 2);
-                  strTemp = String(temperature, 2);
-                  strHumx = String(humidity, 2);
-                  hasError  = false;
-                  
-                  if( humidity < 10){
-                      ESP. restart(); 
-                    }
-                  break;
-              }
-              delay(100);  
+      for(int index = 0; index< 10; index++){
+          error = scd4x.getDataReadyFlag(isDataReady);
+          if (error) {
+              Serial.print("Error trying to execute getDataReadyFlag(): ");
+              errorToString(error, errorMessage, 256);
+              Serial.println(errorMessage);
+                delay(100);  
+              continue;
+              
           }
+
+            if (!isDataReady) {
+                delay(100);  
+              continue;
+            }
+
+        error = scd4x.readMeasurement(fCo2, temperature, humidity);
+        if (error) {
+            Serial.print("Error trying to execute readMeasurement(): ");
+            errorToString(error, errorMessage, 256);
+            Serial.println(errorMessage);
+        } else if (fCo2 == 0) {
+            Serial.println("Invalid sample detected, skipping.");
+            retryCollect = retryCollect+ 1;
+            if(retryCollect < 10){
+              hasError  = false;
+            }
+
+        } else {
+            retryCollect =0;
+            Serial.print("Co2:");
+            Serial.print(fCo2);
+            Serial.print("\t");
+            Serial.print("Temperature:");
+            Serial.print(temperature);
+            Serial.print("\t");
+            Serial.print("Humidity:");
+            Serial.println(humidity);
+            strCo2 = String( float(fCo2), 2);
+            strTemp = String(temperature, 2);
+            strHumx = String(humidity, 2);
+            hasError  = false;
+            
+            if( humidity < 10){
+                ESP. restart(); 
+              }
+            break;
+        }
+        delay(100);  
       }
-  
-      
- 
-  }
+    }
 
    String strTriggerParameter = "";
   //process trigger
