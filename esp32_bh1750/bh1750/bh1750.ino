@@ -819,6 +819,7 @@ bool sendReport(bool hasReport) {
           if (id.length() > 1 && id.length() < 64) {
             EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
             EEPROM.commit();
+            deviceID = id;
           }
         }
 
@@ -828,6 +829,7 @@ bool sendReport(bool hasReport) {
           if (serial_number.length() > 1 && serial_number.length() < 64) {
             EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
             EEPROM.commit();
+            serialNumber = serial_number;
           }
         }
       }
