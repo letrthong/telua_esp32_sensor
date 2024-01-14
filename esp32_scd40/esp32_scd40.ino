@@ -986,7 +986,7 @@ bool sendReport(bool hasReport) {
     if(hasSensor  == true){
         sendReport(true);
         delay(1000);
-        for(int i = 0; i < time_to_sleep_mode; i++){
+        for(int i = 0; i < int(time_to_sleep_mode/2); i++){
           sendReport(false);
           delay(1000);
       }
