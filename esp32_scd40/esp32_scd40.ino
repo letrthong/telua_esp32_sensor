@@ -995,7 +995,7 @@ bool sendReport(bool hasReport) {
     }
     
    
-    if(hasSensor == false){
+    if(hasSensor == false || retryCollect > 10){
        delay(1000);  
        ESP.restart();
     }
