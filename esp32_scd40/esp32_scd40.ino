@@ -991,7 +991,7 @@ bool sendReport(bool hasReport) {
     }
     
    
-    if(hasSensor == false){
+    if(hasError == true || hasSensor == false){
        delay(1000);  
        ESP.restart();
     }
