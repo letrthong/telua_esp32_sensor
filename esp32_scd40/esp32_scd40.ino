@@ -603,9 +603,11 @@ bool sendReport(bool hasReport) {
  
   String strCo2= "0";
   String strTemp= "0";
-   String strHumx= "0";
+  String strHumx= "0";
 
   uint16_t fCo2 = 0;
+  float temperature = 0.0f;
+  float humidity = 0.0f;
 
   hasError = true;
   if (hasSensor == true) {
@@ -614,8 +616,7 @@ bool sendReport(bool hasReport) {
  
       // Read Measurement
     
-      float temperature = 0.0f;
-      float humidity = 0.0f;
+      
       bool  isDataReady = false;
       error = scd4x.getDataReadyFlag(isDataReady);
       if (error) {
@@ -639,14 +640,15 @@ bool sendReport(bool hasReport) {
       } else {
           Serial.print("Co2:");
           Serial.print(fCo2);
-          //led_index = co2;
           Serial.print("\t");
           Serial.print("Temperature:");
           Serial.print(temperature);
           Serial.print("\t");
           Serial.print("Humidity:");
           Serial.println(humidity);
-          strCo2 = String(fCo2, 2);
+          strCo2 = String( float(fCo2), 2);
+          strTemp = String(temperature, 2);
+          strHumx = String(humidity, 2);
           hasError  = false;
         if( humidity < 10){
             ESP. restart(); 
@@ -775,14 +777,14 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=SCD4x&C02=" + strCo2  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=SCD4x&C02=" + strCo2  + "&temperature=" +strTemp + "&humidity=" +strHumx+   "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
   if(hasGPIo == true){
-    serverPath = serverName + "?sensorName=SCD4x_Controller&C02=" + strCo2  + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    serverPath = serverName + "?sensorName=SCD4x_Controller&C02=" + strCo2  +  "&temperature=" +strTemp + "&humidity=" +strHumx + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID +  "&C02=" + strCo2   +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID +  "&C02=" + strCo2  + "&temperature=" +strTemp + "&humidity=" +strHumx+  +"&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
