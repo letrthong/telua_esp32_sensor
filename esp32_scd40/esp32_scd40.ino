@@ -992,6 +992,7 @@ bool sendReport(bool hasReport) {
     
    
     if(hasError == true || hasSensor == false){
+       Serial.println("restart");
        delay(1000);  
        ESP.restart();
     }
