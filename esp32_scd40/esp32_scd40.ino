@@ -612,9 +612,9 @@ bool sendReport(bool hasReport) {
 
   hasError = true;
   if (hasSensor == true) {
-      uint16_t error;
-      char errorMessage[256];
-      // Read Measurement
+    uint16_t error;
+    char errorMessage[256];
+    // Read Measurement
     bool  isDataReady = false;
     for(int index = 0; index< 10; index++){
         error = scd4x.getDataReadyFlag(isDataReady);
@@ -771,6 +771,8 @@ bool sendReport(bool hasReport) {
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    delay(1000);  
+    ESP.restart();
     return false;
   }
 
@@ -778,11 +780,15 @@ bool sendReport(bool hasReport) {
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
+    delay(1000);  
+    ESP.restart();
     return false;
   }
 
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
+    delay(1000);  
+    ESP.restart();
     return false;
   }
 
