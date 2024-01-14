@@ -647,7 +647,7 @@ bool sendReport(bool hasReport) {
       M2MLevel1 =  -1.0;  
       M2MLevel2 =  -1.0; 
       M2MLux =   -1.0; 
-       M2MCO2 = -1.0;
+      M2MCO2 = -1.0;
       Serial.println(serverPath);
     
       http.setTimeout(60000);
