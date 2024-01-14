@@ -628,50 +628,50 @@ bool sendReport(bool hasReport) {
           //return true;
       }
 
-      if (!isDataReady) {
-         // return true;
+      if (isDataReady) {
+          for(int index = 0; index< 10; index++){
+              error = scd4x.readMeasurement(fCo2, temperature, humidity);
+              if (error) {
+                  Serial.print("Error trying to execute readMeasurement(): ");
+                  errorToString(error, errorMessage, 256);
+                  Serial.println(errorMessage);
+                  retryCollect = retryCollect+ 1;
+                  if(retryCollect < 10){
+                      hasError  = false;
+                  }
+              } else if (fCo2 == 0) {
+                  Serial.println("Invalid sample detected, skipping.");
+                  retryCollect = retryCollect+ 1;
+                  if(retryCollect < 10){
+                    hasError  = false;
+                  }
+
+              } else {
+                  retryCollect =0;
+                  Serial.print("Co2:");
+                  Serial.print(fCo2);
+                  Serial.print("\t");
+                  Serial.print("Temperature:");
+                  Serial.print(temperature);
+                  Serial.print("\t");
+                  Serial.print("Humidity:");
+                  Serial.println(humidity);
+                  strCo2 = String( float(fCo2), 2);
+                  strTemp = String(temperature, 2);
+                  strHumx = String(humidity, 2);
+                  hasError  = false;
+                  
+                  if( humidity < 10){
+                      ESP. restart(); 
+                    }
+                  break;
+              }
+              delay(100);  
+          }
       }
   
-      for(int index = 0; index< 10; index++){
-           if (error) {
-              Serial.print("Error trying to execute readMeasurement(): ");
-              errorToString(error, errorMessage, 256);
-              Serial.println(errorMessage);
-              retryCollect = retryCollect+ 1;
-              if(retryCollect < 10){
-                  hasError  = false;
-              }
-          } else if (fCo2 == 0) {
-              Serial.println("Invalid sample detected, skipping.");
-              retryCollect = retryCollect+ 1;
-              if(retryCollect < 10){
-                hasError  = false;
-              }
-
-          } else {
-              retryCollect =0;
-              Serial.print("Co2:");
-              Serial.print(fCo2);
-              Serial.print("\t");
-              Serial.print("Temperature:");
-              Serial.print(temperature);
-              Serial.print("\t");
-              Serial.print("Humidity:");
-              Serial.println(humidity);
-              strCo2 = String( float(fCo2), 2);
-              strTemp = String(temperature, 2);
-              strHumx = String(humidity, 2);
-              hasError  = false;
-              
-              if( humidity < 10){
-                  ESP. restart(); 
-                }
-              break;
-          }
-           delay(100);  
-      }
-      error = scd4x.readMeasurement(fCo2, temperature, humidity);
-     
+      
+ 
   }
 
    String strTriggerParameter = "";
