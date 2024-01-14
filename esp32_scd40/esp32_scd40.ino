@@ -133,7 +133,7 @@ void printSerialNumber(uint16_t serial0, uint16_t serial1, uint16_t serial2) {
     float temperature = 0.0f;
     float humidity = 0.0f;
     uint16_t  isDataReady = false;
-    error = scd4x.getDataReadyStatus(isDataReady);
+    error = scd4x.getDataReadyFlag(isDataReady);
     if (error) {
         Serial.print("Error trying to execute getDataReadyFlag(): ");
         errorToString(error, errorMessage, 256);
