@@ -617,7 +617,7 @@ bool sendReport(bool hasReport) {
       client -> setInsecure();
       HTTPClient http;
       String sensorInfo = "";
-      if(reportCO2 == true || reportTemp == true || M2MHum >=0 ){
+      if(reportCO2 == true || M2MCO2  > 0.0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&co2=" + String(M2MCO2) ;
       } else if(reportHum == true || reportTemp == true || M2MHum >=0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
@@ -897,6 +897,7 @@ bool sendReport(bool hasReport) {
   reportDistance = false;
   reportLevel1 = false;
   reportLevel2 = false;   
+   reportCO2 = false; 
 
   bool hasBtn0 = false;
   bool hasBtn1 = false; 
