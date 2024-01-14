@@ -46,7 +46,7 @@ RTC_DATA_ATTR int retryTimeout = 0;
 int g_count = 0;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
-const char * ssid = "Telua_Timer_";
+const char * ssid = "Telua_GPIO_";
  
 const char * password = "12345678";
 String g_ssid = "";
