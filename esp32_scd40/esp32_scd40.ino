@@ -600,8 +600,9 @@ void turnOffWiFi() {
 
 
 bool sendReport(bool hasReport) {
+ // Serial.println("sendReport");
   bool ret = false;
- 
+  
   String strCo2= "0";
   String strTemp= "0";
   String strHumx= "0";
@@ -616,7 +617,7 @@ bool sendReport(bool hasReport) {
     char errorMessage[256];
     // Read Measurement
     bool  isDataReady = false;
-    for(int index = 0; index< 10; index++){
+    for(int index = 0; index< 100; index++){
         error = scd4x.getDataReadyFlag(isDataReady);
         if (error) {
           Serial.print("Error trying to execute getDataReadyFlag(): ");
@@ -627,6 +628,7 @@ bool sendReport(bool hasReport) {
         }
 
           if (!isDataReady) {
+            Serial.println("sendReport isDataReady");
             delay(100);  
             continue;
           }
@@ -996,7 +998,7 @@ bool sendReport(bool hasReport) {
     }
     
     if( hasSensor == false){
-       Serial.println("loop restart hasSensor =true");
+       Serial.println("loop restart hasSensor =false");
        delay(1000);  
        ESP.restart();
     }
