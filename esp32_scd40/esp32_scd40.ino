@@ -619,16 +619,15 @@ bool sendReport(bool hasReport) {
     for(int index = 0; index< 10; index++){
         error = scd4x.getDataReadyFlag(isDataReady);
         if (error) {
-            Serial.print("Error trying to execute getDataReadyFlag(): ");
-            errorToString(error, errorMessage, 256);
-            Serial.println(errorMessage);
-              delay(100);  
-            continue;
-            
+          Serial.print("Error trying to execute getDataReadyFlag(): ");
+          errorToString(error, errorMessage, 256);
+          Serial.println(errorMessage);
+          delay(100);  
+          continue;
         }
 
           if (!isDataReady) {
-              delay(100);  
+            delay(100);  
             continue;
           }
 
@@ -643,7 +642,6 @@ bool sendReport(bool hasReport) {
           if(retryCollect < 10){
             hasError  = false;
           }
-
       } else {
           retryCollect =0;
           Serial.print("Co2:");
@@ -658,10 +656,7 @@ bool sendReport(bool hasReport) {
           strTemp = String(temperature, 2);
           strHumx = String(humidity, 2);
           hasError  = false;
-          
-          if( humidity < 10){
-              ESP. restart(); 
-            }
+    
           break;
       }
       delay(100);  
