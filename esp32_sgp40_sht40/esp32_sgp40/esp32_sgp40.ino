@@ -659,6 +659,10 @@ bool sendReport(bool hasReport) {
         float currentValue = 0;
         if (property == "voc") {
           currentValue = float(voc_index);
+        } else  if (property == "tem") {
+          currentValue = temperature;
+        }  else  if (property == "hum") {
+          currentValue = humidity;
         } else if (property == "err"){
           if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
