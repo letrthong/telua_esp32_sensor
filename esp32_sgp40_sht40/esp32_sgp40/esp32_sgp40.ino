@@ -74,7 +74,9 @@ const int ledFloatSwitch =  4;
 
 const int btnTop = 18;
 const int btnBot = 16;
- 
+
+int32_t current_voc_index = 0;
+bool  valueChanged = false;
  
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
@@ -609,6 +611,13 @@ bool sendReport(bool hasReport) {
 
           voc_index = sgp.measureVocIndex( temperature, humidity);
           str_voc_index = String(float(voc_index), 2);
+
+          if(voc_index != current_voc_index){
+            current_voc_index = voc_index;
+            valueChanged = true;
+          } else{
+             valueChanged = false; 
+          }
       }   
 
         Serial.print("voc_index:");
@@ -722,10 +731,13 @@ bool sendReport(bool hasReport) {
     }
   }
   
-   if(hasReport == false){
+   if(hasReport == false ){
+      
       return ret;
    }
    
+   
+
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
@@ -947,8 +959,14 @@ bool sendReport(bool hasReport) {
         sendReport(true);
         delay(1000);
         for(int i = 0; i < int(time_to_sleep_mode); i++){
-          sendReport(false);
+          if ((i%30 == 0 ) && valueChanged == true){
+              sendReport(true);
+          } else{
+             sendReport(false);
+          }
+          
           delay(1000);
+          
       }
     }
     
