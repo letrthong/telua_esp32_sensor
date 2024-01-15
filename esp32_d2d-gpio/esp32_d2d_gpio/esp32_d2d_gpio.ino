@@ -61,6 +61,7 @@ RTC_DATA_ATTR  bool hasLevel1 = false;
 RTC_DATA_ATTR  bool hasLevel2 = false;
 RTC_DATA_ATTR  bool hasLux = false; 
 RTC_DATA_ATTR  bool hasCO2 = false; 
+RTC_DATA_ATTR  bool hasVOC = false; 
 RTC_DATA_ATTR  bool hasCorrectData = false;
 RTC_DATA_ATTR  bool pollingInterval = 3;
 
@@ -71,6 +72,7 @@ RTC_DATA_ATTR  float  M2MLevel1 = -1.0;
 RTC_DATA_ATTR  float  M2MLevel2 = -1.0; 
 RTC_DATA_ATTR  float  M2MLux = -1.0; 
 RTC_DATA_ATTR  float  M2MCO2 = -1.0; 
+RTC_DATA_ATTR  float  M2MVOC = -1.0; 
 
 RTC_DATA_ATTR  bool reportTemp = false;
 RTC_DATA_ATTR  bool reportHum = false;
@@ -79,7 +81,7 @@ RTC_DATA_ATTR  bool reportLevel1 = false;
 RTC_DATA_ATTR  bool reportLevel2 = false;
 RTC_DATA_ATTR  bool reportLux = false;
 RTC_DATA_ATTR  bool reportCO2 = false;
-
+RTC_DATA_ATTR  bool reportVOC = false;
 // the LED is connected to GPIO 5
  
 const int ledRelay01 = 17 ; 
@@ -619,6 +621,8 @@ bool sendReport(bool hasReport) {
       String sensorInfo = "";
       if(reportCO2 == true || M2MCO2  > 0.0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&co2=" + String(M2MCO2) ;
+      } else if(reportVOC == true || M2MVOC  > 0.0 ){
+        sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&voc=" + String(M2MVOC) ;
       } else if(reportHum == true || reportTemp == true || M2MHum >=0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
       } else if (reportDistance == true || M2MDistance >= 0){
@@ -639,6 +643,7 @@ bool sendReport(bool hasReport) {
       hasLux = false;
       hasM2M = false;
       hasCO2 = false;
+      hasVOC = false;
       hasCorrectData = false;
 
       M2MTemp = -1.0;
@@ -648,6 +653,7 @@ bool sendReport(bool hasReport) {
       M2MLevel2 =  -1.0; 
       M2MLux =   -1.0; 
       M2MCO2 = -1.0;
+      M2MVOC = -1.0; 
       Serial.println(serverPath);
     
       http.setTimeout(60000);
@@ -828,6 +834,13 @@ bool sendReport(bool hasReport) {
                 hasCO2 = true;
                 Serial.println("deserializeJson M2MSensor M2MCO2=" + String(M2MCO2));
               }
+
+              hasKey = M2MObjectt.containsKey("voc");
+              if(hasKey == true){
+                M2MVOC = M2MObjectt["voc"];
+                hasVOC = true;
+                Serial.println("deserializeJson M2MSensor M2MVOC=" + String(M2MVOC));
+              }
                
 
               hasKey = M2MObjectt.containsKey("pollingInterval");
@@ -955,6 +968,9 @@ bool sendReport(bool hasReport) {
     }   else if (property == "co2") {
       currentValue = M2MCO2;
        reportCO2 = true;
+    }   else if (property == "voc") {
+      currentValue = M2MVOC;
+       reportVOC = true;
     }  
     
     if (opera == "=") {
