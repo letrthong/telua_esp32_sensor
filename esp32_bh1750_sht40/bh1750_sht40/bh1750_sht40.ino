@@ -4,7 +4,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include "Adafruit_SHT4x.h"
-
+#include <BH1750.h>
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -45,9 +45,10 @@ RTC_DATA_ATTR int retryTimeout = 0;
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+BH1750 lightMeter;
 
-const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
+const char * ssid = "Telua_Sht40_BH1750_";
+const char * ssid_gpio = "Telua_Shtx_BH1750_Gpio_"; 
 
 const char * password = "12345678";
 String g_ssid = "";
@@ -559,6 +560,16 @@ void turnOffWiFi() {
 }
 
 void initSht4x() {
+   Wire.begin(21,22);
+    
+    if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
+      Serial.println(F("BH1750 Advanced begin"));
+       hasSensor = true;
+  } else {
+      Serial.println(F("Error initialising BH1750"));
+      
+  }
+
   Serial.println("Telua SHT4x test");
   if (!sht4.begin()) {
     Serial.println("Couldn't find SHT4x");
@@ -645,8 +656,11 @@ bool sendReport(bool hasReport) {
   bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
+  String lux= "0";
+
   float fHumidity = 0.0;
   float fTemperature = 0.0;
+  float fLux = 0.0;
   if (hasSensor == true) {
     for (int i = 0; i < 3; i++) {
       sensors_event_t humidity, temp;
@@ -669,6 +683,23 @@ bool sendReport(bool hasReport) {
       delay(500);
     }
   }
+
+
+  
+   if (hasSensor == true) {
+       for(int i = 0; i< 10; i++){
+          if(   lightMeter.measurementReady()){
+            fLux = lightMeter.readLightLevel();
+            Serial.print("Light: ");
+            Serial.print(fLux);
+            Serial.println(" lx");
+            lux = String(fLux, 2);
+            break;
+          }
+          delay(10);
+       }
+   }
+
 
    String strTriggerParameter = "";
   //process trigger
@@ -713,6 +744,8 @@ bool sendReport(bool hasReport) {
           currentValue = fHumidity;
         }  else if (property == "hum") {
           currentValue = fHumidity;
+        } else  if (property == "lux") {
+          currentValue = fLux;
         } else if (property == "err"){
           if (hasSensor   == false || hasError == true ){
             hasTrigger = true;
@@ -893,6 +926,7 @@ bool sendReport(bool hasReport) {
           if (id.length() > 1 && id.length() < 64) {
             EEPROM.writeString(EEPROM_ADDRESS_DEVICE_ID, id);
             EEPROM.commit();
+            deviceID = id;
           }
         }
 
@@ -902,6 +936,7 @@ bool sendReport(bool hasReport) {
           if (serial_number.length() > 1 && serial_number.length() < 64) {
             EEPROM.writeString(EEPROM_ADDRESS_SERIAL_NUMBER, serial_number);
             EEPROM.commit();
+            serialNumber = serial_number;
           }
         }
       }
