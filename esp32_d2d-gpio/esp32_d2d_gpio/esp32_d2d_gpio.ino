@@ -624,7 +624,10 @@ bool sendReport(bool hasReport) {
       } else if(reportVOC == true || M2MVOC  > 0.0 ){
         sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) + "&voc=" + String(M2MVOC) ;
       } else if(reportHum == true || reportTemp == true || M2MHum >=0 ){
-        sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
+          sensorInfo=  "&temperature=" + String(M2MTemp) + "&humidity=" + String(M2MHum) ;
+         if(reportLux == true){
+            sensorInfo = sensorInfo + "&lux=" + String(M2MLux)  ;
+         }
       } else if (reportDistance == true || M2MDistance >= 0){
         sensorInfo = "&distance=" + String(M2MDistance);
       } else  if (reportLevel1 == true || reportLevel2 == true || M2MLevel1 > 0.0){
