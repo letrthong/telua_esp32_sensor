@@ -810,7 +810,7 @@ bool sendReport(bool hasReport) {
   }
   
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + +"&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + "&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
