@@ -806,7 +806,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=IoExpander16&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=IoExpander08&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
  
   Serial.println(serverPath);
 
