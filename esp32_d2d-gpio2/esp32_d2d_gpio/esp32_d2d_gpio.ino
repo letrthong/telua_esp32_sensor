@@ -636,7 +636,7 @@ bool sendReport(bool hasReport) {
         sensorInfo = "&lux=" + String(M2MLux)  ;
       }  
 
-      String serverPath = serverName  + "?sensorName=M2M" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      String serverPath = serverName  + "?sensorName=M2M_02" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       
       hasTemp = false;
       hasHum = false;
