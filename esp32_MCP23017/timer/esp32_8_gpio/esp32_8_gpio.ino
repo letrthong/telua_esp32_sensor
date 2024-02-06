@@ -78,7 +78,7 @@ const int btnBot = 16;
 
 String gAction = "";
 
- #define I2C_ADDRESS 0x21
+ #define I2C_ADDRESS 0x20
  
 // https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
@@ -227,10 +227,10 @@ bool detectI2c(){
   Wire.beginTransmission(I2C_ADDRESS);
   byte  error = Wire.endTransmission();
   if (error == 0){
-     Serial.println("I2C device found at address 0x21");
+     Serial.println("I2C device found at address 0x20");
      ret = true;
    } else {
-       Serial.println("I2C device NOT found at address 0x21");
+       Serial.println("I2C device NOT found at address 0x20");
   }
 
   return ret;

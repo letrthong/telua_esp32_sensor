@@ -78,7 +78,7 @@ const int btnBot = 16;
 
 String gAction = "";
 
- #define I2C_ADDRESS 0x21
+ #define I2C_ADDRESS 0x20
  
 // https://github.com/adafruit/Adafruit-MCP23017-Arduino-Library/tree/master
 int initMcp23017(){
