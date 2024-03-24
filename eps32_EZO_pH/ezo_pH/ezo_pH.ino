@@ -37,7 +37,8 @@ void serialEvent() {                                                            
 }
 
 
-void loop() {                                                                     //the main loop.
+void loop() {     
+   Serial.println("loop ....");                                                                   //the main loop.
   if (serial_event == true) {                                                     //if a command was sent to the EZO device.
     for (i = 0; i <= received_from_computer; i++) {                               //set all char to lower case, this is just so this exact sample code can recognize the "sleep" command.
       computerdata[i] = tolower(computerdata[i]);                                 //"Sleep" ≠ "sleep"
