@@ -608,6 +608,7 @@ void initEEPROM() {
 }
 
 bool sendReport(bool hasReport) {
+  Serial.println("sendReport");
   bool ret = false;
   String pH = "0";
   float fpH = 0.0;
