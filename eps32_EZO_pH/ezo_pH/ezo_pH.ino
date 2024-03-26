@@ -429,6 +429,7 @@ void startSmartConfig() {
 }
 
 void initWiFi() {
+  Serial.println("initWiFi start");
   WiFi.mode(WIFI_STA);
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
@@ -561,7 +562,7 @@ void initWiFi() {
 //    else{
 //        startLocalWeb();
 //    }
-
+   Serial.println("initWiFi end");
 }
 
 void turnOffWiFi() {
@@ -987,6 +988,7 @@ void setup() {
   if(hasGPIo == true){
     intGpio();
   }
+
   initEEPROM();
   initWiFi();
 
