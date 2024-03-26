@@ -153,6 +153,8 @@ void startSleepMode() {
    First we configure the wake up source
    We set our ESP32 to wake up every 5 seconds
    */
+   Wire.end();
+
   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
   Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
 
@@ -623,11 +625,10 @@ bool sendReport(bool hasReport) {
             hasError = false;
             fpH = PH.get_last_received_reading();
             pH = String(fpH, 2);
-
            
             Serial.print(" pH=");
-             Serial.print(pH);
-              break;
+            Serial.print(pH);
+            break;
         } else {
 
            Serial.print(" PH.get_error() !SUCCESS");
