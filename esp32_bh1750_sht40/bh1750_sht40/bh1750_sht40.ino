@@ -521,6 +521,10 @@ void initWiFi() {
         if(remote_pass.length() > 1){
            WiFi.begin(remote_ssid, remote_pass);
            isConnecting = true;
+        }  else {
+          EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
+          EEPROM.commit();
+          ESP.restart();
         }
       }
       Serial.print("Connecting to Remote WiFi ..");
@@ -546,6 +550,13 @@ void initWiFi() {
           EEPROM.commit();
           ESP.restart();
         }
+      } else {
+        if(isConnecting == true){
+           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
+           EEPROM.commit();
+           ESP.restart();
+        }
+       
       }
     }
   }
