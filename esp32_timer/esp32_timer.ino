@@ -956,7 +956,7 @@ void loop() {
    if(g_count> 60){
        sendReport(true); 
       g_count= 0;
-   }else{
+   } else {
       sendReport(false); 
    }
    
