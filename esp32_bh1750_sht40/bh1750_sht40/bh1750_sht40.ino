@@ -556,7 +556,6 @@ void initWiFi() {
            EEPROM.commit();
            ESP.restart();
         }
-       
       }
     }
   }
