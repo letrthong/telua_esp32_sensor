@@ -516,7 +516,9 @@ void initWiFi() {
         Serial.println("WIFI_AUTH_OPEN");
         WiFi.begin(remote_ssid);
       } else {
-        WiFi.begin(remote_ssid, remote_pass);
+        if(remote_pass.length() > 1){
+           WiFi.begin(remote_ssid, remote_pass);
+        }
       }
       Serial.print("Connecting to Remote WiFi ..");
       int count = 0;
