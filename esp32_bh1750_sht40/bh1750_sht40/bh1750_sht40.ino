@@ -509,21 +509,24 @@ void initWiFi() {
   if (isCorrectPassword == false) {
     // Retry again
     Serial.println(" Retry with the remote router");
+    bool isConnecting = false;
     if (hasRemoteRouter == true) {
       WiFi.disconnect();
       delay(500);
       if (g_remtoe_encryption_Type == WIFI_AUTH_OPEN) {
         Serial.println("WIFI_AUTH_OPEN");
         WiFi.begin(remote_ssid);
+        isConnecting = true;
       } else {
         if(remote_pass.length() > 1){
            WiFi.begin(remote_ssid, remote_pass);
+           isConnecting = true;
         }
       }
       Serial.print("Connecting to Remote WiFi ..");
       int count = 0;
       int retryTime = 30;
-      while (WiFi.status() != WL_CONNECTED) {
+      while (WiFi.status() != WL_CONNECTED &&  (isConnecting == true)) {
         Serial.print('.');
         delay(500);
         // 15 seconds
