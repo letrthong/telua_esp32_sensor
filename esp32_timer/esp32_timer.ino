@@ -22,6 +22,8 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
+String btnStatus = "&b1=off&b2=off&al=off"
+String releaseDate = "12-May-2024"
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -68,7 +70,7 @@ const int ledFloatSwitch =  4;
 
 const int btnTop = 18;
 const int btnBot = 16;
-
+ 
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
@@ -623,22 +625,29 @@ bool sendReport(bool hasReport) {
           }
       }
 
+      btnStatus = ""
       if(hasBtn0 == true){
          turnOnRelay("b1On");
+         btnStatus   = btnStatus + "&b1=on"
       }else{
         turnOffRelay("b1Off");
+         btnStatus   = btnStatus + "&b1=off"
       }
 
       if(hasBtn1 == true){
          turnOnRelay("b2On");
+          btnStatus   = btnStatus + "&b2=on"
       }else{
         turnOffRelay("b2Off");
+         btnStatus   = btnStatus + "&b2=off"
       }
 
       if(hasAl == true){
          turnOnRelay("alOn");
+         btnStatus   = btnStatus + "&al=on"
       }else{
         turnOffRelay("alOff");
+        btnStatus   = btnStatus + "&al=off"
       }
     }
   }
@@ -672,7 +681,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=12-May-2024";
+  String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +  btnStatus ;
  
   Serial.println(serverPath);
 
