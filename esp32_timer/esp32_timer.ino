@@ -628,26 +628,26 @@ bool sendReport(bool hasReport) {
       btnStatus = ""
       if(hasBtn0 == true){
          turnOnRelay("b1On");
-         btnStatus   = btnStatus + "&b1=on"
+         btnStatus   = btnStatus + "&b1=on";
       }else{
         turnOffRelay("b1Off");
-         btnStatus   = btnStatus + "&b1=off"
+         btnStatus   = btnStatus + "&b1=off";
       }
 
       if(hasBtn1 == true){
          turnOnRelay("b2On");
-          btnStatus   = btnStatus + "&b2=on"
+          btnStatus   = btnStatus + "&b2=on";
       }else{
         turnOffRelay("b2Off");
-         btnStatus   = btnStatus + "&b2=off"
+         btnStatus   = btnStatus + "&b2=off";
       }
 
       if(hasAl == true){
          turnOnRelay("alOn");
-         btnStatus   = btnStatus + "&al=on"
+         btnStatus   = btnStatus + "&al=on";
       }else{
         turnOffRelay("alOff");
-        btnStatus   = btnStatus + "&al=off"
+        btnStatus   = btnStatus + "&al=off";
       }
     }
   }
