@@ -22,8 +22,8 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String btnStatus = "&b1=off&b2=off&al=off"
-String releaseDate = "12-May-2024"
+String btnStatus = "&b1=off&b2=off&al=off";
+String releaseDate = "12-May-2024";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -625,7 +625,7 @@ bool sendReport(bool hasReport) {
           }
       }
 
-      btnStatus = ""
+      btnStatus = "";
       if(hasBtn0 == true){
          turnOnRelay("b1On");
          btnStatus   = btnStatus + "&b1=on";
@@ -651,7 +651,7 @@ bool sendReport(bool hasReport) {
       }
     }
   }
-  
+
    if(hasReport == false){
       return ret;
    }
