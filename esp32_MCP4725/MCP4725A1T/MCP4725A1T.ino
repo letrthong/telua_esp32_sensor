@@ -22,6 +22,8 @@ String configScheduler = "";
 String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
+String currentPwm = "";
+bool gHasSpeed = false;
 
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
@@ -110,6 +112,8 @@ void setSpeed(String percent,  bool hasRestat){
     if(gCount > 100){
       currentPercent  ="";
     }
+
+    currentPwm = String(percent);
 
     if(currentPercent == percent){
         Serial.print("setSpeedsame percent=");
@@ -633,7 +637,7 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
-      bool  hasSpeed = false;
+      gHasSpeed = false;
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
           Serial.print("valueStart=");
@@ -653,12 +657,12 @@ bool sendReport(bool hasReport) {
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
             setSpeed(action, true);
-            hasSpeed = true;
+            gHasSpeed = true;
             break;
           }
       }
 
-      if(hasSpeed == false){
+      if(gHasSpeed == false){
         setSpeed("0", true);
       }
     }
@@ -693,7 +697,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&pwm=" + currentPwm;
  
   Serial.println(serverPath);
 
@@ -1009,6 +1013,7 @@ void setup() {
   if(deviceID.length() > 0){
     getTimeZone();
   }
+
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
    sendReport(true); 
 }
