@@ -1022,7 +1022,7 @@ void setup() {
 void loop() {
    // printLocalTime();
    g_count = g_count +1;
-   if((g_count> 60) || ( ( g_count> 0) && gHasSpeed == true )){
+   if((g_count> 60) || ( ( g_count> 15) && gHasSpeed == true )){
        sendReport(true); 
       g_count= 0;
    }else{
