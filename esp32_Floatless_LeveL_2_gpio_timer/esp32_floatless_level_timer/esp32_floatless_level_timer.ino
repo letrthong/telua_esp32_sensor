@@ -44,6 +44,8 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
+bool hasSwitchLevel = false;
+
 RTC_DATA_ATTR int retryTimeout = 0;
 RTC_DATA_ATTR int hasInit = 0;
 int g_count = 0;
@@ -73,6 +75,8 @@ const int ledFloatSwitch =  4;
 
 const int btnTop = 18;
 const int btnBot = 16;
+
+
 
 void powerLed(int led){
   digitalWrite(led, HIGH);
@@ -644,40 +648,47 @@ bool sendReport(bool hasReport) {
           Serial.print("action=");
           Serial.println(action);
 
-          int level1 =  v["lev1"];
-          int level2 =  v["lev2"];
+          String levelSwitch =  v["levelSwitch"];
+           Serial.println("levelSwitch=");
+          Serial.println(levelSwitch);
+
+          hasSwitchLevel = false;
+          if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
+            hasSwitchLevel = true;
+          } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
+            hasSwitchLevel = true;
+          } else if(levelSwitch == "botOn" && fbtnBot == 3.3 ){
+            hasSwitchLevel = true;
+          } else  if(levelSwitch == "botOff" && fbtnBot == 0.0 ){
+            hasSwitchLevel = true;
+          }
+
 
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
-              
-               if(level1 == fbtnTop  ||  level2 ==  fbtnBot){
-                   Serial.println("turn on and fbtnTop or fbtnBot");
-                  if( action.indexOf("b1") > -1){
-                    hasBtn0 =  true;
-                  } else if( action.indexOf("b2") > -1){
-                    hasBtn1 =  true;
-                  } else if( action.indexOf("al") > -1){
-                    hasAl =  true;
-                  }
-               } else {
-                   Serial.println("turn off and fbtnTop or fbtnBot");
-
-               }
+                Serial.println("turn on with timer");
+                if( action.indexOf("b1") > -1){
+                  hasBtn0 =  true;
+                } else if( action.indexOf("b2") > -1){
+                  hasBtn1 =  true;
+                } else if( action.indexOf("al") > -1){
+                  hasAl =  true;
+                }
           }
       }
 
-      if(hasBtn0 == true){
+      if(hasBtn0 == true && hasSwitchLevel == true){
          turnOnRelay("b1On");
       }else{
         turnOffRelay("b1Off");
       }
 
-      if(hasBtn1 == true){
+      if(hasBtn1 == true && hasSwitchLevel == true){
          turnOnRelay("b2On");
       }else{
         turnOffRelay("b2Off");
       }
 
-      if(hasAl == true){
+      if(hasAl == true && hasSwitchLevel == true){
          turnOnRelay("alOn");
       }else{
         turnOffRelay("alOff");
