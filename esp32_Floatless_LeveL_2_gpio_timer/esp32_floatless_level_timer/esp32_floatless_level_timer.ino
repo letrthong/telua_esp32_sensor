@@ -22,7 +22,8 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-
+String btnStatus = "&b1=off&b2=off&al=off";
+String releaseDate = "12-May-2024";
 
 String  strTop = "0";
 String strBot = "0";
@@ -676,22 +677,29 @@ bool sendReport(bool hasReport) {
           }
       }
 
+       btnStatus = "";
       if(hasBtn0 == true && hasSwitchLevel == true){
          turnOnRelay("b1On");
+          btnStatus   = btnStatus + "&b1=on";
       }else{
         turnOffRelay("b1Off");
+         btnStatus   = btnStatus + "&b1=off";
       }
 
       if(hasBtn1 == true && hasSwitchLevel == true){
          turnOnRelay("b2On");
+         btnStatus   = btnStatus + "&b2=on";
       }else{
         turnOffRelay("b2Off");
+         btnStatus   = btnStatus + "&b2=off";
       }
 
       if(hasAl == true && hasSwitchLevel == true){
          turnOnRelay("alOn");
+         btnStatus   = btnStatus + "&al=on";
       }else{
         turnOffRelay("alOff");
+         btnStatus   = btnStatus + "&al=off";
       }
     }
   }
@@ -725,7 +733,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=LevelSwitchAndTimer2Channels&deviceID=" + deviceID + "&serialNumber=" + serialNumber + "&top=" +  strTop + "&bot=" +  strBot ;
+  String serverPath = serverName + "?sensorName=LevelSwitchAndTimer2Channels&deviceID=" + deviceID + "&serialNumber=" + serialNumber + "&top=" +  strTop + "&bot=" +  strBot + "&release=" + releaseDate +  btnStatus  ;
  
   Serial.println(serverPath);
 
