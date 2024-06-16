@@ -702,7 +702,7 @@ bool sendReport(bool hasReport) {
          btnStatus   = btnStatus + "&b2=off";
       }
 
-      if(hasAl == true && hasSwitchLevel == true){
+      if(hasAl == true){
          turnOnRelay("alOn");
         // btnStatus   = btnStatus + "&al=on";
       }else{
