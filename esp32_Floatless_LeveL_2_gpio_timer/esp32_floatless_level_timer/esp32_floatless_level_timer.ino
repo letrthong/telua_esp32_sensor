@@ -669,13 +669,13 @@ bool sendReport(bool hasReport) {
                   }
                   
                 } else if( action.indexOf("b2") > -1){
-                    if(levelSwitch == "topOn" && fbtnTop > 1.0 ){
+                    if(levelSwitch == "topDown" && fbtnTop > 1.0 ){
                       hasBtn1 =  true;
-                    } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
+                    } else  if(levelSwitch == "topUp" && fbtnTop == 0.0 ){
                       hasBtn1 =  true;
-                    } else if(levelSwitch == "botOn" && fbtnBot > 1.0 ){
+                    } else if(levelSwitch == "botDown" && fbtnBot > 1.0 ){
                       hasBtn1 =  true;
-                    } else  if(levelSwitch == "botOff" && fbtnBot == 0.0){
+                    } else  if(levelSwitch == "botUp" && fbtnBot == 0.0){
                       hasBtn1 =  true;
                     }  
                 } else if( action.indexOf("al") > -1){
