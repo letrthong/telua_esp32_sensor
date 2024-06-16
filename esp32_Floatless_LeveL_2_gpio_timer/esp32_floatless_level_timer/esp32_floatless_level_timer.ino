@@ -658,13 +658,13 @@ bool sendReport(bool hasReport) {
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                 Serial.println("turn on with timer");
                 if( action.indexOf("b1") > -1){
-                  if(levelSwitch == "topOn" && fbtnTop > 1.0 ){
+                  if(levelSwitch == "topUp" && fbtnTop > 1.0 ){
                     hasBtn0 =  true;
-                  } else  if(levelSwitch == "topOff" && fbtnTop == 0.0  ){
+                  } else  if(levelSwitch == "topUp" && fbtnTop == 0.0  ){
                     hasBtn0 =  true;
-                  } else if(levelSwitch == "botOn" && fbtnBot > 1.0){
+                  } else if(levelSwitch == "botDown" && fbtnBot > 1.0){
                    hasBtn0 =  true;
-                  } else  if(levelSwitch == "botOff" && fbtnBot == 0.0  ){
+                  } else  if(levelSwitch == "botUp" && fbtnBot == 0.0  ){
                     hasBtn0 =  true;
                   }
                   
@@ -901,7 +901,7 @@ bool sendReport(bool hasReport) {
               ESP.restart();
          }
        
-      }
+      } else if 
   }
   // Free resources
   http.end();
