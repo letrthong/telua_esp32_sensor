@@ -658,7 +658,7 @@ bool sendReport(bool hasReport) {
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                 Serial.println("turn on with timer");
                 if( action.indexOf("b1") > -1){
-                  if(levelSwitch == "topUp" && fbtnTop > 1.0 ){
+                  if(levelSwitch == "topDown" && fbtnTop > 1.0 ){
                     hasBtn0 =  true;
                   } else  if(levelSwitch == "topUp" && fbtnTop == 0.0  ){
                     hasBtn0 =  true;
