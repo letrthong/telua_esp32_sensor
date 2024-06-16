@@ -659,7 +659,7 @@ bool sendReport(bool hasReport) {
                 Serial.println("turn on with timer");
                 if( action.indexOf("b1") > -1){
                   
-                   if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
+                  if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
                     hasBtn0 =  true;
                   } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
                     hasBtn0 =  true;
@@ -675,7 +675,7 @@ bool sendReport(bool hasReport) {
                   } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
                     hasBtn1 =  true;
                   } else if(levelSwitch == "botOn" && fbtnBot == 3.3 ){
-                   hasBtn1 =  true;
+                    hasBtn1 =  true;
                   } else  if(levelSwitch == "botOff" && fbtnBot == 0.0 ){
                     hasBtn1 =  true;
                   }  
