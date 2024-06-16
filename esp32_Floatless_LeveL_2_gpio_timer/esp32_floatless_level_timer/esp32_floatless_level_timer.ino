@@ -45,7 +45,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
-bool hasSwitchLevel = false;
+
 
 RTC_DATA_ATTR int retryTimeout = 0;
 RTC_DATA_ATTR int hasInit = 0;
@@ -652,25 +652,33 @@ bool sendReport(bool hasReport) {
           String levelSwitch =  v["levelSwitch"];
            Serial.println("levelSwitch=");
           Serial.println(levelSwitch);
-
-          hasSwitchLevel = false;
-          if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
-            hasSwitchLevel = true;
-          } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
-            hasSwitchLevel = true;
-          } else if(levelSwitch == "botOn" && fbtnBot == 3.3 ){
-            hasSwitchLevel = true;
-          } else  if(levelSwitch == "botOff" && fbtnBot == 0.0 ){
-            hasSwitchLevel = true;
-          }
+ 
 
 
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                 Serial.println("turn on with timer");
                 if( action.indexOf("b1") > -1){
-                  hasBtn0 =  true;
+                  
+                   if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
+                    hasBtn0 =  true;
+                  } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
+                    hasBtn0 =  true;
+                  } else if(levelSwitch == "botOn" && fbtnBot == 3.3 ){
+                   hasBtn0 =  true;
+                  } else  if(levelSwitch == "botOff" && fbtnBot == 0.0 ){
+                    hasBtn0 =  true;
+                  }
+                  
                 } else if( action.indexOf("b2") > -1){
-                  hasBtn1 =  true;
+                    if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
+                    hasBtn1 =  true;
+                  } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
+                    hasBtn1 =  true;
+                  } else if(levelSwitch == "botOn" && fbtnBot == 3.3 ){
+                   hasBtn1 =  true;
+                  } else  if(levelSwitch == "botOff" && fbtnBot == 0.0 ){
+                    hasBtn1 =  true;
+                  }  
                 } else if( action.indexOf("al") > -1){
                   hasAl =  true;
                 }
@@ -686,7 +694,7 @@ bool sendReport(bool hasReport) {
          btnStatus   = btnStatus + "&b1=off";
       }
 
-      if(hasBtn1 == true && hasSwitchLevel == true){
+      if(hasBtn1 == true && ){
          turnOnRelay("b2On");
          btnStatus   = btnStatus + "&b2=on";
       }else{
