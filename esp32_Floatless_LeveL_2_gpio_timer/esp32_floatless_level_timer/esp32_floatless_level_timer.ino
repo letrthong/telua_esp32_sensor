@@ -901,7 +901,7 @@ bool sendReport(bool hasReport) {
               ESP.restart();
          }
        
-      } else if 
+      }  
   }
   // Free resources
   http.end();
