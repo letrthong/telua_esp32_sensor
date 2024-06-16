@@ -686,7 +686,7 @@ bool sendReport(bool hasReport) {
       }
 
        btnStatus = "";
-      if(hasBtn0 == true && hasSwitchLevel == true){
+      if(hasBtn0 == true ){
          turnOnRelay("b1On");
           btnStatus   = btnStatus + "&b1=on";
       }else{
@@ -694,7 +694,7 @@ bool sendReport(bool hasReport) {
          btnStatus   = btnStatus + "&b1=off";
       }
 
-      if(hasBtn1 == true && ){
+      if(hasBtn1 == true  ){
          turnOnRelay("b2On");
          btnStatus   = btnStatus + "&b2=on";
       }else{
