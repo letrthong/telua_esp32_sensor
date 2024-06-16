@@ -658,22 +658,22 @@ bool sendReport(bool hasReport) {
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
                 Serial.println("turn on with timer");
                 if( action.indexOf("b1") > -1){
-                  if(levelSwitch == "topOn" && fbtnTop == 3.3 ){
+                  if(levelSwitch == "topOn" && fbtnTop > 1.0 ){
                     hasBtn0 =  true;
-                  } else  if(levelSwitch == "topOff" && fbtnTop ==0.0  ){
+                  } else  if(levelSwitch == "topOff" && fbtnTop == 0.0  ){
                     hasBtn0 =  true;
-                  } else if(levelSwitch == "botOn" && fbtnBot == 3.3){
+                  } else if(levelSwitch == "botOn" && fbtnBot > 1.0){
                    hasBtn0 =  true;
                   } else  if(levelSwitch == "botOff" && fbtnBot == 0.0  ){
                     hasBtn0 =  true;
                   }
                   
                 } else if( action.indexOf("b2") > -1){
-                    if(levelSwitch == "topOn" && fbtnTop ==  3.3 ){
+                    if(levelSwitch == "topOn" && fbtnTop > 1.0 ){
                       hasBtn1 =  true;
                     } else  if(levelSwitch == "topOff" && fbtnTop == 0.0 ){
                       hasBtn1 =  true;
-                    } else if(levelSwitch == "botOn" && fbtnBot ==3.3){
+                    } else if(levelSwitch == "botOn" && fbtnBot > 1.0 ){
                       hasBtn1 =  true;
                     } else  if(levelSwitch == "botOff" && fbtnBot == 0.0){
                       hasBtn1 =  true;
