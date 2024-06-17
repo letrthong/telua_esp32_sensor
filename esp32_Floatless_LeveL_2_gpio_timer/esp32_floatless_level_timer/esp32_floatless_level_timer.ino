@@ -95,7 +95,7 @@ void intGpio(){
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
     
-    powerLed(ledRelay02);
+    //powerLed(ledRelay02);
 
   pinMode(ledFloatSwitch, OUTPUT);  
   pinMode(btnTop, INPUT); 
