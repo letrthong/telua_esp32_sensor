@@ -941,7 +941,7 @@ int getSeconds(){
   }
   seconds = timeinfo.tm_hour*(60*60);
   seconds = seconds + (timeinfo.tm_min*60);
-  return   seconds ;
+  return  seconds ;
 }
 
 
