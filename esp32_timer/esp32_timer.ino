@@ -636,7 +636,7 @@ bool sendReport(bool hasReport) {
 
       if(hasBtn1 == true){
          turnOnRelay("b2On");
-          btnStatus   = btnStatus + "&b2=on";
+          btnStatus = btnStatus + "&b2=on";
       }else{
         turnOffRelay("b2Off");
          btnStatus   = btnStatus + "&b2=off";
@@ -644,10 +644,10 @@ bool sendReport(bool hasReport) {
 
       if(hasAl == true){
          turnOnRelay("alOn");
-         btnStatus   = btnStatus + "&al=on";
+         btnStatus = btnStatus + "&al=on";
       }else{
         turnOffRelay("alOff");
-        btnStatus   = btnStatus + "&al=off";
+        btnStatus = btnStatus + "&al=off";
       }
     }
   }
