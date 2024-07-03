@@ -876,6 +876,7 @@ bool getTimeZone( ) {
 
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
+    ESP.restart();
     return ret;
   }
 
