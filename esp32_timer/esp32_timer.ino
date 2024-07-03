@@ -842,6 +842,10 @@ bool sendReport(bool hasReport) {
               ESP.restart();
          }
        
+      } else {
+         if(retryTimeout > 4){
+            ESP.restart();
+          }
       }
   }
   // Free resources
