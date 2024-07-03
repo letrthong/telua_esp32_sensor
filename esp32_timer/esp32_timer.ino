@@ -581,6 +581,10 @@ bool sendReport(bool hasReport) {
   bool ret = false;
   String strTriggerParameter = "";
   //process trigger
+    bool hasBtn0 = false;
+    bool hasBtn1 = false; 
+    bool hasAl = false; 
+
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     StaticJsonDocument < 2048 > docTrigger;
     // parse a JSON array
@@ -592,10 +596,7 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
-      bool hasBtn0 = false;
-       bool hasBtn1 = false; 
-       bool hasAl = false; 
-        
+    
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
           //Serial.print("valueStart=");
@@ -625,32 +626,35 @@ bool sendReport(bool hasReport) {
           }
       }
 
-      btnStatus = "";
-      if(hasBtn0 == true){
-         turnOnRelay("b1On");
-         btnStatus   = btnStatus + "&b1=on";
-      } else {
-        turnOffRelay("b1Off");
-         btnStatus   = btnStatus + "&b1=off";
-      }
-
-      if(hasBtn1 == true){
-         turnOnRelay("b2On");
-          btnStatus = btnStatus + "&b2=on";
-      } else {
-        turnOffRelay("b2Off");
-         btnStatus   = btnStatus + "&b2=off";
-      }
-
-      if(hasAl == true){
-         turnOnRelay("alOn");
-         btnStatus = btnStatus + "&al=on";
-      } else {
-        turnOffRelay("alOff");
-        btnStatus = btnStatus + "&al=off";
-      }
+    
     }
   }
+  
+  btnStatus = "";
+  if(hasBtn0 == true){
+      turnOnRelay("b1On");
+      btnStatus   = btnStatus + "&b1=on";
+  } else {
+    turnOffRelay("b1Off");
+      btnStatus   = btnStatus + "&b1=off";
+  }
+
+  if(hasBtn1 == true){
+      turnOnRelay("b2On");
+      btnStatus = btnStatus + "&b2=on";
+  } else {
+    turnOffRelay("b2Off");
+      btnStatus   = btnStatus + "&b2=off";
+  }
+
+  if(hasAl == true){
+      turnOnRelay("alOn");
+      btnStatus = btnStatus + "&al=on";
+  } else {
+    turnOffRelay("alOff");
+    btnStatus = btnStatus + "&al=off";
+  }
+
 
    if(hasReport == false){
       return ret;
@@ -826,6 +830,7 @@ bool sendReport(bool hasReport) {
      Serial.println(httpResponseCode);
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
+      configScheduler  = "";
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
       if(httpResponseCode == -11){
         http.end();
