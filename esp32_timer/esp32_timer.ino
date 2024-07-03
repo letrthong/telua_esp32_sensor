@@ -629,7 +629,7 @@ bool sendReport(bool hasReport) {
       if(hasBtn0 == true){
          turnOnRelay("b1On");
          btnStatus   = btnStatus + "&b1=on";
-      }else{
+      } else {
         turnOffRelay("b1Off");
          btnStatus   = btnStatus + "&b1=off";
       }
