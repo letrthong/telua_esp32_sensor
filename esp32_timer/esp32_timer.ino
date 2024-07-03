@@ -606,8 +606,8 @@ bool sendReport(bool hasReport) {
           Serial.println(valueStop);
   
           int currentSeconds= getSeconds();
-          Serial.print("currentSeconds=");
-          Serial.println(currentSeconds);
+          //Serial.print("currentSeconds=");
+          //Serial.println(currentSeconds);
           
           String action = v["action"];
           Serial.print("action=");
