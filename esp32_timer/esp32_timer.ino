@@ -598,12 +598,12 @@ bool sendReport(bool hasReport) {
         
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
-          Serial.print("valueStart=");
-          Serial.println(valueStart);
+          //Serial.print("valueStart=");
+          //Serial.println(valueStart);
   
           int valueStop = v["stopTimer"];
-          Serial.print("valueStop=");
-          Serial.println(valueStop);
+          //Serial.print("valueStop=");
+          //Serial.println(valueStop);
   
           int currentSeconds= getSeconds();
           //Serial.print("currentSeconds=");
