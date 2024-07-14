@@ -89,14 +89,17 @@ bool turnOnRelay(String action){
    
    if( action =="b1On"){
        Serial.println("turnOnRelay b1On");
+       delay(1000); 
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
    }else  if( action =="b2On"){
       Serial.println("turnOnRelay b2On");
+      delay(1000); 
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( action == "alOn"){
        Serial.println("turnOnRelay alOn");
+       delay(1000); 
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
