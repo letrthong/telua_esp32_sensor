@@ -1,6 +1,6 @@
 #include <esp_task_wdt.h>
 
-#define WDT_TIMEOUT 600                   
+                 
 // WDT Timeout in seconds
 
 void setup() {
@@ -8,7 +8,7 @@ void setup() {
   Serial.println("Setup started.");
   delay(2000);
   esp_task_wdt_config_t  config;
-  config.timeout_ms =WDT_TIMEOUT*1000;
+  config.timeout_ms =5000;
   config.trigger_panic = true;
   
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
