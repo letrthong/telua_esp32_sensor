@@ -27,9 +27,9 @@ void loop() {
 
   int count = 0;
   while (1) {
-     Serial.print("MCU hang event!!!: ");
+    Serial.print("MCU hang event!!!: ");
     Serial.println(count);
-    count = count+ 1
+    count = count+ 1;
     delay(1000);
   }
 }
