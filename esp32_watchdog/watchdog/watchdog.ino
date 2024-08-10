@@ -1,6 +1,6 @@
 #include <esp_task_wdt.h>
 
-#define WDT_TIMEOUT 3                   
+#define WDT_TIMEOUT 600                   
 // WDT Timeout in seconds
 
 void setup() {
@@ -24,8 +24,12 @@ void loop() {
     // Kick the dog
     esp_task_wdt_reset();
   }
+
+  int count = 0;
   while (1) {
-    Serial.println("MCU hang event!!!");
+     Serial.print("MCU hang event!!!: ");
+    Serial.println(count);
+    count = count+ 1
     delay(1000);
   }
 }
