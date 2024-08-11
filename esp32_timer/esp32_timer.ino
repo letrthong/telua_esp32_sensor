@@ -4,7 +4,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
- 
+ #include <esp_task_wdt.h>
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -23,7 +23,7 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
-String releaseDate = "12-May-2024";
+String releaseDate = "12-Aug-2024";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -70,7 +70,9 @@ const int ledFloatSwitch =  4;
 
 const int btnTop = 18;
 const int btnBot = 16;
- 
+
+TaskHandle_t taskHandle;
+
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
@@ -394,9 +396,10 @@ void startSmartConfig() {
 void initWiFi() {
   WiFi.mode(WIFI_STA);
 
-  String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
-  String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-
+  // String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
+  // String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+  String current_ssid = "hcmus";
+  String current_pass = "fetelxxx";
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
   hasRouter = false;
@@ -958,29 +961,66 @@ void setup() {
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
   
-  Serial.println("Ver:8/Aug/2023");
-  
+  Serial.println("Ver:8/Aug/2024");
+   
+  esp_task_wdt_config_t  config;
+  config.timeout_ms = (5 * 1000);
+  config.trigger_panic = true;
+ 
+  esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
+  esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
+
+
+  // Create task1
+  xTaskCreate(
+    task1,       // Task function pointer
+    "Task1",     // Task name
+    2000,        // Stack depth in words
+    NULL,        // Task parameter
+    2,           // Task priority
+    &taskHandle  // Task handle
+  );
+}
+
+void loop() {
+  delay(1000);
+  // Kick the dog
+  //Serial.println("esp_task_wdt_reset");
+  esp_task_wdt_reset();
+
+}
+
+
+void task1(void *parameter) {
+  int count = 0;
   intGpio();
-  
   initEEPROM();
   initWiFi();
 
   if(deviceID.length() > 0){
     getTimeZone();
   }
+  
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-   sendReport(true); 
-}
-
-void loop() {
-   // printLocalTime();
-   g_count = g_count +1;
-   if(g_count> 60){
-       sendReport(true); 
-      g_count= 0;
-   } else {
-      sendReport(false); 
-   }
+  sendReport(true); 
+  
+  while (1) {
+    Serial.print("MCU hang event!!!: ");
+    Serial.println(count);
+    count = count+ 1;
+    if(count > 1000){  
+        count = 0;
+    }
    
-   delay(1000);
+    // printLocalTime();
+    g_count = g_count +1;
+    if(g_count> 60){
+        sendReport(true); 
+        g_count= 0;
+    } else {
+        sendReport(false); 
+    }
+    
+    delay(1000);
+  }
 }
