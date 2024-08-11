@@ -25,6 +25,7 @@ String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset";
 String btnStatus = "&b1=off&b2=off&al=off";
 String releaseDate = "12-Aug-2024";
 int gUptime = 0;
+int startEpchoTime = 0;
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -1004,7 +1005,14 @@ void task1(void *parameter) {
   }
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  if(startEpchoTime == 0){
+     startEpchoTime = getSeconds();
+  }
 
+  int currntEpchoTime =  getSeconds();
+
+  gUptime=  currntEpchoTime - startEpchoTime;
+  
   while (1) {
     Serial.print("MCU hang event!!!: ");
     Serial.println(g_count);
