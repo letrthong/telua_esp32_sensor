@@ -990,7 +990,7 @@ void setup() {
 void loop() {
   delay(1000);
   // Kick the dog
-  //Serial.println("esp_task_wdt_reset");
+  Serial.println("esp_task_wdt_reset");
   esp_task_wdt_reset();
 
 }
@@ -1000,9 +1000,12 @@ void task1(void *parameter) {
   int count = 0;
 
   if(deviceID.length() > 0){
+    Serial.println("task1 getTimeZone");
     getTimeZone();
+     
   }
   
+  Serial.println("task1 sendReport");
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   sendReport(true); 
   
