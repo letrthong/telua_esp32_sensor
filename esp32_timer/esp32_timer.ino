@@ -43,7 +43,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-int g_count = 0;
+int g_count = 120;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_Timer_";
@@ -966,10 +966,9 @@ void setup() {
   intGpio();
   initEEPROM();
   initWiFi();
-
-
+ 
   esp_task_wdt_config_t  config;
-  config.timeout_ms = (5 * 1000);
+  config.timeout_ms = (60 * 1000);
   config.trigger_panic = true;
  
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
@@ -980,7 +979,7 @@ void setup() {
   xTaskCreate(
     task1,       // Task function pointer
     "Task1",     // Task name
-    2000,        // Stack depth in words
+    10000,        // Stack depth in words
     NULL,        // Task parameter
     2,           // Task priority
     &taskHandle  // Task handle
@@ -991,32 +990,25 @@ void loop() {
   delay(1000);
   // Kick the dog
   Serial.println("esp_task_wdt_reset");
-  esp_task_wdt_reset();
+  //esp_task_wdt_reset();
 
 }
 
 
 void task1(void *parameter) {
-  int count = 0;
-
-  if(deviceID.length() > 0){
-    Serial.println("task1 getTimeZone");
-    getTimeZone();
+  
+   if(deviceID.length() > 0){
+     Serial.println("task1 getTimeZone");
+     getTimeZone();
      
   }
-  
-  Serial.println("task1 sendReport");
+
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  sendReport(true); 
-  
+
   while (1) {
     Serial.print("MCU hang event!!!: ");
-    Serial.println(count);
-    count = count+ 1;
-    if(count > 1000){  
-        count = 0;
-    }
-   
+    Serial.println(g_count);
+     
     // printLocalTime();
     g_count = g_count +1;
     if(g_count> 60){
@@ -1026,6 +1018,6 @@ void task1(void *parameter) {
         sendReport(false); 
     }
     
-    delay(1000);
+    vTaskDelay(1000);
   }
 }
