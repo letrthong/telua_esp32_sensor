@@ -991,7 +991,6 @@ void loop() {
   // Kick the dog
   Serial.println("esp_task_wdt_reset");
   esp_task_wdt_reset();
-
 }
 
 
