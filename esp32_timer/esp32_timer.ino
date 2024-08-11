@@ -956,6 +956,7 @@ int getSeconds(){
   }
   seconds = timeinfo.tm_hour*(60*60);
   seconds = seconds + (timeinfo.tm_min*60);
+  econds = seconds + (timeinfo.tm_sec );
   return  seconds ;
 }
 
@@ -1009,11 +1010,11 @@ void task1(void *parameter) {
      startEpchoTime = getSeconds();
   }
 
-  int currntEpchoTime =  getSeconds();
 
-  gUptime=  currntEpchoTime - startEpchoTime;
-  
   while (1) {
+    int currntEpchoTime =  getSeconds();
+    gUptime=  currntEpchoTime - startEpchoTime;
+
     Serial.print("MCU hang event!!!: ");
     Serial.println(g_count);
      
