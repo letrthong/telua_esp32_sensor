@@ -24,6 +24,7 @@ String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
 String releaseDate = "12-Aug-2024";
+int gUptime = 0;
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -692,7 +693,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +  btnStatus ;
+  String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
  
   Serial.println(serverPath);
 
