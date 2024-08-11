@@ -968,7 +968,7 @@ void setup() {
   initWiFi();
  
   esp_task_wdt_config_t  config;
-  config.timeout_ms = (60 * 1000);
+  config.timeout_ms = (5*1000);
   config.trigger_panic = true;
  
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
@@ -990,7 +990,7 @@ void loop() {
   delay(1000);
   // Kick the dog
   Serial.println("esp_task_wdt_reset");
-  //esp_task_wdt_reset();
+  esp_task_wdt_reset();
 
 }
 
