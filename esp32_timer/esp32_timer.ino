@@ -448,6 +448,7 @@ void initWiFi() {
         break;
       }
       delay(500);
+
     }
   }
 
@@ -870,7 +871,7 @@ bool getTimeZone( ) {
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
-    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
+    Serial.println("getTimeZone WiFi.status() != WL_CONNECTED");
     delay(1000); 
     ESP.restart();
     return ret;
@@ -962,7 +963,11 @@ void setup() {
   delay(1000); //Take some time to open up the Serial Monitor
   
   Serial.println("Ver:8/Aug/2024");
-   
+  intGpio();
+  initEEPROM();
+  initWiFi();
+
+
   esp_task_wdt_config_t  config;
   config.timeout_ms = (5 * 1000);
   config.trigger_panic = true;
@@ -993,9 +998,6 @@ void loop() {
 
 void task1(void *parameter) {
   int count = 0;
-  intGpio();
-  initEEPROM();
-  initWiFi();
 
   if(deviceID.length() > 0){
     getTimeZone();
