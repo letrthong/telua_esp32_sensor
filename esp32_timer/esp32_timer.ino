@@ -407,6 +407,7 @@ void initWiFi() {
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
   hasRouter = false;
+  bool hasNetworks = false;
   if (isCorrectPassword == false) {
     for (int y = 0; y < 3; y++) {
       int n = WiFi.scanNetworks();
@@ -414,6 +415,7 @@ void initWiFi() {
       if (n == 0) {
         Serial.println("no networks found");
       } else {
+		hasNetworks  = true;
         Serial.print(n);
         Serial.println(" networks found");
         select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
@@ -541,12 +543,16 @@ void initWiFi() {
   }
 
   Serial.println(WiFi.localIP());
-  if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
-    startLocalWeb();
+  if(hasNetworks == false){
+	 ESP.restart();
   }
-//    else{
-//        startLocalWeb();
-//    }
+  else{
+	if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
+        startLocalWeb();
+    }
+  }
+  
+ 
 
 }
 
