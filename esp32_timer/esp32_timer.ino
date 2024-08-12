@@ -994,17 +994,16 @@ void setup() {
 void loop() {
   delay(1000);
   gUptimeCounter = gUptimeCounter + 1;
-   if(gUptimeCounter >  300){
+   // restartt if the device can not access the interne after 10 minutes
+   if(gUptimeCounter >  600){
 	gUptimeCounter = 0;
-	if(gUptime  != 0){ 
-	    if( gPreUptime != gUptime )
-	    {
+	if( gPreUptime != gUptime )
+	{
 		gPreUptime = gUptime; 
-	    }
-	    else
-	    {
+	}
+	else
+	{
 		   ESP.restart();  
-	    }
 	}
    }
   // Kick the dog
