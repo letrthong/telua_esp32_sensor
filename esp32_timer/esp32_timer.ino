@@ -25,6 +25,8 @@ String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset";
 String btnStatus = "&b1=off&b2=off&al=off";
 String releaseDate = "12-Aug-2024";
 int gUptime = 0;
+int gUptimeCounter = 0;
+int gPreUptime = 0;
 int startEpchoTime = 0;
 
 int EEPROM_ADDRESS_SSID = 0;
@@ -991,6 +993,20 @@ void setup() {
 
 void loop() {
   delay(1000);
+  gUptimeCounter = gUptimeCounter + 1;
+   if(gUptimeCounter >  300){
+	gUptimeCounter = 0;
+	if(gUptime  != 0){ 
+	    if( gPreUptime != gUptime )
+	    {
+		gPreUptime = gUptime; 
+	    }
+	    else
+	    {
+		   ESP.restart();  
+	    }
+	}
+   }
   // Kick the dog
   Serial.println("esp_task_wdt_reset");
   esp_task_wdt_reset();
