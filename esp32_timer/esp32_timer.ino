@@ -1000,18 +1000,18 @@ void setup() {
 void loop() {
   delay(1000);
   gUptimeCounter = gUptimeCounter + 1;
-   // restartt if the device can not access the interne after 10 minutes
-   if(gUptimeCounter >  600){
-	gUptimeCounter = 0;
-	if( gPreUptime != gUptime )
-	{
-		gPreUptime = gUptime; 
-	}
-	else
-	{
-		   ESP.restart();  
-	}
-   }
+  // restartt if the device can not access the interne after 10 minutes
+  if(gUptimeCounter >  600){
+      gUptimeCounter = 0;
+      if( gPreUptime != gUptime )
+      {
+        gPreUptime = gUptime; 
+      }
+      else
+      {
+          ESP.restart();  
+      }
+  }
   // Kick the dog
   Serial.println("esp_task_wdt_reset");
   esp_task_wdt_reset();
