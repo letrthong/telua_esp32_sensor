@@ -55,10 +55,10 @@ const char * ssid = "Telua_Timer_";
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+unsigned long interval = 90000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 30000;
+unsigned long intervalLocalWeb = 90000;
 
 const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
