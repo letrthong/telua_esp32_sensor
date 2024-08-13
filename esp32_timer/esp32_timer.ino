@@ -1025,6 +1025,8 @@ void task1(void *parameter) {
   }
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+  
   if(startEpchoTime == 0){
      startEpchoTime = getSeconds();
   }

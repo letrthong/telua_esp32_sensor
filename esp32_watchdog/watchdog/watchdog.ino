@@ -15,7 +15,7 @@ void setup() {
     
   
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
-  esp_task_wdt_add(NULL);               // Subscribe to the Task WDT
+  esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
 
 
   // Create task1

@@ -4,7 +4,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
- 
+  #include <esp_task_wdt.h>
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -69,6 +69,8 @@ const int ledFloatSwitch =  4;
 
 const int btnTop = 18;
 const int btnBot = 16;
+
+TaskHandle_t taskHandle;
 
 void powerLed(int led){
   digitalWrite(led, HIGH);
@@ -941,9 +943,36 @@ void setup() {
   delay(1000); //Take some time to open up the Serial Monitor
   Serial.println("Ver:8/Aug/2023");
   intGpio();
+  esp_task_wdt_config_t  config;
+  config.timeout_ms = (5*1000);
+  config.trigger_panic = true;
+ 
+  esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
+  esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
+
+
+  // Create task1
+  xTaskCreate(
+    task1,       // Task function pointer
+    "Task1",     // Task name
+    10000,        // Stack depth in words
+    NULL,        // Task parameter
+    2,           // Task priority
+    &taskHandle  // Task handle
+  );
 }
 
+
 void loop() {
+  delay(1000);
+  // Kick the dog
+  Serial.println("esp_task_wdt_reset");
+  esp_task_wdt_reset();
+}
+
+
+void task1(void *parameter) {
+  
    if(hasInit == 0){
       hasInit = 1;
       delay(1000); 
@@ -959,14 +988,25 @@ void loop() {
       sendReport(true); 
    }
 
-   // printLocalTime();
-   g_count = g_count +1;
-   if(g_count> 60){
-       sendReport(true); 
-      g_count= 0;
-   }else{
-      sendReport(false); 
-   }
-   
-   delay(1000);
+
+  while (1) {
+    //int currntEpchoTime =  getSeconds();
+    //gUptime=  currntEpchoTime - startEpchoTime;
+
+    Serial.print("MCU hang event!!!: ");
+    Serial.println(g_count);
+     
+    // printLocalTime();
+    g_count = g_count +1;
+    if(g_count> 60){
+        sendReport(true); 
+        g_count= 0;
+    } else {
+        sendReport(false); 
+    }
+    
+    vTaskDelay(1000);
+  }
 }
+
+ 
