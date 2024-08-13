@@ -28,8 +28,11 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "26-May-2024";
-
+String releaseDate = "13-Aug-2024";
+int gUptime = 0;
+int gUptimeCounter = 0;
+int gPreUptime = 0;
+int startEpchoTime = 0;
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -49,7 +52,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-int g_count = 0;
+int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_PWM_";
@@ -57,10 +60,10 @@ const char * ssid = "Telua_PWM_";
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+unsigned long interval = 60000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 30000;
+unsigned long intervalLocalWeb = 60000;
 
 const char* ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
@@ -697,7 +700,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&pwm=" + currentPwm;
+  String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
  
   Serial.println(serverPath);
 
@@ -1016,11 +1019,18 @@ void setup() {
   }
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-   sendReport(true); 
+  if(startEpchoTime == 0){
+     startEpchoTime = getSeconds();
+  }
+
+ 
 }
 
 void loop() {
    // printLocalTime();
+   int currntEpchoTime =  getSeconds();
+    gUptime=  currntEpchoTime - startEpchoTime;
+
    g_count = g_count +1;
    if((g_count> 60) || ( ( g_count> 15) && gHasSpeed == true )){
        sendReport(true); 
