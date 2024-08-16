@@ -545,9 +545,9 @@ void initWiFi() {
 	 ESP.restart();
   }
   else{
-	if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
-        startLocalWeb();
-    }
+    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
+          startLocalWeb();
+      }
   }
   
  
