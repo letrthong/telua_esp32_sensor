@@ -413,7 +413,7 @@ void initWiFi() {
       if (n == 0) {
         Serial.println("no networks found");
       } else {
-		hasNetworks  = true;
+		    hasNetworks  = true;
         Serial.print(n);
         Serial.println(" networks found");
         select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
