@@ -52,10 +52,10 @@ const char * ssid_gpio = "Telua_Shtx_Gpio_";
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+unsigned long interval = 60000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 30000;
+unsigned long intervalLocalWeb = 60000;
 
 
 
