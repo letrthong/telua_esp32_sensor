@@ -550,8 +550,6 @@ void initWiFi() {
       }
   }
   
- 
-
 }
 
 void turnOffWiFi() {
@@ -934,6 +932,7 @@ bool getTimeZone( ) {
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
+     ESP.restart();
   }
   // Free resources
   http.end();

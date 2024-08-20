@@ -28,7 +28,7 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "13-Aug-2024";
+String releaseDate = "20-Aug-2024";
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -851,9 +851,7 @@ bool sendReport(bool hasReport) {
         if(retryTimeout > 3){
               ESP.restart();
         }
-      }
-
-      if(retryTimeout > 10){
+      }  else if(retryTimeout > 4){
           ESP.restart();
       }
   }
@@ -922,6 +920,7 @@ bool getTimeZone( ) {
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
+     ESP.restart();
   }
   // Free resources
   http.end();
@@ -979,6 +978,7 @@ bool sendError( bool hasError) {
   } else {
      Serial.print("sendError Error code: ");
      Serial.println(httpResponseCode);
+     ESP.restart();
   }
   // Free resources
   http.end();
