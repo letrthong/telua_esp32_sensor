@@ -147,10 +147,10 @@ void setSpeed(String percent,  bool hasRestat){
         hasSensorError = true;
 
         if(hasRestat == true){
-             sendError(true);
-          
-          delay(10000); 
-          ESP.restart();
+            sendError(true);
+
+            delay(10000); 
+            ESP.restart();
         }
        
     }  
