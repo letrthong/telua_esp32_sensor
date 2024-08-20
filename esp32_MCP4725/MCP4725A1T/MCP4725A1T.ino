@@ -843,7 +843,7 @@ bool sendReport(bool hasReport) {
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
-      if(httpResponseCode == -11){
+      if(httpResponseCode == -11 || httpResponseCode == -1){
         http.end();
         delete client;
         delay(3000);
