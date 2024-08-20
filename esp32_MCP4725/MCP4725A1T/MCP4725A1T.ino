@@ -843,7 +843,7 @@ bool sendReport(bool hasReport) {
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
-      if(httpResponseCode == -11 || httpResponseCode == -1){
+      if(httpResponseCode == -11  ){
         http.end();
         delete client;
         delay(3000);
@@ -851,6 +851,10 @@ bool sendReport(bool hasReport) {
         if(retryTimeout > 3){
               ESP.restart();
         }
+      }
+
+      if(retryTimeout > 10){
+          ESP.restart();
       }
   }
   // Free resources
