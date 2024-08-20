@@ -139,7 +139,7 @@ void setSpeed(String percent,  bool hasRestat){
 
     Serial.println("");
     Serial.print("setSpeed Expected Voltage: ");
-    Serial.print(MCP4725_reading, max_Voltage);
+    Serial.println(MCP4725_reading, max_Voltage);
 
     if(ret == false){
         Serial.print("\t Can not write MCP4725");
