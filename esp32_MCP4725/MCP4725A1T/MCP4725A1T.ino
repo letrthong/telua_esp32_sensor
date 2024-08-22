@@ -734,11 +734,10 @@ bool sendReport(bool hasReport) {
           Serial.print("deserializeJson intervalTime=");
           Serial.println(intervalTime);
           if (intervalTime >= 30) {
-  
             if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
-              time_to_sleep_mode = intervalTime;
-              EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
-              EEPROM.commit();
+                time_to_sleep_mode = intervalTime;
+                EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
+                EEPROM.commit();
             }
           }
         }
@@ -747,26 +746,26 @@ bool sendReport(bool hasReport) {
         bool hasSSID = doc.containsKey("ssid");
         bool hasPassword = doc.containsKey("password");
         if (hasSSID == true && hasPassword == true) {
-          String ssid = doc["ssid"];
-          String password = doc["password"];
-          Serial.print("deserializeJson ssid=");
-          Serial.println(ssid);
-  
-          Serial.print("deserializeJson password=");
-          Serial.println(password);
-          if (ssid.length() > 0 && remote_ssid != ssid) {
-            remote_ssid = ssid;
-            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
-            EEPROM.commit();
-          } else {
-            Serial.println("remote_ssid is the same");
-          }
-  
-          if (remote_pass != password) {
-            remote_pass = password;
-            EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
-            EEPROM.commit();
-          }
+            String ssid = doc["ssid"];
+            String password = doc["password"];
+            Serial.print("deserializeJson ssid=");
+            Serial.println(ssid);
+    
+            Serial.print("deserializeJson password=");
+            Serial.println(password);
+            if (ssid.length() > 0 && remote_ssid != ssid) {
+                remote_ssid = ssid;
+                EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, remote_ssid);
+                EEPROM.commit();
+            } else {
+              Serial.println("remote_ssid is the same");
+            }
+    
+            if (remote_pass != password) {
+              remote_pass = password;
+              EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
+              EEPROM.commit();
+            }
         }
   
         // Device ID
