@@ -1041,7 +1041,7 @@ void loop() {
     gUptime=  currntEpchoTime - startEpchoTime;
 
    g_count = g_count +1;
-   if((g_count> 60) || ( ( g_count> 15) && gHasSpeed == true )){
+   if((g_count > 60) || ( ( g_count> 15) && gHasSpeed == true )){
        sendReport(true); 
       g_count= 0;
    }else{
