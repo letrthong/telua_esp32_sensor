@@ -30,7 +30,7 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("LOOP started ! ");
+    //Serial.println("LOOP started ! ");
     delay(1000);
     // Kick the dog
     esp_task_wdt_reset();
@@ -42,8 +42,8 @@ void task1(void *parameter) {
   int hours = 0;
   int minutes = 0;
   while (1) {
-    Serial.print("MCU hang event!!! seconds: ");
-    Serial.println(seconds);
+    // Serial.print("MCU hang event!!! seconds: ");
+    // Serial.println(seconds);
     seconds = seconds+ 1;
     if(seconds > 60){
       seconds = 0;
