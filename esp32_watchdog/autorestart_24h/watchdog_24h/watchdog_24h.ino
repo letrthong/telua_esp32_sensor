@@ -77,7 +77,7 @@ void task1(void *parameter) {
   int hours = 0;
   int minutes = 0;
   while (1) {
-    Serial.print("seconds= ");
+    Serial.print("seconds=");
     Serial.print(seconds);
     Serial.print(" ,minutes=");
     Serial.print(minutes);
