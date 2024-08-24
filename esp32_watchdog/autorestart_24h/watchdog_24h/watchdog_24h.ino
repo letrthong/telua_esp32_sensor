@@ -22,15 +22,19 @@ void turnOffAll(){
    //digitalWrite(ledAlarm, LOW);
 }
 
-
-
-void rerestGPIO(){
-   Serial.println("rerestGPIO");
-    digitalWrite(ledRelay01, HIGH);
+void turnOnAll(){
+     digitalWrite(ledRelay01, HIGH);
     digitalWrite(ledRelay02, HIGH);
-    delay(3000);
+}
 
-   turnOffAll();
+
+
+void resetGPIO(){
+  Serial.println("rerestGPIO");
+  turnOnAll();
+  delay(3000);
+
+  turnOffAll();
 }
 
 
@@ -44,7 +48,7 @@ void setup() {
   config.trigger_panic = true;
 
     intGpio();
-  
+  resetGPIO();
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
 
@@ -83,7 +87,7 @@ void task1(void *parameter) {
     if(seconds > 60){
       seconds = 0;
       minutes = minutes + 1;
-      rerestGPIO();
+      resetGPIO();
     }
 
      if(minutes > 60){
@@ -93,7 +97,7 @@ void task1(void *parameter) {
 
      if(hours > 24){
         hours = 0;
-        rerestGPIO();
+        resetGPIO();
      }
     delay(1000);
   }
