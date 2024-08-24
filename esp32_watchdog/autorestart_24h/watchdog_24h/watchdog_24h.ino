@@ -33,7 +33,6 @@ void resetGPIO(){
   Serial.println("rerestGPIO");
   turnOnAll();
   delay(3000);
-
   turnOffAll();
 }
 
@@ -48,7 +47,7 @@ void setup() {
   config.trigger_panic = true;
 
   intGpio();
-  turnOffAll();
+  resetGPIO();
 
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
@@ -88,7 +87,7 @@ void task1(void *parameter) {
     if(seconds > 60){
       seconds = 0;
       minutes = minutes + 1;
-      resetGPIO();
+       
     }
 
      if(minutes > 60){
@@ -96,7 +95,7 @@ void task1(void *parameter) {
         hours = hours +1;
      }
 
-     if(hours > 24){
+     if(hours > 12){
         hours = 0;
         resetGPIO();
      }
