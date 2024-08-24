@@ -47,8 +47,9 @@ void setup() {
   config.timeout_ms = (5 * 1000);
   config.trigger_panic = true;
 
-    intGpio();
-  resetGPIO();
+  intGpio();
+  turnOffAll();
+
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
 
