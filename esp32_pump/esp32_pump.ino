@@ -69,11 +69,11 @@ const int daylightOffset_sec = 0;
 bool hasGPIo = false;
 const int ledRelay01 = 17; 
 const int ledRelay02 = 5; 
-const int ledAlarm =  19; 
+const int ledAlarm =  18; 
 const int ledFloatSwitch =  4; 
 
-const int btnTop = 18;
-const int btnBot = 16;
+// const int btnTop = 19 ( 18-> 19);
+// const int btnBot = 16;
 
 TaskHandle_t taskHandle;
 
