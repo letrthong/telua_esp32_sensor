@@ -448,7 +448,7 @@ void initWiFi() {
 //  String current_ssid = "telua";
 //  String current_pass = "13572468";
 // WifiName = "const telua"
- WifiName = WifiName.replace(" ", "+");
+  WifiName.replace(" ", "+");
     
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
