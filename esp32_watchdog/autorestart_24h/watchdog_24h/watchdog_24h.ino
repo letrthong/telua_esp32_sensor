@@ -48,7 +48,7 @@ void setup() {
   config.trigger_panic = true;
 
   intGpio();
-  resetGPIO();
+  //resetGPIO();
 
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
