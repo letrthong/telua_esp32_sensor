@@ -34,6 +34,8 @@ int gUptimeCounter = 0;
 int gPreUptime = 0;
 int startEpchoTime = 0;
 
+String WifiName = "";
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -439,14 +441,18 @@ void startSmartConfig() {
 void initWiFi() {
   WiFi.mode(WIFI_STA);
 
- // String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
-// String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+  String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
+  String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+  WifiName =  current_ssid;
 
- String current_ssid = "telua";
- String current_pass = "13572468";
-
+//  String current_ssid = "telua";
+//  String current_pass = "13572468";
+// WifiName = "const telua"
+    
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
+
+
   hasRouter = false;
    bool hasNetworks = false;
   if (isCorrectPassword == false) {
@@ -709,7 +715,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
- 
+ serverPath = serverPath + "&wiFiName=" + WifiName;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
