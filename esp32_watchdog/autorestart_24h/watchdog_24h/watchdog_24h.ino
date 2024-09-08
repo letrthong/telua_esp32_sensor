@@ -12,19 +12,20 @@ const int ledAlarm =  19;
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
-    //pinMode(ledAlarm, OUTPUT);
+    pinMode(ledAlarm, OUTPUT);
    turnOffAll();
 }
 
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
-   //digitalWrite(ledAlarm, LOW);
+   digitalWrite(ledAlarm, LOW);
 }
 
 void turnOnAll(){
      digitalWrite(ledRelay01, HIGH);
     digitalWrite(ledRelay02, HIGH);
+    digitalWrite(ledAlarm, HIGH);
 }
 
 
@@ -41,7 +42,7 @@ void resetGPIO(){
 void setup() {
   Serial.begin(115200);
   Serial.println("Setup started.");
-  delay(2000);
+  delay(1000);
   esp_task_wdt_config_t  config;
   config.timeout_ms = (5 * 1000);
   config.trigger_panic = true;
@@ -76,6 +77,7 @@ void task1(void *parameter) {
    int seconds = 0;
   int hours = 0;
   int minutes = 0;
+  int count  = 0;
   while (1) {
     Serial.print("seconds=");
     Serial.print(seconds);
@@ -87,7 +89,7 @@ void task1(void *parameter) {
     if(seconds > 60){
       seconds = 0;
       minutes = minutes + 1;
-       
+      //resetGPIO();
     }
 
      if(minutes > 60){
@@ -98,7 +100,17 @@ void task1(void *parameter) {
      if(hours > 12){
         hours = 0;
         resetGPIO();
+        count  = count +1;
      }
+
+
     delay(1000);
+
+    //a week
+    if(count> 14)
+    {
+      ESP.restart();
+    }
+    
   }
 }
