@@ -439,8 +439,8 @@ void startSmartConfig() {
 void initWiFi() {
   WiFi.mode(WIFI_STA);
 
- # String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
- # String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+ // String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
+// String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
 
  String current_ssid = "telua";
  String current_pass = "13572468";
