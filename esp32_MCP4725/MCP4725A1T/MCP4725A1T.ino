@@ -447,7 +447,7 @@ void initWiFi() {
 
   current_ssid = "telua";
   current_pass = "13572468";
-  gWifiName = "const_" + current_ssid
+  gWifiName = "const " + current_ssid;
 
   gWifiName.replace(" ", "+");
     
