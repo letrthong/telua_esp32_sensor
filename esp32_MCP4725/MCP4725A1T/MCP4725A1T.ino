@@ -1024,7 +1024,7 @@ int getSeconds(){
 
 void setup() {
   Serial.begin(115200);
-  delay(500); //Take some time to open up the Serial Monitor
+  delay(300); //Take some time to open up the Serial Monitor
   
   Serial.println("Ver:8/Aug/2023");
   
