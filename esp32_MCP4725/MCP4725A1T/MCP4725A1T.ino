@@ -445,8 +445,8 @@ void initWiFi() {
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   gWifiName =  current_ssid;
 
-//  String current_ssid = "telua";
-//  String current_pass = "13572468";
+// current_ssid = "telua";
+// current_pass = "13572468";
 // gWifiName = "const_" + current_ssid
 
   gWifiName.replace(" ", "+");
