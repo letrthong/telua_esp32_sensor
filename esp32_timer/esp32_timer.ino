@@ -443,13 +443,17 @@ void initWiFi() {
             if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
-              
               gSignalStrength = String(WiFi.RSSI(i));
-            } else if (remote_ssid.equals(SSID) && (hasRouter == false) && remote_pass.length() > 1 ) {
-              hasRemoteRouter = true;
+            }
+            else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
+             
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              
-              gSignalStrength = String(WiFi.RSSI(i));  
+              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
+                  if(remote_pass.length() > 1){
+                      gSignalStrength = String(WiFi.RSSI(i));  
+                      hasRemoteRouter = true;
+                  }
+              }
             }
 
           }
