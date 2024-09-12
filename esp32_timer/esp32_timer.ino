@@ -23,7 +23,11 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
-String releaseDate = "12-Aug-2024";
+String releaseDate = "12-Sep-2024";
+String gWifiName = "";
+String gVoltage = "12";
+String gSignalStrength = "0";
+
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -404,6 +408,16 @@ void initWiFi() {
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
+
+  gWifiName = current_ssid;
+
+  // current_ssid = "telua";
+  // current_pass = "13572468";
+  // gWifiName = "const " + current_ssid;
+ 
+
+  gWifiName.replace(" ", "+");
+
   hasRouter = false;
   bool hasNetworks = false;
   if (isCorrectPassword == false) {
@@ -429,13 +443,14 @@ void initWiFi() {
             if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
-              //break;
-            }
-
-            if (remote_ssid.equals(SSID)) {
+              
+              gSignalStrength = String(WiFi.RSSI(i);) 
+            } else if (remote_ssid.equals(SSID) && (hasRouter ==flase)) {
+              gSignalStrength
               hasRemoteRouter = true;
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              
+               gSignalStrength = String(WiFi.RSSI(i);) 
             }
 
           }
@@ -699,7 +714,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
- 
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
