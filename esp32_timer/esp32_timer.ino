@@ -445,7 +445,7 @@ void initWiFi() {
               g_encryption_Type = WiFi.encryptionType(i);
               
               gSignalStrength = String(WiFi.RSSI(i));
-            } else if (remote_ssid.equals(SSID) && (hasRouter == false)) {
+            } else if (remote_ssid.equals(SSID) && (hasRouter == false) && remote_pass.length() > 1 ) {
               hasRemoteRouter = true;
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
               
