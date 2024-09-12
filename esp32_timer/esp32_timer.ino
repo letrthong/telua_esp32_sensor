@@ -444,13 +444,12 @@ void initWiFi() {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
               
-              gSignalStrength = String(WiFi.RSSI(i);) 
-            } else if (remote_ssid.equals(SSID) && (hasRouter ==flase)) {
-              gSignalStrength
+              gSignalStrength = String(WiFi.RSSI(i));
+            } else if (remote_ssid.equals(SSID) && (hasRouter == false)) {
               hasRemoteRouter = true;
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
               
-               gSignalStrength = String(WiFi.RSSI(i);) 
+              gSignalStrength = String(WiFi.RSSI(i));  
             }
 
           }
@@ -714,7 +713,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage;
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
