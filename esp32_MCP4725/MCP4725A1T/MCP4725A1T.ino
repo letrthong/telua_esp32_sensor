@@ -479,21 +479,21 @@ void initWiFi() {
           }
 
            if (Length_of_ssid > 0) {
-            if (current_ssid.equals(SSID)) {
-              hasRouter = true;
-              g_encryption_Type = WiFi.encryptionType(i);
-              gSignalStrength = String(WiFi.RSSI(i));
-            }
-            else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
-             
-              g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
-                  if(remote_pass.length() > 1){
-                      gSignalStrength = String(WiFi.RSSI(i));  
-                      hasRemoteRouter = true;
-                  }
+              if (current_ssid.equals(SSID)) {
+                hasRouter = true;
+                g_encryption_Type = WiFi.encryptionType(i);
+                gSignalStrength = String(WiFi.RSSI(i));
               }
-            }
+              else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
+                g_remtoe_encryption_Type = WiFi.encryptionType(i);
+                if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
+                    if(remote_pass.length() > 1){
+                        gSignalStrength = String(WiFi.RSSI(i));  
+                        hasRemoteRouter = true;
+                    }
+                }
+              }
+           }
         }
 
         if (n < 1) {
