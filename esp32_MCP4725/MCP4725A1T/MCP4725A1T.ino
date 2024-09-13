@@ -490,6 +490,7 @@ void initWiFi() {
                     if(remote_pass.length() > 1){
                         gSignalStrength = String(WiFi.RSSI(i));  
                         hasRemoteRouter = true;
+                         Serial.println("remote_ssid");
                     }
                 }
               }
