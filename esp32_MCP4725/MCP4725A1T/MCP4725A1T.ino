@@ -28,13 +28,15 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "09-Sep-2024";
+String releaseDate = "14-Sep-2024";
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
 int startEpchoTime = 0;
 
 String gWifiName = "";
+String gVoltage = "12";
+String gSignalStrength = "0";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -476,20 +478,22 @@ void initWiFi() {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-          if (Length_of_ssid > 0) {
+           if (Length_of_ssid > 0) {
             if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              gSignalStrength = String(WiFi.RSSI(i));
             }
-
-            if (remote_ssid.equals(SSID)) {
-              hasRemoteRouter = true;
+            else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
+             
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
+                  if(remote_pass.length() > 1){
+                      gSignalStrength = String(WiFi.RSSI(i));  
+                      hasRemoteRouter = true;
+                  }
+              }
             }
-
-          }
         }
 
         if (n < 1) {
@@ -717,7 +721,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
- serverPath = serverPath + "&wiFiName=" + gWifiName;
+ serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
