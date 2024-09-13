@@ -713,6 +713,9 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
+   gSignalStrength = String(WiFi.RSSI());  
+
+
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
     return false;
