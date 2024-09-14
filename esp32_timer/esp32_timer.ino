@@ -455,7 +455,6 @@ void initWiFi() {
                   }
               }
             }
-
           }
         }
 

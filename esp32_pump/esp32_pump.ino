@@ -23,7 +23,11 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
-String releaseDate = "12-Aug-2024";
+String releaseDate = "14-Sep-2024";
+String gWifiName = "";
+String gVoltage = "220";
+String gSignalStrength = "0";
+
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -404,6 +408,17 @@ void initWiFi() {
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
+
+  gWifiName = current_ssid;
+
+  // current_ssid = "telua";
+  // current_pass = "13572468";
+  // gWifiName = "const " + current_ssid;
+
+  gWifiName.replace(" ", "+");
+
+
+
   hasRouter = false;
   bool hasNetworks = false;
   if (isCorrectPassword == false) {
@@ -425,19 +440,22 @@ void initWiFi() {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-          if (Length_of_ssid > 0) {
+            if (Length_of_ssid > 0) {
             if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              gSignalStrength = String(WiFi.RSSI(i));
             }
-
-            if (remote_ssid.equals(SSID)) {
-              hasRemoteRouter = true;
+            else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
+             
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
+                  if(remote_pass.length() > 1){
+                      gSignalStrength = String(WiFi.RSSI(i));  
+                      hasRemoteRouter = true;
+                  }
+              }
             }
-
           }
         }
 
@@ -695,11 +713,12 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
+  gSignalStrength = String(WiFi.RSSI());  
   
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Pump&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
- 
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
