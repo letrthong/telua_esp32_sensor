@@ -853,7 +853,8 @@ bool sendReport(bool hasReport) {
     }
   }
 
-  // serverPath = serverPath + "&wiFiName=" + gWifiName + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + +"&release=" + releaseDate;
+  
+  serverPath = serverPath + "&wiFiName=" + gWifiName + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + +"&release=" + releaseDate;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
