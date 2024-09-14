@@ -27,7 +27,7 @@ String releaseDate = "14-Sep-2024";
 String gWifiName = "";
 String gVoltage = "220";
 String gSignalStrength = "0";
-
+String gProtocol = "&protocol=RESTfulAPI";
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -718,7 +718,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Pump&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol;
   Serial.println(serverPath);
 
   http.setTimeout(60000);

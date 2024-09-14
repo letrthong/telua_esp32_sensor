@@ -24,6 +24,7 @@ String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
 String releaseDate = "12-Sep-2024";
+String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
 String gVoltage = "12";
 String gSignalStrength = "0";
@@ -717,7 +718,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength +  gProtocol ;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
