@@ -23,6 +23,11 @@ String serverName = "https://telua.co/service/v1/esp32/update-sensor";
 String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
+String releaseDate = "14-Sep-2024";
+String gWifiName = "";
+String gVoltage = "5";
+String gSignalStrength = "0";
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -423,6 +428,12 @@ void initWiFi() {
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+
+  gWifiName = current_ssid;
+  // current_ssid = "telua";
+  // current_pass = "13572468";
+  // gWifiName = "const " + current_ssid;
+  gWifiName.replace(" ", "+");
 
   unsigned int Length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;

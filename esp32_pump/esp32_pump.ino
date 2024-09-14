@@ -713,7 +713,7 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
-  gSignalStrength = String(WiFi.RSSI());  
+   gSignalStrength = String(WiFi.RSSI()); 
   
   client -> setInsecure();
   HTTPClient http;
