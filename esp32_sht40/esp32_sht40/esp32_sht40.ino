@@ -1,8 +1,13 @@
 #include <WiFi.h>
+
 #include <EEPROM.h>
+
 #include <WiFiClientSecure.h>
+
 #include <HTTPClient.h>
+
 #include <ArduinoJson.h>
+
 #include "Adafruit_SHT4x.h"
 
 
@@ -32,7 +37,7 @@ int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
 int EEPROM_ADDRESS_REOMVE_PASS = 64;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
+int EEPROM_ADDRESS_TIME_TO_SLEEP = 96;
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
 int EEPROM_ADDRESS_TRIGGER = 256;
@@ -51,10 +56,10 @@ int time_to_sleep_mode = TIME_TO_SLEEP;
 
 Adafruit_SHT4x sht4 = Adafruit_SHT4x();
 
-const char * ssid = "Telua_Sht40_";
-const char * ssid_gpio = "Telua_Shtx_Gpio_"; 
+const char* ssid = "Telua_Sht40_";
+const char* ssid_gpio = "Telua_Shtx_Gpio_";
 
-const char * password = "12345678";
+const char* password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
 unsigned long interval = 60000;
@@ -62,88 +67,84 @@ unsigned long interval = 60000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
-
-
-
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
-const int ledRelay01 = 17 ; 
-const int ledRelay02 =  5; 
-const int ledAlarm =  19; 
-const int ledFloatSwitch =  4; 
+const int ledRelay01 = 17;
+const int ledRelay02 = 5;
+const int ledAlarm = 19;
+const int ledFloatSwitch = 4;
 
 const int btnTop = 18;
 const int btnBot = 16;
 
-void intGpio(){
-    pinMode(ledRelay01, OUTPUT);
-    pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
-//  pinMode(ledFloatSwitch, OUTPUT);  
+void intGpio() {
+  pinMode(ledRelay01, OUTPUT);
+  pinMode(ledRelay02, OUTPUT);
+  pinMode(ledAlarm, OUTPUT);
+  //  pinMode(ledFloatSwitch, OUTPUT);
 
-//  pinMode(btnTop, INPUT); 
-//  pinMode(btnBot, INPUT);  
-   turnOffAll();
+  //  pinMode(btnTop, INPUT);
+  //  pinMode(btnBot, INPUT);
+  turnOffAll();
 }
 
-void turnOffAll(){
-   digitalWrite(ledRelay01, LOW);
-   digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
-   
-//   digitalWrite(ledFloatSwitch, LOW);
-//
-//   
-//   int buttonState = digitalRead(btnTop);
-//    if (buttonState == HIGH) {
-//        digitalWrite(ledRelay01, HIGH);
-//    }
-//
-//     buttonState = digitalRead(btnBot);
-//    if (buttonState == HIGH) {
-//        digitalWrite(ledRelay02, HIGH);
-//    }
+void turnOffAll() {
+  digitalWrite(ledRelay01, LOW);
+  digitalWrite(ledRelay02, LOW);
+  digitalWrite(ledAlarm, LOW);
+
+  //   digitalWrite(ledFloatSwitch, LOW);
+  //
+  //
+  //   int buttonState = digitalRead(btnTop);
+  //    if (buttonState == HIGH) {
+  //        digitalWrite(ledRelay01, HIGH);
+  //    }
+  //
+  //     buttonState = digitalRead(btnBot);
+  //    if (buttonState == HIGH) {
+  //        digitalWrite(ledRelay02, HIGH);
+  //    }
 }
 
-bool turnOnRelay(String action){
-   bool retCode  = false;
-   
-   if( action =="b1On"){
-       digitalWrite(ledRelay01, HIGH);
-        retCode = true;
-   }else  if( action =="b2On"){
-      digitalWrite(ledRelay02, HIGH);
-       retCode = true;
-   } else  if( action == "alOn"){
-       digitalWrite(ledAlarm, HIGH);
-       retCode = true;
-   } 
+bool turnOnRelay(String action) {
+  bool retCode = false;
 
-   return retCode;
+  if (action == "b1On") {
+    digitalWrite(ledRelay01, HIGH);
+    retCode = true;
+  } else if (action == "b2On") {
+    digitalWrite(ledRelay02, HIGH);
+    retCode = true;
+  } else if (action == "alOn") {
+    digitalWrite(ledAlarm, HIGH);
+    retCode = true;
+  }
+
+  return retCode;
 }
 
-bool turnOffRelay(String action){
-   bool retCode  = false;
-   if( action =="b1Off"){
-       digitalWrite(ledRelay01, LOW);
-   }else  if( action =="b2Off"){
-      digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alOff"){
-       digitalWrite(ledAlarm, LOW);
-   } 
-   return retCode;
+bool turnOffRelay(String action) {
+  bool retCode = false;
+  if (action == "b1Off") {
+    digitalWrite(ledRelay01, LOW);
+  } else if (action == "b2Off") {
+    digitalWrite(ledRelay02, LOW);
+  } else if (action == "alOff") {
+    digitalWrite(ledAlarm, LOW);
+  }
+  return retCode;
 }
 
-bool hasTrigger(){
-    bool retCode  = false;
-   if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
-      if(hasGPIo == true){
-          retCode = true;
-      }
-   }
-   return retCode;
+bool hasTrigger() {
+  bool retCode = false;
+  if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
+    if (hasGPIo == true) {
+      retCode = true;
+    }
+  }
+  return retCode;
 }
-
 
 void startSleepMode() {
   /*
@@ -170,12 +171,11 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  if(hasGPIo == false){
-     WiFi.softAP(ssid + serialNumber, password); 
-  }else{
-     WiFi.softAP(ssid_gpio + serialNumber, password);
+  if (hasGPIo == false) {
+    WiFi.softAP(ssid + serialNumber, password);
+  } else {
+    WiFi.softAP(ssid_gpio + serialNumber, password);
   }
- 
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -186,7 +186,7 @@ void startLocalWeb() {
   bool hasConnection = false;
   int count = 0;
   int countWaitRequest = 0;
-  
+
   unsigned long currentMillisLocalWeb = millis();
   previousMillisLocalWeb = currentMillisLocalWeb;
   while (1) {
@@ -207,27 +207,27 @@ void startLocalWeb() {
       WiFi.disconnect();
       delay(100);
       time_to_sleep_mode = 30;
-      if(hasTrigger() == true){
+      if (hasTrigger() == true) {
         return;
       }
       startSleepMode();
       return;
     }
 
-    if (client) { // If a new client connects,
-      Serial.println("New Client."); // print a message out in the serial port
-      String currentLine = ""; // make a String to hold incoming data from the client
+    if (client) {                     // If a new client connects,
+      Serial.println("New Client.");  // print a message out in the serial port
+      String currentLine = "";        // make a String to hold incoming data from the client
       bool hasWrongFormat = false;
       String privateIpv4 = "";
-      while (client.connected()) { // loop while the client's connected
-        if (client.available()) { // if there's bytes to read from the client,
-           unsigned long currentMillisLocalWeb = millis();
-           previousMillisLocalWeb = currentMillisLocalWeb;
-           countWaitRequest = 0; 
-          char c = client.read(); // read a byte, then
+      while (client.connected()) {  // loop while the client's connected
+        if (client.available()) {   // if there's bytes to read from the client,
+          unsigned long currentMillisLocalWeb = millis();
+          previousMillisLocalWeb = currentMillisLocalWeb;
+          countWaitRequest = 0;
+          char c = client.read();  // read a byte, then
           //            Serial.write(c);                    // print it out the serial monitor
           header += c;
-          if (c == '\n') { // if the byte is a newline character
+          if (c == '\n') {  // if the byte is a newline character
             // if the current line is blank, you got two newline characters in a row.
             // that's the end of the client HTTP request, so send a response:
             if (currentLine.length() == 0) {
@@ -300,7 +300,6 @@ void startLocalWeb() {
                   } else {
                     hasWrongFormat = true;
                   }
-
                 }
               }
 
@@ -308,7 +307,7 @@ void startLocalWeb() {
               client.println("<!DOCTYPE html><html>");
               client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
               client.println("<link rel=\"icon\" href=\"data:,\">");
-              // Web Page Heading 
+              // Web Page Heading
               client.println("<body><h4>Telua Nen Tang Cho IoT- Telua IoT platform - 20-08-2023 </h4>");
               if (serialNumber.length() > 0) {
                 client.println("<p>Serial Number=" + serialNumber + "</p>");
@@ -345,19 +344,19 @@ void startLocalWeb() {
               client.println();
               // Break out of the while loop
               break;
-            } else { // if you got a newline, then clear currentLine
+            } else {  // if you got a newline, then clear currentLine
               currentLine = "";
             }
-          } else if (c != '\r') { // if you got anything else but a carriage return character,
-            currentLine += c; // add it to the end of the currentLine
+          } else if (c != '\r') {  // if you got anything else but a carriage return character,
+            currentLine += c;      // add it to the end of the currentLine
           }
-        } else{
+        } else {
           unsigned long currentMillisLocalWeb = millis();
           if (currentMillisLocalWeb - previousMillisLocalWeb >= intervalLocalWeb) {
             previousMillisLocalWeb = currentMillisLocalWeb;
             Serial.println("waiting httpRequest");
             countWaitRequest = countWaitRequest + 1;
-            if(countWaitRequest >=2){
+            if (countWaitRequest >= 2) {
               countWaitRequest = 0;
               break;
             }
@@ -383,7 +382,7 @@ void startSmartConfig() {
     while (!WiFi.smartConfigDone()) {
       delay(500);
       Serial.print(".");
-      // 180seconds = 3 minutes 
+      // 180seconds = 3 minutes
       count = count + 1;
       if (count > 360) {
         ESP.restart();
@@ -398,7 +397,7 @@ void startSmartConfig() {
       delay(500);
       Serial.print(".");
       count = count + 1;
-      // 180seconds = 3 minutes 
+      // 180seconds = 3 minutes
       if (count > 360) {
         ESP.restart();
       }
@@ -428,17 +427,20 @@ void initWiFi() {
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
+  unsigned int Length_of_ssid = current_ssid.length();
+  g_ssid = current_ssid;
 
   gWifiName = current_ssid;
+
   // current_ssid = "telua";
   // current_pass = "13572468";
   // gWifiName = "const " + current_ssid;
+
+
   gWifiName.replace(" ", "+");
 
-  unsigned int Length_of_ssid = current_ssid.length();
-  g_ssid = current_ssid;
   hasRouter = false;
-   bool hasNetworks = false;
+  bool hasNetworks = false;
   if (isCorrectPassword == false) {
     for (int y = 0; y < 3; y++) {
       int n = WiFi.scanNetworks();
@@ -446,7 +448,7 @@ void initWiFi() {
       if (n == 0) {
         Serial.println("no networks found");
       } else {
-        hasNetworks  = true;
+        hasNetworks = true;
         Serial.print(n);
         Serial.println(" networks found");
         select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
@@ -454,37 +456,29 @@ void initWiFi() {
           String SSID = WiFi.SSID(i);
           Serial.print("scanNetworks SSID=");
           Serial.println(SSID);
-          if (i < 10)
-          {
+          if (i < 10) {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-          if (Length_of_ssid > 0)
-          {
-            if (current_ssid.equals(SSID)) 
-            {
+          if (Length_of_ssid > 0) {
+            if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
               gSignalStrength = String(WiFi.RSSI(i));
-            }
-            else if (remote_ssid.equals(SSID) && (hasRouter == false)  )
-            {
-             
+            } else if (remote_ssid.equals(SSID) && (hasRouter == false)) {
+
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN)
-              {
-                  if(remote_pass.length() > 1)
-                  {
-                      gSignalStrength = String(WiFi.RSSI(i));  
-                      hasRemoteRouter = true;
-                  }
+              if (g_remtoe_encryption_Type != WIFI_AUTH_OPEN) {
+                if (remote_pass.length() > 1) {
+                  gSignalStrength = String(WiFi.RSSI(i));
+                  hasRemoteRouter = true;
+                }
               }
             }
-          } 
+          }
         }
 
-        if (n < 1)
-        {
+        if (n < 1) {
           select_html = select_html + "<option value=\" \"> </option>";
         }
         select_html = select_html + " </select> <br>";
@@ -540,10 +534,10 @@ void initWiFi() {
         WiFi.begin(remote_ssid);
         isConnecting = true;
       } else {
-        if(remote_pass.length() > 1){
-           WiFi.begin(remote_ssid, remote_pass);
-           isConnecting = true;
-        }  else {
+        if (remote_pass.length() > 1) {
+          WiFi.begin(remote_ssid, remote_pass);
+          isConnecting = true;
+        } else {
           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
           EEPROM.commit();
           ESP.restart();
@@ -552,23 +546,19 @@ void initWiFi() {
       Serial.print("Connecting to Remote WiFi ..");
       int count = 0;
       int retryTime = 30;
-      while (WiFi.status() != WL_CONNECTED &&  (isConnecting == true))
-      {
+      while (WiFi.status() != WL_CONNECTED && (isConnecting == true)) {
         Serial.print('.');
         delay(500);
         // 15 seconds
         count = count + 1;
-        if (count > retryTime) 
-        {
+        if (count > retryTime) {
           break;
         }
       }
 
-      if (WiFi.status() == WL_CONNECTED)
-      {
+      if (WiFi.status() == WL_CONNECTED) {
         Serial.println("Remote WL_CONNECTED");
-        if (current_ssid != remote_ssid)
-        {
+        if (current_ssid != remote_ssid) {
           EEPROM.writeString(EEPROM_ADDRESS_SSID, remote_ssid);
           EEPROM.commit();
 
@@ -576,30 +566,24 @@ void initWiFi() {
           EEPROM.commit();
           ESP.restart();
         }
-      } 
-      else 
-      {
-        if(isConnecting == true){
-           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
-           EEPROM.commit();
-           ESP.restart();
+      } else {
+        if (isConnecting == true) {
+          EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
+          EEPROM.commit();
+          ESP.restart();
         }
       }
     }
   }
 
-  if(hasNetworks == false)
-  {
-	   ESP.restart();
-  }
-  else
-  {
-    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) 
-    {
-          startLocalWeb();
+  Serial.println(WiFi.localIP());
+  if (hasNetworks == false) {
+    ESP.restart();
+  } else {
+    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
+      startLocalWeb();
     }
   }
-
 }
 
 void turnOffWiFi() {
@@ -619,38 +603,38 @@ void initSht4x() {
       // You can have 3 different precisions, higher precision takes longer
       sht4.setPrecision(SHT4X_HIGH_PRECISION);
       switch (sht4.getPrecision()) {
-      case SHT4X_HIGH_PRECISION:
-        Serial.println("High precision");
-        break;
-      case SHT4X_MED_PRECISION:
-        Serial.println("Med precision");
-        break;
-      case SHT4X_LOW_PRECISION:
-        Serial.println("Low precision");
-        break;
+        case SHT4X_HIGH_PRECISION:
+          Serial.println("High precision");
+          break;
+        case SHT4X_MED_PRECISION:
+          Serial.println("Med precision");
+          break;
+        case SHT4X_LOW_PRECISION:
+          Serial.println("Low precision");
+          break;
       }
       switch (sht4.getHeater()) {
-      case SHT4X_NO_HEATER:
-        Serial.println("No heater");
-        break;
-      case SHT4X_HIGH_HEATER_1S:
-        Serial.println("High heat for 1 second");
-        break;
-      case SHT4X_HIGH_HEATER_100MS:
-        Serial.println("High heat for 0.1 second");
-        break;
-      case SHT4X_MED_HEATER_1S:
-        Serial.println("Medium heat for 1 second");
-        break;
-      case SHT4X_MED_HEATER_100MS:
-        Serial.println("Medium heat for 0.1 second");
-        break;
-      case SHT4X_LOW_HEATER_1S:
-        Serial.println("Low heat for 1 second");
-        break;
-      case SHT4X_LOW_HEATER_100MS:
-        Serial.println("Low heat for 0.1 second");
-        break;
+        case SHT4X_NO_HEATER:
+          Serial.println("No heater");
+          break;
+        case SHT4X_HIGH_HEATER_1S:
+          Serial.println("High heat for 1 second");
+          break;
+        case SHT4X_HIGH_HEATER_100MS:
+          Serial.println("High heat for 0.1 second");
+          break;
+        case SHT4X_MED_HEATER_1S:
+          Serial.println("Medium heat for 1 second");
+          break;
+        case SHT4X_MED_HEATER_100MS:
+          Serial.println("Medium heat for 0.1 second");
+          break;
+        case SHT4X_LOW_HEATER_1S:
+          Serial.println("Low heat for 1 second");
+          break;
+        case SHT4X_LOW_HEATER_100MS:
+          Serial.println("Low heat for 0.1 second");
+          break;
       }
     }
   }
@@ -689,8 +673,7 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-bool sendReport(bool hasReport) 
-{
+bool sendReport(bool hasReport) {
   bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
@@ -699,12 +682,12 @@ bool sendReport(bool hasReport)
   if (hasSensor == true) {
     for (int i = 0; i < 3; i++) {
       sensors_event_t humidity, temp;
-      sht4.getEvent( & humidity, & temp);
+      sht4.getEvent(&humidity, &temp);
 
       //      Serial.print("Temperature: ");
       //      Serial.print(temp.temperature);
       //      Serial.println(" degrees C");
-      //      Serial.print("Humidity: "); 
+      //      Serial.print("Humidity: ");
       //      Serial.print(humidity.relative_humidity);
       //      Serial.println("% rH");
       fHumidity = humidity.relative_humidity;
@@ -719,10 +702,10 @@ bool sendReport(bool hasReport)
     }
   }
 
-   String strTriggerParameter = "";
+  String strTriggerParameter = "";
   //process trigger
   if (configTrigger.length() > 1 /*&& hasSensor == true*/) {
-    StaticJsonDocument < 2048 > docTrigger;
+    StaticJsonDocument< 2048 > docTrigger;
 
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configTrigger);
@@ -732,11 +715,11 @@ bool sendReport(bool hasReport)
       strTriggerParameter = "ConfigError";
     } else {
       // extract the values
-      JsonArray triggerList = docTrigger.as < JsonArray > ();
+      JsonArray triggerList = docTrigger.as< JsonArray >();
       bool hasTrigger = false;
-       
-      for (JsonObject v: triggerList) {
-         String property = v["property"];
+
+      for (JsonObject v : triggerList) {
+        String property = v["property"];
         Serial.print("property=");
         Serial.println(property);
 
@@ -760,75 +743,75 @@ bool sendReport(bool hasReport)
           currentValue = fTemperature;
         } else if (property == "humidity") {
           currentValue = fHumidity;
-        }  else if (property == "hum") {
+        } else if (property == "hum") {
           currentValue = fHumidity;
-        } else if (property == "err"){
-          if (hasSensor   == false || hasError == true ){
+        } else if (property == "err") {
+          if (hasSensor == false || hasError == true) {
             hasTrigger = true;
           }
         }
-        
-        if (property != "error"){
-            if (opera == "=") {
-                if (currentValue == value) {
-                  hasTrigger = true;
-                }
-              } else if (opera == "<") {
-                if (currentValue < value) {
-                  hasTrigger = true;
-                    }
-            } else if (opera == ">") {
-              if (currentValue > value) {
-                hasTrigger = true;
-              }
-            } else if (opera == ">=") {
-              if (currentValue >= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "<=") {
-              if (currentValue <= value) {
-                hasTrigger = true;
-              }
-            } else if (opera == "!=") {
-              if (currentValue != value) {
-                hasTrigger = true;
-              }
-           }
+
+        if (property != "error") {
+          if (opera == "=") {
+            if (currentValue == value) {
+              hasTrigger = true;
+            }
+          } else if (opera == "<") {
+            if (currentValue < value) {
+              hasTrigger = true;
+            }
+          } else if (opera == ">") {
+            if (currentValue > value) {
+              hasTrigger = true;
+            }
+          } else if (opera == ">=") {
+            if (currentValue >= value) {
+              hasTrigger = true;
+            }
+          } else if (opera == "<=") {
+            if (currentValue <= value) {
+              hasTrigger = true;
+            }
+          } else if (opera == "!=") {
+            if (currentValue != value) {
+              hasTrigger = true;
+            }
+          }
         }
         // -- start hasTrigger----------------
         if (hasTrigger == true) {
           strTriggerParameter = strTriggerParameter + action + "-";
-           if(hasGPIo == true){
-               int index = action.indexOf("On");
-                if (index >= 0) {
-                   bool result = turnOnRelay(action);
-                   if(result == true){
-                        ret = true;
-                   }
-                } else {
-                  index = action.indexOf("Off");
-                  if (index >= 0) {
-                      bool result = turnOffRelay(action);
-                     if(result == true){
-                          ret = true;
-                     }
-                  }
+          if (hasGPIo == true) {
+            int index = action.indexOf("On");
+            if (index >= 0) {
+              bool result = turnOnRelay(action);
+              if (result == true) {
+                ret = true;
+              }
+            } else {
+              index = action.indexOf("Off");
+              if (index >= 0) {
+                bool result = turnOffRelay(action);
+                if (result == true) {
+                  ret = true;
                 }
+              }
             }
+          }
         }
         //  -- End hasTrigger----------------
       }
     }
   }
-  
-   if(hasReport == false){
-      return ret;
-   }
-   
+
+  if (hasReport == false) {
+    return ret;
+  }
+
   if (WiFi.status() != WL_CONNECTED) {
     time_to_sleep_mode = 60;
     Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    if(hasTrigger() == true){
+    if (hasTrigger() == true) {
       return ret;
     }
     return false;
@@ -838,43 +821,43 @@ bool sendReport(bool hasReport)
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
     Serial.println("sendReport  localIP= 0.0.0.0");
-    if(hasTrigger() == true){
+    if (hasTrigger() == true) {
       return ret;
     }
     return false;
   }
 
-  WiFiClientSecure * client = new WiFiClientSecure;
+  WiFiClientSecure* client = new WiFiClientSecure;
   if (!client) {
     return false;
   }
 
-  gSignalStrength = String(WiFi.RSSI());  
+  gSignalStrength = String(WiFi.RSSI());
 
-  client -> setInsecure();
+  client->setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
-  if(hasGPIo == true){
+  if (hasGPIo == true) {
     serverPath = serverName + "?sensorName=SHT40_Controller&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
   }
-  
+
   if (strTriggerParameter.length() > 0) {
     serverPath = trigger_url + "?deviceID=" + deviceID + "&temperature=" + temperature + "&humidity=" + relative_humidity + "&trigger=" + strTriggerParameter;
   }
 
   if (hasError == true) {
-      serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-      if(hasGPIo == true){
-          serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
-     }
+    serverPath = error_url + "?sensorName=SHT40&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    if (hasGPIo == true) {
+      serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+    }
   }
 
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength +  +"&release=" + releaseDate ;
+  // serverPath = serverPath + "&wiFiName=" + gWifiName + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + +"&release=" + releaseDate;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
-  http.begin( * client, serverPath.c_str());
+  http.begin(*client, serverPath.c_str());
 
   // Send HTTP GET request
   int httpResponseCode = http.GET();
@@ -974,16 +957,16 @@ bool sendReport(bool hasReport)
         Serial.println(strTrigger);
         Serial.println("strTrigger.length()=" + String(strTrigger.length()));
         if (configTrigger != strTrigger) {
-         
-           if(hasGPIo == true){
-            if (strTrigger.length() < 256){
-               configTrigger = strTrigger;
-                turnOffAll();
-            } 
-          }else{
-             configTrigger = strTrigger; 
+
+          if (hasGPIo == true) {
+            if (strTrigger.length() < 256) {
+              configTrigger = strTrigger;
+              turnOffAll();
+            }
+          } else {
+            configTrigger = strTrigger;
           }
-          
+
           if (configTrigger.length() < 256) {
             EEPROM.writeString(EEPROM_ADDRESS_TRIGGER, configTrigger);
             EEPROM.commit();
@@ -998,31 +981,34 @@ bool sendReport(bool hasReport)
       }
     }
     retryTimeout = 0;
-  } else {
-     Serial.print("Error code: ");
-     Serial.println(httpResponseCode);
-      time_to_sleep_mode = TIME_TO_SLEEP;
-      retryTimeout = retryTimeout + 1;
-      //Timeout - https://github.com/esp8266/Arduino/issues/5137
-      if(httpResponseCode == -11){
-        http.end();
-        delete client;
-        delay(3000);
-        Serial.println("sendReport retryTimeout=" + String(retryTimeout));
-         if(hasGPIo == true){
-              if(retryTimeout > 3){
-                 ESP.restart();
-              }else{
-                return ret;
-            } 
-         }else{
-              ESP.restart();
-         }
-       
+  }
+  else
+  {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+    time_to_sleep_mode = TIME_TO_SLEEP;
+    retryTimeout = retryTimeout + 1;
+    // //Timeout - https://github.com/esp8266/Arduino/issues/5137
+    if (httpResponseCode == -11) {
+      http.end();
+      delete client;
+      delay(3000);
+      Serial.println("sendReport retryTimeout=" + String(retryTimeout));
+      if (hasGPIo == true) 
+      {
+        if (retryTimeout > 3) {
+          ESP.restart();
+        } else {
+          return ret;
+        }
       }
-      else (retryTimeout > 5){
-                 ESP.restart();
+       else {
+        ESP.restart();
       }
+
+    } else if(retryTimeout > 5) {
+      ESP.restart();
+    }
   }
   // Free resources
   http.end();
@@ -1040,30 +1026,30 @@ void print_wakeup_reason() {
   wakeup_reason = esp_sleep_get_wakeup_cause();
 
   switch (wakeup_reason) {
-  case ESP_SLEEP_WAKEUP_EXT0:
-    Serial.println("Wakeup caused by external signal using RTC_IO");
-    break;
-  case ESP_SLEEP_WAKEUP_EXT1:
-    Serial.println("Wakeup caused by external signal using RTC_CNTL");
-    break;
-  case ESP_SLEEP_WAKEUP_TIMER:
-    Serial.println("Wakeup caused by timer");
-    break;
-  case ESP_SLEEP_WAKEUP_TOUCHPAD:
-    Serial.println("Wakeup caused by touchpad");
-    break;
-  case ESP_SLEEP_WAKEUP_ULP:
-    Serial.println("Wakeup caused by ULP program");
-    break;
-  default:
-    Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
-    break;
+    case ESP_SLEEP_WAKEUP_EXT0:
+      Serial.println("Wakeup caused by external signal using RTC_IO");
+      break;
+    case ESP_SLEEP_WAKEUP_EXT1:
+      Serial.println("Wakeup caused by external signal using RTC_CNTL");
+      break;
+    case ESP_SLEEP_WAKEUP_TIMER:
+      Serial.println("Wakeup caused by timer");
+      break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD:
+      Serial.println("Wakeup caused by touchpad");
+      break;
+    case ESP_SLEEP_WAKEUP_ULP:
+      Serial.println("Wakeup caused by ULP program");
+      break;
+    default:
+      Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
+      break;
   }
 }
 
 void setup() {
   Serial.begin(115200);
-  delay(1000); //Take some time to open up the Serial Monitor
+  delay(1000);  //Take some time to open up the Serial Monitor
   if (bootCount >= 60) {
     bootCount = 0;
     ESP.restart();
@@ -1073,7 +1059,7 @@ void setup() {
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
 
-  if(hasGPIo == true){
+  if (hasGPIo == true) {
     intGpio();
   }
   initEEPROM();
@@ -1081,35 +1067,32 @@ void setup() {
 
   initSht4x();
 
-  
-  if(hasGPIo == false){
-    sendReport(true); 
-  }else{
-      for(int i = 0; i< 15; i++){
-        bool ret = sendReport(true);
-        if(ret == true){
-           delay(1000);
-           for(int i = 0; i < time_to_sleep_mode; i++){
-              if (sendReport(false) == false){
-                  break;
-              }
-             
-              Serial.println("sendReport count=" + String(i));
-              delay(1000);
+  if (hasGPIo == false) {
+    sendReport(true);
+  } else {
+    for (int i = 0; i < 15; i++) {
+      bool ret = sendReport(true);
+      if (ret == true) {
+        delay(1000);
+        for (int i = 0; i < time_to_sleep_mode; i++) {
+          if (sendReport(false) == false) {
+            break;
           }
-        }else{
-          break;
+
+          Serial.println("sendReport count=" + String(i));
+          delay(1000);
         }
+      } else {
+        break;
       }
+    }
   }
- 
-  
+
   turnOffWiFi();
 
   //Print the wakeup reason for ESP32
   print_wakeup_reason();
   startSleepMode();
-
 }
 
 void loop() {
