@@ -53,7 +53,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-int g_count = 120;
+int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_Timer_";
@@ -1060,7 +1060,7 @@ void task1(void *parameter) {
      
     // printLocalTime();
     g_count = g_count +1;
-    if(g_count> 60){
+    if(g_count >= 60){
         gPollingTime = String(g_count);
         sendReport(true); 
         g_count= 0;
