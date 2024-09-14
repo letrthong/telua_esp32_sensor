@@ -454,27 +454,37 @@ void initWiFi() {
           String SSID = WiFi.SSID(i);
           Serial.print("scanNetworks SSID=");
           Serial.println(SSID);
-          if (i < 10) {
+          if (i < 10)
+          {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-          if (Length_of_ssid > 0) {
-            if (current_ssid.equals(SSID)) {
+          if (Length_of_ssid > 0)
+          {
+            if (current_ssid.equals(SSID)) 
+            {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              gSignalStrength = String(WiFi.RSSI(i));
             }
-
-            if (remote_ssid.equals(SSID)) {
-              hasRemoteRouter = true;
+            else if (remote_ssid.equals(SSID) && (hasRouter == false)  )
+            {
+             
               g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              //break;
+              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN)
+              {
+                  if(remote_pass.length() > 1)
+                  {
+                      gSignalStrength = String(WiFi.RSSI(i));  
+                      hasRemoteRouter = true;
+                  }
+              }
             }
-
-          }
+          } 
         }
 
-        if (n < 1) {
+        if (n < 1)
+        {
           select_html = select_html + "<option value=\" \"> </option>";
         }
         select_html = select_html + " </select> <br>";
@@ -542,19 +552,23 @@ void initWiFi() {
       Serial.print("Connecting to Remote WiFi ..");
       int count = 0;
       int retryTime = 30;
-      while (WiFi.status() != WL_CONNECTED &&  (isConnecting == true)) {
+      while (WiFi.status() != WL_CONNECTED &&  (isConnecting == true))
+      {
         Serial.print('.');
         delay(500);
         // 15 seconds
         count = count + 1;
-        if (count > retryTime) {
+        if (count > retryTime) 
+        {
           break;
         }
       }
 
-      if (WiFi.status() == WL_CONNECTED) {
+      if (WiFi.status() == WL_CONNECTED)
+      {
         Serial.println("Remote WL_CONNECTED");
-        if (current_ssid != remote_ssid) {
+        if (current_ssid != remote_ssid)
+        {
           EEPROM.writeString(EEPROM_ADDRESS_SSID, remote_ssid);
           EEPROM.commit();
 
@@ -562,7 +576,9 @@ void initWiFi() {
           EEPROM.commit();
           ESP.restart();
         }
-      } else {
+      } 
+      else 
+      {
         if(isConnecting == true){
            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
            EEPROM.commit();
@@ -572,13 +588,16 @@ void initWiFi() {
     }
   }
 
-  if(hasNetworks == false){
+  if(hasNetworks == false)
+  {
 	   ESP.restart();
   }
-  else{
-    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
+  else
+  {
+    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) 
+    {
           startLocalWeb();
-      }
+    }
   }
 
 }
@@ -670,7 +689,8 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-bool sendReport(bool hasReport) {
+bool sendReport(bool hasReport) 
+{
   bool ret = false;
   String temperature = "0";
   String relative_humidity = "0";
@@ -829,7 +849,8 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
-  
+  gSignalStrength = String(WiFi.RSSI());  
+
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=SHT40&temperature=" + temperature + "&humidity=" + relative_humidity + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
@@ -848,6 +869,8 @@ bool sendReport(bool hasReport) {
           serverPath = error_url + "?sensorName=SHT40_Controller&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
      }
   }
+
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength +  +"&release=" + releaseDate ;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
