@@ -28,6 +28,7 @@ String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
 String gVoltage = "12";
 String gSignalStrength = "0";
+String gPollingTime = "60";
 
 int gUptime = 0;
 int gUptimeCounter = 0;
@@ -718,7 +719,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength +  gProtocol ;
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength +  gProtocol  + "&pollingTime=" +gPollingTime;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -1060,6 +1061,7 @@ void task1(void *parameter) {
     // printLocalTime();
     g_count = g_count +1;
     if(g_count> 60){
+        gPollingTime = String(g_count);
         sendReport(true); 
         g_count= 0;
     } else {
