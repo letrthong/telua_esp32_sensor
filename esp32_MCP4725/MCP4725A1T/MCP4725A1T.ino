@@ -28,7 +28,7 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "14-Sep-2024";
+String releaseDate = "15-Sep-2024";
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -37,6 +37,9 @@ int startEpchoTime = 0;
 String gWifiName = "";
 String gVoltage = "12";
 String gSignalStrength = "0";
+String gProtocol = "&protocol=RESTfulAPI";
+String gPollingTime = "60";
+
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -712,20 +715,18 @@ bool sendReport(bool hasReport) {
     ESP.restart();
     return false;
   }
-
-   gSignalStrength = String(WiFi.RSSI());  
-
-
+ 
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
     return false;
   }
 
+  gSignalStrength = String(WiFi.RSSI());  
   
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
- serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength;
+ serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength  + gProtocol + "&pollingTime=" +gPollingTime;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -1059,8 +1060,9 @@ void loop() {
     gUptime=  currntEpchoTime - startEpchoTime;
 
    g_count = g_count +1;
-   if((g_count > 60) || ( ( g_count> 15) && gHasSpeed == true )){
-       sendReport(true); 
+   if((g_count >= 60) || ( ( g_count >= 15) && gHasSpeed == true )){
+      gPollingTime = String(g_count);
+      sendReport(true); 
       g_count= 0;
    }else{
       sendReport(false); 
