@@ -29,9 +29,11 @@ String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
 String releaseDate = "14-Sep-2024";
+String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
 String gVoltage = "5";
 String gSignalStrength = "0";
+String gPollingTime = "60";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -827,11 +829,19 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
+   
+
   WiFiClientSecure* client = new WiFiClientSecure;
   if (!client) {
     return false;
   }
 
+  if(WiFi.RSSI() < -93 ){
+       Serial.println("sendReport  WiFi.RSSI() week");
+      ESP.restart();
+  }
+
+  gPollingTime = String(time_to_sleep_mode);
   gSignalStrength = String(WiFi.RSSI());
 
   client->setInsecure();
@@ -855,6 +865,7 @@ bool sendReport(bool hasReport) {
 
   
   serverPath = serverPath + "&wiFiName=" + gWifiName + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + +"&release=" + releaseDate;
+  serverPath = serverPath  + gProtocol + "&pollingTime=" +gPollingTime;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
