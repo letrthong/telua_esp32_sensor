@@ -33,7 +33,7 @@ void turnOnAll(){
 void resetGPIO(){
   Serial.println("rerestGPIO");
   turnOnAll();
-  delay(3000);
+  delay(10000);
   turnOffAll();
 }
 
