@@ -28,6 +28,8 @@ String gWifiName = "";
 String gVoltage = "220";
 String gSignalStrength = "0";
 String gProtocol = "&protocol=RESTfulAPI";
+String gPollingTime = "60";
+
 int gUptime = 0;
 int gUptimeCounter = 0;
 int gPreUptime = 0;
@@ -51,7 +53,7 @@ RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-int g_count = 120;
+int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
 const char * ssid = "Telua_Timer_";
@@ -718,7 +720,7 @@ bool sendReport(bool hasReport) {
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Pump&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol;
+  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
@@ -1059,7 +1061,8 @@ void task1(void *parameter) {
      
     // printLocalTime();
     g_count = g_count +1;
-    if(g_count> 60){
+    if(g_count >= 60){
+         gPollingTime = String(g_count);
         sendReport(true); 
         g_count= 0;
     } else {
