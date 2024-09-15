@@ -20,6 +20,8 @@ String select_html = "";
 String remote_ssid = "";
 String remote_pass = "";
 
+ 
+
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
@@ -29,6 +31,10 @@ String gVoltage = "220";
 String gSignalStrength = "0";
 String gProtocol = "&protocol=RESTfulAPI";
 String gPollingTime = "60";
+
+bool gIsDefaultWifi = true;
+String gDefaultWifname = "telua";
+String gDefaultWifPass = "13572468";
 
 int gUptime = 0;
 int gUptimeCounter = 0;
@@ -413,13 +419,13 @@ void initWiFi() {
 
   gWifiName = current_ssid;
 
-  // current_ssid = "telua";
-  // current_pass = "13572468";
-  // gWifiName = "const " + current_ssid;
-
+  if(gIsDefaultWifi == true)
+  {
+    current_ssid = gDefaultWifname;
+    current_pass = gDefaultWifPass;
+    gWifiName = "const " + current_ssid;
+  }
   gWifiName.replace(" ", "+");
-
-
 
   hasRouter = false;
   bool hasNetworks = false;
@@ -1061,11 +1067,14 @@ void task1(void *parameter) {
      
     // printLocalTime();
     g_count = g_count +1;
-    if(g_count >= 60){
-         gPollingTime = String(g_count);
+    if (g_count >= 60)
+    {
+        gPollingTime = String(g_count);
         sendReport(true); 
         g_count= 0;
-    } else {
+    } 
+    else 
+    {
         sendReport(false); 
     }
     
