@@ -28,10 +28,8 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "15-Sep-2024";
+String releaseDate = "18-Sep-2024";
 int gUptime = 0;
-int gUptimeCounter = 0;
-int gPreUptime = 0;
 int startEpchoTime = 0;
 
 String gWifiName = "";
@@ -1058,6 +1056,9 @@ void loop() {
    // printLocalTime();
    int currntEpchoTime =  getSeconds();
     gUptime=  currntEpchoTime - startEpchoTime;
+    if(gUptime < 0){
+       startEpchoTime = currntEpchoTime;
+    }
 
    g_count = g_count +1;
    if((g_count >= 60) || ( ( g_count >= 15) && gHasSpeed == true )){
