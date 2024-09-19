@@ -1054,6 +1054,10 @@ void task1(void *parameter) {
   while (1) {
     int currntEpchoTime =  getSeconds();
     gUptime=  currntEpchoTime - startEpchoTime;
+     if(gUptime < 0){
+       startEpchoTime = currntEpchoTime;
+    }
+
 
     Serial.print("MCU hang event!!!: ");
     Serial.println(g_count);
