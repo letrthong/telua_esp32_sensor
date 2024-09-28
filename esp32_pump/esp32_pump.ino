@@ -698,10 +698,15 @@ bool sendReport(bool hasReport) {
 
   if(hasAl == true){
       turnOnRelay("alOn");
-      btnStatus = btnStatus + "&al=on";
+      if(gHas2Channel == false){
+        btnStatus = btnStatus + "&al=on";
+      }
+      
   } else {
     turnOffRelay("alOff");
-    btnStatus = btnStatus + "&al=off";
+     if(gHas2Channel == false){
+        btnStatus = btnStatus + "&al=off";
+     }
   }
 
 
