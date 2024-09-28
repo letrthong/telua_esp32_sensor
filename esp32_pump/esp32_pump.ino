@@ -98,18 +98,34 @@ void intGpio(){
     if(gHas2Channel == true){
         ledRelay01 = 18;
         ledRelay02 = 5;
+        ledAlarm = 17;
         gSensorName = "Timer2Channels";
+         pinMode(ledRelay01, OUTPUT);
+         pinMode(ledRelay02, OUTPUT);
     }
-    pinMode(ledRelay01, OUTPUT);
-    pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
+    else
+    {
+       pinMode(ledRelay01, OUTPUT);
+      pinMode(ledRelay02, OUTPUT);
+      pinMode(ledAlarm, OUTPUT);
+    }
+   
    turnOffAll();
 }
 
 void turnOffAll(){
-   digitalWrite(ledRelay01, LOW);
-   digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
+  if(gHas2Channel == true)
+  {
+         digitalWrite(ledRelay01, LOW);
+         digitalWrite(ledRelay02, LOW);
+  }
+  else
+  {
+       digitalWrite(ledRelay01, LOW);
+    digitalWrite(ledRelay02, LOW);
+    digitalWrite(ledAlarm, LOW);
+  }
+  
 }
 
 bool turnOnRelay(String action){
@@ -696,19 +712,21 @@ bool sendReport(bool hasReport) {
       btnStatus   = btnStatus + "&b2=off";
   }
 
-  if(hasAl == true){
-      turnOnRelay("alOn");
-      if(gHas2Channel == false){
+  if(gHas2Channel == false){
+      if(hasAl == true){
+        turnOnRelay("alOn");
         btnStatus = btnStatus + "&al=on";
-      }
-      
-  } else {
-    turnOffRelay("alOff");
-     if(gHas2Channel == false){
-        btnStatus = btnStatus + "&al=off";
-     }
-  }
 
+      } 
+      else
+       {
+        turnOffRelay("alOff");
+        btnStatus = btnStatus + "&al=off";
+      }
+
+
+  }
+  
 
    if(hasReport == false){
       return ret;
