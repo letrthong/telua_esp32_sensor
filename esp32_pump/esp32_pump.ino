@@ -32,9 +32,13 @@ String gSignalStrength = "0";
 String gProtocol = "&protocol=RESTfulAPI";
 String gPollingTime = "60";
 
-bool gIsDefaultWifi = true;
+bool gIsDefaultWifi = false;
 String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
+
+// Timer2Channels
+bool gHas2Channel = true;
+String gSensorName = "Pump";
 
 int gUptime = 0;
 int gUptimeCounter = 0;
@@ -79,8 +83,8 @@ const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
-const int ledRelay01 = 17; 
-const int ledRelay02 = 5; 
+ int ledRelay01 = 17; 
+ int ledRelay02 = 5; 
 const int ledAlarm =  18; 
 const int ledFloatSwitch =  4; 
 
@@ -90,6 +94,12 @@ const int ledFloatSwitch =  4;
 TaskHandle_t taskHandle;
 
 void intGpio(){
+
+    if(gHas2Channel == true){
+        ledRelay01 = 18;
+        ledRelay02 = 5;
+        gSensorName = "Timer2Channels";
+    }
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
@@ -725,7 +735,7 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=Pump&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
+  String serverPath = serverName + "?sensorName=" + gSensorName + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
   serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
   Serial.println(serverPath);
 
