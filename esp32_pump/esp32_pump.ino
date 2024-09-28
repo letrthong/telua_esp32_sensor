@@ -95,11 +95,13 @@ TaskHandle_t taskHandle;
 
 void intGpio(){
 
-    if(gHas2Channel == true){
-        ledRelay01 = 18 ;
-        ledRelay02 = 5 ;
+    if(gHas2Channel == true)
+    {
+        ledRelay01 = 5 ;
+        ledRelay02 = 18  ;
         ledAlarm = 17;
         gSensorName = "Timer2Channels";
+
          pinMode(ledRelay01, OUTPUT);
          pinMode(ledRelay02, OUTPUT);
     }
