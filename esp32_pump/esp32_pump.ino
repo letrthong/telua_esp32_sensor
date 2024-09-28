@@ -83,9 +83,9 @@ const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
- int ledRelay01 = 17; 
- int ledRelay02 = 5; 
-const int ledAlarm =  18; 
+int ledRelay01 = 17; 
+int ledRelay02 = 5; 
+int ledAlarm =  18; 
 const int ledFloatSwitch =  4; 
 
 // const int btnTop = 19 ( 18-> 19);
@@ -96,8 +96,8 @@ TaskHandle_t taskHandle;
 void intGpio(){
 
     if(gHas2Channel == true){
-        ledRelay01 = 5;
-        ledRelay02 = 18 ;
+        ledRelay01 = 18 ;
+        ledRelay02 = 5 ;
         ledAlarm = 17;
         gSensorName = "Timer2Channels";
          pinMode(ledRelay01, OUTPUT);
