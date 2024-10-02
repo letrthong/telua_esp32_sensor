@@ -1058,6 +1058,9 @@ void task1(void *parameter) {
        startEpchoTime = currntEpchoTime;
     }
 
+    if(currntEpchoTime < 0){
+       ESP.restart();  
+    }
 
     Serial.print("MCU hang event!!!: ");
     Serial.println(g_count);
