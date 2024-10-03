@@ -1099,7 +1099,8 @@ void task1(void *parameter) {
 
     if(gUptime < 0)
     {
-      gUptime = currntEpchoTime;
+      startEpchoTime = currntEpchoTime;
+      gUptime = 0;
     }
 
 
