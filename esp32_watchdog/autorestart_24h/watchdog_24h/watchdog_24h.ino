@@ -4,8 +4,8 @@
 // WDT Timeout in seconds
 TaskHandle_t taskHandle;
 
-const int ledRelay01 = 18; 
-const int ledRelay02 = 5; 
+const int ledRelay01 = 5; 
+const int ledRelay02 = 18; 
 const int ledAlarm =  19; 
 
 
@@ -32,8 +32,14 @@ void turnOnAll(){
 
 void resetGPIO(){
   Serial.println("rerestGPIO");
-  turnOnAll();
+  digitalWrite(ledRelay01, HIGH);
   delay(10000);
+  digitalWrite(ledRelay01, LOW);
+
+  digitalWrite(ledRelay02, HIGH);
+  delay(10000);
+  turnOnAll();
+ 
   turnOffAll();
 }
 
