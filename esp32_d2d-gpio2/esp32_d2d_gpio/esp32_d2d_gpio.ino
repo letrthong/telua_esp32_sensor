@@ -89,7 +89,7 @@ RTC_DATA_ATTR  bool reportpH = false;
  
 const int ledRelay01 = 17 ; 
 const int ledRelay02 =  5; 
-const int ledAlarm =  19; 
+const int ledAlarm =  18; 
 const int ledFloatSwitch =  4; 
 
 const int btnTop = 18;
