@@ -671,6 +671,7 @@ bool sendReport(bool hasReport) {
 
       String serverPath = serverName  + "?sensorName=M2M_02" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
       
+       serverPath = serverPath + btnStatus+ "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
       hasTemp = false;
       hasHum = false;
       hasDistance = false;
