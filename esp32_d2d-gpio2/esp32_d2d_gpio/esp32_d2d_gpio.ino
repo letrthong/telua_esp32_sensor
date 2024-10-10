@@ -18,7 +18,20 @@ String remote_ssid = "";
 String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/m2m";
- 
+
+String btnStatus = "&b1=off&b2=off&al=off";
+String releaseDate = "14-Sep-2024";
+String gWifiName = "";
+String gVoltage = "220";
+String gSignalStrength = "0";
+String gProtocol = "&protocol=RESTfulAPI";
+String gPollingTime = "60";
+
+bool gIsDefaultWifi = false;
+String gDefaultWifname = "telua";
+String gDefaultWifPass = "13572468";
+ s
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
