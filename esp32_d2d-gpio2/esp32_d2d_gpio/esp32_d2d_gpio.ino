@@ -30,8 +30,7 @@ String gPollingTime = "60";
 bool gIsDefaultWifi = false;
 String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
- s
-
+ 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
