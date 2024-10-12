@@ -19,7 +19,7 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/m2m";
 
-String btnStatus = "&b1=off&b2=off&al=off";
+String btnStatus = "&b1=off&b2=off";
 String releaseDate = "14-Sep-2024";
 String gWifiName = "";
 String gVoltage = "220";
@@ -101,7 +101,7 @@ RTC_DATA_ATTR  bool reportpH = false;
  
 const int ledRelay01 = 5 ; 
 const int ledRelay02 =  18; 
-const int ledAlarm =  7; 
+ 
 const int ledFloatSwitch =  4; 
 
 const int btnTop = 18;
@@ -112,7 +112,7 @@ void intGpio(){
     delay(1000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
+     
      
     delay(1000);
     // digitalWrite(ledAlarm, HIGH);
@@ -124,7 +124,7 @@ void intGpio(){
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
+   
   
 }
 
@@ -138,7 +138,7 @@ bool turnOnRelay(String action){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( action == "alOn"){
-       digitalWrite(ledAlarm, HIGH);
+       //digitalWrite(ledAlarm, HIGH);
        retCode = true;
    } 
 
@@ -152,7 +152,7 @@ bool turnOffRelay(String action){
    }else  if( action =="b2Off"){
       digitalWrite(ledRelay02, LOW);
    } else  if( action =="alOff"){
-       digitalWrite(ledAlarm, LOW);
+       //digitalWrite(ledAlarm, LOW);
    } 
    return retCode;
 }
@@ -609,6 +609,7 @@ void turnOffWiFi() {
  
 
 void initEEPROM() {
+  Serial.println("initEEPROM");
   // Allocate The Memory Size Needed
   EEPROM.begin(EEPROM_SIZE);
 
@@ -687,7 +688,7 @@ bool sendReport(bool hasReport) {
         sensorInfo = "&ph=" + String(M2MpH)  ;
       }  
 
-      String serverPath = serverName  + "?sensorName=M2M_02" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+      String serverPath = serverName  + "?sensorName=M2M_02" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber  +"&release=" + releaseDate;
       
        serverPath = serverPath + btnStatus+ "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
       hasTemp = false;
@@ -1109,33 +1110,30 @@ bool sendReport(bool hasReport) {
     //  -- End hasTrigger----------------
   }
 
-
+   btnStatus = "";
   if(hasBtn0 == true){
         turnOnRelay("b1On");
+         btnStatus   = btnStatus + "&b1=on";
         ret = true;
     }
     
     if(offBtn0 == true){
       turnOffRelay("b1Off");
+      btnStatus   = btnStatus + "&b1=off";
     }
 
     if(hasBtn1 == true){
         turnOnRelay("b2On");
+        btnStatus = btnStatus + "&b2=on";
         ret = true;
     }
     
     if(offBtn1 == true){
       turnOffRelay("b2Off");
+       btnStatus   = btnStatus + "&b2=off";
     }
 
-    if(hasAl == true){
-        turnOnRelay("alOn");
-        ret = true;
-    } 
-    
-    if(offAl == true){
-      turnOffRelay("alOff");
-    }
+   
  
   return ret;
 }
