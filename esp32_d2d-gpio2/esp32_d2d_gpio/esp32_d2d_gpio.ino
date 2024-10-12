@@ -99,25 +99,26 @@ RTC_DATA_ATTR  bool reportVOC = false;
 RTC_DATA_ATTR  bool reportpH = false;
 // the LED is connected to GPIO 5
  
-const int ledRelay01 = 17 ; 
-const int ledRelay02 =  5; 
-const int ledAlarm =  18; 
+const int ledRelay01 = 5 ; 
+const int ledRelay02 =  18; 
+const int ledAlarm =  7; 
 const int ledFloatSwitch =  4; 
 
 const int btnTop = 18;
 const int btnBot = 16;
 
 void intGpio(){
-     delay(1000);
+  
+    delay(1000);
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
      
     delay(1000);
-    digitalWrite(ledAlarm, HIGH);
-    delay(1000);
-    digitalWrite(ledAlarm, LOW);
-    delay(1000);
+    // digitalWrite(ledAlarm, HIGH);
+    // delay(1000);
+    // digitalWrite(ledAlarm, LOW);
+    // delay(1000);
 }
 
 void turnOffAll(){
