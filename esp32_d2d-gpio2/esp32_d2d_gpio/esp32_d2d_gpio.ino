@@ -1193,6 +1193,7 @@ void setup() {
     bool ret = sendReport(true);
     if(ret == true){
       delay(pollingInterval*1000);
+      gPollingTime = pollingInterval;
       Serial.println("sendReport count i=" + String(i));
     }else{
       break;
