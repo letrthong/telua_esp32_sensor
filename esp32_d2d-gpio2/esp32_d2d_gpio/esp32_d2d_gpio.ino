@@ -1115,10 +1115,11 @@ bool sendReport(bool hasReport) {
         turnOnRelay("b1On");
          btnStatus   = btnStatus + "&b1=on";
         ret = true;
-    }
-    
-    if(offBtn0 == true){
+    } else   if(offBtn0 == true){
       turnOffRelay("b1Off");
+      btnStatus   = btnStatus + "&b1=off";
+    } else {
+       turnOffRelay("b1Off");
       btnStatus   = btnStatus + "&b1=off";
     }
 
@@ -1126,9 +1127,10 @@ bool sendReport(bool hasReport) {
         turnOnRelay("b2On");
         btnStatus = btnStatus + "&b2=on";
         ret = true;
-    }
-    
-    if(offBtn1 == true){
+    } else if(offBtn1 == true){
+      turnOffRelay("b2Off");
+       btnStatus   = btnStatus + "&b2=off";
+    } else {
       turnOffRelay("b2Off");
        btnStatus   = btnStatus + "&b2=off";
     }
