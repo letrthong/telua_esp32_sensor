@@ -732,9 +732,9 @@ bool sendReport(bool hasReport) {
     
         } else {
     
-          bool hasIntervalTime = doc.containsKey("intervalTime");
+          bool hasIntervalTime = doc.containsKey("intervalTimeSeconds");
           if (hasIntervalTime == true) {
-            int intervalTime = doc["intervalTime"];
+            int intervalTime = doc["intervalTimeSeconds"];
             Serial.print("deserializeJson intervalTime=");
             Serial.println(intervalTime);
             if (intervalTime >= 30) {
@@ -906,13 +906,14 @@ bool sendReport(bool hasReport) {
               }
                
 
-              hasKey = M2MObjectt.containsKey("pollingInterval");
+              hasKey = M2MObjectt.containsKey("pollingIntervalSeconds");
               if(hasKey == true){
-                int value = M2MObjectt["pollingInterval"]; 
+                int value = M2MObjectt["pollingIntervalSeconds"]; 
                  Serial.print("deserializeJson pollingInterval=");
                  Serial.println(value);
                 if( value > 1 &&  value< 60){
-                  pollingInterval = value;
+                   pollingInterval = value;
+                    Serial.println("pollingInterval");
                 }           
               }
   
