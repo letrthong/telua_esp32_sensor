@@ -76,7 +76,7 @@ RTC_DATA_ATTR  bool hasCO2 = false;
 RTC_DATA_ATTR  bool hasVOC = false; 
 RTC_DATA_ATTR  bool haspH = false; 
 RTC_DATA_ATTR  bool hasCorrectData = false;
-RTC_DATA_ATTR  bool pollingInterval = 3;
+RTC_DATA_ATTR  int pollingIntervalSeconds = 3;
 
 RTC_DATA_ATTR  float  M2MTemp = 0.0;
 RTC_DATA_ATTR  float  M2MHum = -1.0;
@@ -909,11 +909,11 @@ bool sendReport(bool hasReport) {
               hasKey = M2MObjectt.containsKey("pollingIntervalSeconds");
               if(hasKey == true){
                 int value = M2MObjectt["pollingIntervalSeconds"]; 
-                 Serial.print("deserializeJson pollingInterval=");
+                 Serial.print("deserializeJson pollingIntervalSeconds=");
                  Serial.println(value);
                 if( value > 1 &&  value< 60){
-                   pollingInterval = value;
-                    Serial.println("pollingInterval");
+                   pollingIntervalSeconds = value;
+                    Serial.println("pollingIntervalSeconds");
                 }           
               }
   
@@ -1201,10 +1201,10 @@ void setup() {
   for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
-      delay(pollingInterval*1000);
+      delay(pollingIntervalSeconds*1000);
       //gPollingTime = pollingInterval;
       Serial.println("sendReport count i=" + String(i));
-       Serial.println("sendReport pollingInterval=" + String(pollingInterval));
+       Serial.println("sendReport pollingInterval=" + String(pollingIntervalSeconds));
     }else{
       break;
     }
