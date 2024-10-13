@@ -908,7 +908,9 @@ bool sendReport(bool hasReport) {
 
               hasKey = M2MObjectt.containsKey("pollingInterval");
               if(hasKey == true){
-                int value = M2MObjectt["pollingInterval"];
+                int value = M2MObjectt["pollingInterval"]; 
+                 Serial.print("deserializeJson pollingInterval=");
+                 Serial.println(value);
                 if( value > 1 &&  value< 60){
                   pollingInterval = value;
                 }           
@@ -1192,9 +1194,9 @@ void setup() {
 
   
    // 30minutes = 60*30  
-   int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
+   int index  = int( ((g_cycle_minutes*60)/) )  + 1;
    Serial.println("sendReport index=" + String(index));
-
+pollingInterval
   for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
