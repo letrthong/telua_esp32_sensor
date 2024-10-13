@@ -1185,10 +1185,16 @@ void setup() {
   initEEPROM();
   initWiFi();
   
+  //Get configuration from cloud
+  sendReport(true);
+
    gPollingTime = time_to_sleep_mode;
 
+  
    // 30minutes = 60*30  
    int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
+   Serial.println("sendReport index=" + String(index));
+
   for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
