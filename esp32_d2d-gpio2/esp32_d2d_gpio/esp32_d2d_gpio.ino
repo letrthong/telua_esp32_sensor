@@ -741,6 +741,7 @@ bool sendReport(bool hasReport) {
     
               if (time_to_sleep_mode != intervalTime && intervalTime <= 1800) {
                 time_to_sleep_mode = intervalTime;
+                gPollingTime = time_to_sleep_mode;
                 EEPROM.writeUInt(EEPROM_ADDRESS_TIME_TO_SLEEP, intervalTime);
                 EEPROM.commit();
               }
@@ -978,7 +979,7 @@ bool sendReport(bool hasReport) {
   bool hasBtn1 = false; 
   bool hasAl = false; 
 
-    bool offBtn0 = false;
+  bool offBtn0 = false;
   bool offBtn1 = false; 
   bool offAl = false; 
   for (JsonObject v: triggerList) {
@@ -1192,7 +1193,7 @@ void setup() {
     bool ret = sendReport(true);
     if(ret == true){
       delay(pollingInterval*1000);
-      gPollingTime = pollingInterval;
+      //gPollingTime = pollingInterval;
       Serial.println("sendReport count i=" + String(i));
        Serial.println("sendReport pollingInterval=" + String(pollingInterval));
     }else{
