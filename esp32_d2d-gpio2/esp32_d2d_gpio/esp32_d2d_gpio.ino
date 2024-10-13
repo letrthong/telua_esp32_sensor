@@ -59,10 +59,10 @@ const char * ssid_gpio = "Telua_M2M_";
 const char * password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+unsigned long interval = 60000;
 
 unsigned long previousMillisLocalWeb = 0;
-unsigned long intervalLocalWeb = 30000;
+unsigned long intervalLocalWeb = 60000;
 
 // Machine to Machine
 RTC_DATA_ATTR  bool hasM2M  = false;
@@ -102,10 +102,7 @@ RTC_DATA_ATTR  bool reportpH = false;
 const int ledRelay01 = 5 ; 
 const int ledRelay02 =  18; 
  
-const int ledFloatSwitch =  4; 
-
-const int btnTop = 18;
-const int btnBot = 16;
+ 
 
 void intGpio(){
   
@@ -664,7 +661,7 @@ bool sendReport(bool hasReport) {
       if (!client) {
         return false;
       }
-    
+
       
       client -> setInsecure();
       HTTPClient http;
@@ -1187,6 +1184,8 @@ void setup() {
   initEEPROM();
   initWiFi();
   
+   gPollingTime = time_to_sleep_mode;
+
    // 30minutes = 60*30  
    int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
   for(int i = 0; i< index ; i++){
@@ -1195,6 +1194,7 @@ void setup() {
       delay(pollingInterval*1000);
       gPollingTime = pollingInterval;
       Serial.println("sendReport count i=" + String(i));
+       Serial.println("sendReport pollingInterval=" + String(pollingInterval));
     }else{
       break;
     }
