@@ -1194,9 +1194,9 @@ void setup() {
 
   
    // 30minutes = 60*30  
-   int index  = int( ((g_cycle_minutes*60)/) )  + 1;
+   int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
    Serial.println("sendReport index=" + String(index));
-pollingInterval
+
   for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
