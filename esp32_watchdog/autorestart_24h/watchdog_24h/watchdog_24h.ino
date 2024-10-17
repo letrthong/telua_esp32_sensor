@@ -6,26 +6,24 @@ TaskHandle_t taskHandle;
 
 const int ledRelay01 = 5; 
 const int ledRelay02 = 18; 
-const int ledAlarm =  19; 
+ 
 
 
 void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
-   turnOffAll();
+    turnOffAll();
 }
 
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
 }
 
 void turnOnAll(){
      digitalWrite(ledRelay01, HIGH);
     digitalWrite(ledRelay02, HIGH);
-    digitalWrite(ledAlarm, HIGH);
+     
 }
 
 

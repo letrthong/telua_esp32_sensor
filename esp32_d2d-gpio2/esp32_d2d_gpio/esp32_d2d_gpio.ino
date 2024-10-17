@@ -27,6 +27,8 @@ String gSignalStrength = "0";
 String gProtocol = "&protocol=RESTfulAPI";
 String gPollingTime = "60";
 
+int collectedTime = -1;
+
 bool gIsDefaultWifi = false;
 String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
@@ -685,9 +687,18 @@ bool sendReport(bool hasReport) {
         sensorInfo = "&ph=" + String(M2MpH)  ;
       }  
 
+        if(collectedTime > 0){
+          sensorInfo = sensorInfo + "&collectedTime=" + String(collectedTime);
+       }
+
+
+
       String serverPath = serverName  + "?sensorName=M2M_02" +sensorInfo+  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber  +"&release=" + releaseDate;
       
-       serverPath = serverPath + btnStatus+ "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
+      serverPath = serverPath + btnStatus+ "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
+
+       
+
       hasTemp = false;
       hasHum = false;
       hasDistance = false;
@@ -727,7 +738,8 @@ bool sendReport(bool hasReport) {
         DynamicJsonDocument doc(2048);
     
         DeserializationError error = deserializeJson(doc, payload);
-        if (error) {
+        if (error)
+         { 
           Serial.println("deserializeJson() failed");
     
         } else {
@@ -903,6 +915,14 @@ bool sendReport(bool hasReport) {
                 M2MpH = M2MObjectt["ph"];
                 haspH = true;
                 Serial.println("deserializeJson M2MSensor M2MpH=" + String(M2MpH));
+              }
+
+
+              hasKey = M2MObjectt.containsKey("collectedTime");
+              if(hasKey == true){
+                collectedTime = M2MObjectt["collectedTime"];
+                
+                Serial.println("deserializeJson M2MSensor collectedTime=" + String(collectedTime));
               }
                
 
@@ -1195,14 +1215,14 @@ void setup() {
 
   
    // 30minutes = 60*30  
-   int index  = int( ((g_cycle_minutes*60)/pollingInterval) )  + 1;
+   int index  = int( ((g_cycle_minutes*60)/pollingIntervalSeconds) )  + 1;
    Serial.println("sendReport index=" + String(index));
 
   for(int i = 0; i< index ; i++){
     bool ret = sendReport(true);
     if(ret == true){
       delay(pollingIntervalSeconds*1000);
-      //gPollingTime = pollingInterval;
+      gPollingTime = String(pollingIntervalSeconds);
       Serial.println("sendReport count i=" + String(i));
        Serial.println("sendReport pollingInterval=" + String(pollingIntervalSeconds));
     }else{
