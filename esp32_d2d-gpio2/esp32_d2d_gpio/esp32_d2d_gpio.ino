@@ -112,12 +112,7 @@ void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
      
-     
-    delay(1000);
-    // digitalWrite(ledAlarm, HIGH);
-    // delay(1000);
-    // digitalWrite(ledAlarm, LOW);
-    // delay(1000);
+ 
 }
 
 void turnOffAll(){
@@ -136,9 +131,6 @@ bool turnOnRelay(String action){
    }else  if( action =="b2On"){
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action == "alOn"){
-       //digitalWrite(ledAlarm, HIGH);
-       retCode = true;
    } 
 
    return retCode;
@@ -150,9 +142,7 @@ bool turnOffRelay(String action){
        digitalWrite(ledRelay01, LOW);
    }else  if( action =="b2Off"){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action =="alOff"){
-       //digitalWrite(ledAlarm, LOW);
-   } 
+   }  
    return retCode;
 }
 
