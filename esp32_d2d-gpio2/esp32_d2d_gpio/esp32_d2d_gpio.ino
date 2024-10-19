@@ -438,6 +438,7 @@ void initWiFi() {
     current_pass = gDefaultWifPass;
     gWifiName = "const " + current_ssid;
   }
+  
   gWifiName.replace(" ", "+");
 
   hasRouter = false;
