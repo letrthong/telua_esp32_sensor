@@ -81,6 +81,11 @@ const int ledFloatSwitch =  4;
 const int btnTop = 18;
 const int btnBot = 16;
 
+
+bool gIsDefaultWifi = true;
+String gDefaultWifname = "HO CHI MINH US";
+String gDefaultWifPass = "12345678";
+
 TaskHandle_t taskHandle;
 
 void intGpio(){
@@ -413,11 +418,12 @@ void initWiFi() {
 
   gWifiName = current_ssid;
 
-  // current_ssid = "telua";
-  // current_pass = "13572468";
-  // gWifiName = "const " + current_ssid;
- 
-
+  if(gIsDefaultWifi == true)
+  {
+    current_ssid = gDefaultWifname;
+    current_pass = gDefaultWifPass;
+    gWifiName = "const " + current_ssid;
+  }
   gWifiName.replace(" ", "+");
 
   hasRouter = false;

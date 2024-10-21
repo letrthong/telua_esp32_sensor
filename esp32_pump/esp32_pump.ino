@@ -104,6 +104,7 @@ void intGpio(){
 
          pinMode(ledRelay01, OUTPUT);
          pinMode(ledRelay02, OUTPUT);
+         pinMode(ledAlarm, OUTPUT);
     }
     else
     {
@@ -118,12 +119,12 @@ void intGpio(){
 void turnOffAll(){
   if(gHas2Channel == true)
   {
-         digitalWrite(ledRelay01, LOW);
-         digitalWrite(ledRelay02, LOW);
+      digitalWrite(ledRelay01, LOW);
+      digitalWrite(ledRelay02, LOW);
   }
   else
   {
-       digitalWrite(ledRelay01, LOW);
+    digitalWrite(ledRelay01, LOW);
     digitalWrite(ledRelay02, LOW);
     digitalWrite(ledAlarm, LOW);
   }
