@@ -37,7 +37,7 @@ String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
 
 // Timer2Channels
-bool gHas2Channel = true;
+bool gHas2Channel = false;
 String gSensorName = "Pump";
 
 int gUptime = 0;
