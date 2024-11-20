@@ -37,7 +37,9 @@ String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
 
 // Timer2Channels
-bool gHas2Channel = false;
+bool gHas2Channel = true;
+bool gPWM = true;
+
 String gSensorName = "Pump";
 
 int gUptime = 0;
@@ -101,6 +103,10 @@ void intGpio(){
         ledRelay02 = 18  ;
         ledAlarm = 17;
         gSensorName = "Timer2Channels";
+        if(gPWM == true){
+
+          gSensorName = "PWM2Channels";
+        }
 
          pinMode(ledRelay01, OUTPUT);
          pinMode(ledRelay02, OUTPUT);
