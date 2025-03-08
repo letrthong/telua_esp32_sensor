@@ -29,7 +29,7 @@ void loop() {
     count = 0;
 
     float currentValue = (analogVolts*100)/3300;
-    Serial.println(currentValue);
+    Serial.printf("12 bit - A = %f\n",currentValue);
   }
   else
   {
