@@ -560,8 +560,10 @@ bool sendReport(bool hasReport) {
 
   int analogVolts = analogReadMilliVolts(potPin_adc);
   if(analogVolts > 150){
+    float volt = analogVolts/1000;
+
     float currentValue = (analogVolts*100)/3300;
-    gData =String(currentValue, 2);  
+    gData =String(volt, 3);  
     Serial.printf("12 bit - A = %f\n",currentValue);
   }
 
