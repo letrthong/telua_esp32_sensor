@@ -556,11 +556,11 @@ void initEEPROM() {
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  gData = "off";
+  gData = "0";
 
   int potValue = analogReadMilliVolts(potPin_adc);
-  if(potValue > 150){
-     gData = "on";
+  if(potValue > 10){
+     gData =String(potValue, 2);  
   }
 
 

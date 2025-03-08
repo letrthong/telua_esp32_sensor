@@ -17,7 +17,7 @@ void setup() {
 
 void loop() {
   //get ADC value for a given pin/ADC channel in millivolts.
-  potValue = analogReadMilliVolts(potPin_adc);
+  int potValue = analogReadMilliVolts(potPin_adc);
   if(potValue > 150){
     Serial.println(potValue);
     count = 0;
