@@ -558,9 +558,11 @@ bool sendReport(bool hasReport) {
   bool ret = false;
   gData = "0";
 
-  int potValue = analogReadMilliVolts(potPin_adc);
-  if(potValue > 10){
-     gData =String(potValue, 2);  
+  int analogVolts = analogReadMilliVolts(potPin_adc);
+  if(analogVolts > 150){
+    float currentValue = (analogVolts*100)/3300;
+    gData =String(currentValue, 2);  
+    Serial.printf("12 bit - A = %f\n",currentValue);
   }
 
 
@@ -884,6 +886,9 @@ void print_wakeup_reason() {
 void setup() {
   Serial.begin(115200);
   delay(1000);  //Take some time to open up the Serial Monitor
+  
+   analogReadResolution(12);
+
   if (bootCount >= 60) {
     bootCount = 0;
     ESP.restart();
@@ -892,7 +897,7 @@ void setup() {
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
-
+ 
   
   initEEPROM();
   initWiFi();
