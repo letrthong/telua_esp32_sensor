@@ -8,3 +8,5 @@ https://telua.co/
 #  PZCT-02
 https://hshop.vn/dong-ho-do-ap-dong-cong-suat-nang-luong-ac-da-nang-100a-pzem-004
 https://hshop.vn/dong-ho-do-ap-dong-cong-suat-nang-luong-ac-da-nang-100a
+## Base64
+https://docs.arduino.cc/libraries/base64/ 
