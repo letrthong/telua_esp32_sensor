@@ -554,18 +554,26 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-bool sendReport(bool hasReport) {
-  bool ret = false;
+void getData()
+{
   gData = "0";
 
   int analogVolts = analogReadMilliVolts(potPin_adc);
-  if(analogVolts > 150){
-    float volt = analogVolts/1000;
+  Serial.printf("getData 12 bit - analogReadMilliVolts = %d\n",analogVolts);
+  if (analogVolts > 150)
+  {
+    float volt = (analogVolts/1000);
 
     float currentValue = (analogVolts*100)/3300;
     gData =String(volt, 3);  
-    Serial.printf("12 bit - A = %f\n",currentValue);
+    Serial.printf("getData 12 bit - A = %f\n",currentValue);
+    
   }
+}
+
+bool sendReport(bool hasReport) {
+  bool ret = false;
+  getData();
 
 
   String strTriggerParameter = "";
@@ -906,30 +914,34 @@ void setup() {
 
   
  
-  for (int i = 0; i < 15; i++) {
-    bool ret = sendReport(true);
-    if (ret == true) {
-      delay(1000);
-      for (int i = 0; i < time_to_sleep_mode; i++) {
-        if (sendReport(false) == false) {
-          break;
-        }
+  // for (int i = 0; i < 15; i++) {
+  //   bool ret = sendReport(true);
+  //   if (ret == true) {
+  //     delay(1000);
+  //     for (int i = 0; i < time_to_sleep_mode; i++) {
+  //       if (sendReport(false) == false) {
+  //         break;
+  //       }
 
-        Serial.println("sendReport count=" + String(i));
-        delay(1000);
-      }
-    } else {
-      break;
-    }
-  }
+  //       Serial.println("sendReport count=" + String(i));
+  //       delay(1000);
+  //     }
+  //   } else {
+  //     break;
+  //   }
+  // }
    
-  turnOffWiFi();
+  // turnOffWiFi();
 
-  //Print the wakeup reason for ESP32
-  print_wakeup_reason();
-  startSleepMode();
+  // //Print the wakeup reason for ESP32
+  // print_wakeup_reason();
+  // startSleepMode();
 }
 
 void loop() {
-  //This is not going to be called
+   for (int i = 0; i < 30; i++){
+      getData();
+      delay(1000);
+   }
+   sendReport(true);
 }
