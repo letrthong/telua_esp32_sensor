@@ -14,4 +14,5 @@ https://docs.arduino.cc/libraries/base64/
 
 
 # https://covesa.global/
-https://github.com/COVESA/vehicle_signal_specification/tree/master/spec
+https://github.com/COVESA/vehicle_signal_specification/tree/master/spec 
+https://github.com/COVESA
