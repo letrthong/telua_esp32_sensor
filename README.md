@@ -9,5 +9,12 @@ https://telua.co/
 #  PZCT-02
 https://hshop.vn/dong-ho-do-ap-dong-cong-suat-nang-luong-ac-da-nang-100a-pzem-004
 https://hshop.vn/dong-ho-do-ap-dong-cong-suat-nang-luong-ac-da-nang-100a
-## Base64
+# Base64
 https://docs.arduino.cc/libraries/base64/ 
+
+
+# https://covesa.global/
+https://github.com/COVESA/vehicle_signal_specification/tree/master/spec 
+https://github.com/COVESA
+# SDV 
+https://blackberry.qnx.com/en/ultimate-guides/software-defined-vehicle 
