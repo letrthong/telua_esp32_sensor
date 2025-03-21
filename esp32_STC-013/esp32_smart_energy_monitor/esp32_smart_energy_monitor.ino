@@ -7,7 +7,7 @@
 #include <HTTPClient.h>
 
 #include <ArduinoJson.h>
-
+#include "EmonLib.h"  
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -69,7 +69,7 @@ unsigned long intervalLocalWeb = 60000;
 
 // the LED is connected to GPIO 5
  
- 
+ EnergyMonitor emon1; 
 
 bool hasTrigger() {
   bool retCode = false;
@@ -556,19 +556,10 @@ void initEEPROM() {
 
 void getData()
 {
-  gData = "0";
-
+  double amps = emon1.calcIrms(1480);  
   int analogVolts = analogReadMilliVolts(potPin_adc);
-  Serial.printf("getData 12 bit - analogReadMilliVolts = %d\n",analogVolts);
-  if (analogVolts > 150)
-  {
-    float volt = (analogVolts/1000);
-
-    float currentValue = (analogVolts*100)/3300;
-    gData =String(volt, 3);  
-    Serial.printf("getData 12 bit - A = %f\n",currentValue);
-    
-  }
+  Serial.printf("getData amps = %f\n",analogVolts);
+  gData =gData + amps(amps, 3)+ "-";  
 }
 
 bool sendReport(bool hasReport) {
@@ -703,11 +694,11 @@ bool sendReport(bool hasReport) {
 
   client->setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=energyMonitor&report=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=energyMonitor&amps=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&report=" + gData + "&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&amps=" + gData + "&trigger=" + strTriggerParameter;
   }
 
   // if (hasError == true) {
@@ -897,7 +888,10 @@ void setup() {
   Serial.begin(115200);
   delay(1000);  //Take some time to open up the Serial Monitor
   
-   analogReadResolution(12);
+    analogReadResolution(10); 
+     
+     //1.65V -22R - 5A
+     emon1.current(ADC_INPUT, 11)
 
   if (bootCount >= 60) {
     bootCount = 0;
@@ -944,4 +938,5 @@ void loop() {
       delay(1000);
    }
    sendReport(true);
+    gData = "0";
 }
