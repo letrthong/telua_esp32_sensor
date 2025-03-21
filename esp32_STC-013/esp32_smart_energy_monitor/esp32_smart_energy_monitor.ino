@@ -54,7 +54,7 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
-const int potPin_adc = 34;
+const int ADC_INPUT = 34;
 
 const char* ssid = "Telua_SCT_013_";
  
@@ -557,7 +557,6 @@ void initEEPROM() {
 void getData()
 {
   double amps = emon1.calcIrms(1480);  
-  int analogVolts = analogReadMilliVolts(potPin_adc);
   Serial.printf("getData amps = %f\n",analogVolts);
   gData =gData + amps(amps, 3)+ "-";  
 }
