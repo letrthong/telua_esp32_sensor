@@ -558,7 +558,7 @@ void getData()
 {
   double amps = emon1.calcIrms(1480);  
   Serial.printf("getData amps = %f\n",analogVolts);
-  gData =gData + amps(amps, 3)+ "-";  
+  gData =gData + string(amps, 3)+ "-";  
 }
 
 bool sendReport(bool hasReport) {
@@ -890,7 +890,7 @@ void setup() {
     analogReadResolution(10); 
      
      //1.65V -22R - 5A
-     emon1.current(ADC_INPUT, 11)
+     emon1.current(ADC_INPUT, 11);
 
   if (bootCount >= 60) {
     bootCount = 0;
