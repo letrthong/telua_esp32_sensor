@@ -7,7 +7,10 @@
 #include <HTTPClient.h>
 
 #include <ArduinoJson.h>
-#include "EmonLib.h"  
+
+#include "EmonLib.h"                   // Include Emon Library
+#include <driver/adc.h> 
+
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -26,7 +29,7 @@ String serverName = "https://telua.co/service/v1/esp32/update-sensor";
 String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
-String releaseDate = "08-March-2025";
+String releaseDate = "14-Sep-2024";
 String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
 String gVoltage = "5";
@@ -49,15 +52,19 @@ RTC_DATA_ATTR int g_encryption_Type = WIFI_AUTH_OPEN;
 bool hasRemoteRouter = false;
 RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
+bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
+ EnergyMonitor emon1; 
+
+ 
 const int ADC_INPUT = 34;
 
 const char* ssid = "Telua_SCT_013_";
- 
+const char* ssid_gpio = "Telua_Shtx_Gpio_";
 
 const char* password = "12345678";
 String g_ssid = "";
@@ -68,13 +75,80 @@ unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
 // the LED is connected to GPIO 5
- 
- EnergyMonitor emon1; 
+bool hasGPIo = false;
+const int ledRelay01 = 17;
+const int ledRelay02 = 5;
+const int ledAlarm = 19;
+const int ledFloatSwitch = 4;
+
+const int btnTop = 18;
+const int btnBot = 16;
+
+void intGpio() {
+  pinMode(ledRelay01, OUTPUT);
+  pinMode(ledRelay02, OUTPUT);
+  pinMode(ledAlarm, OUTPUT);
+  //  pinMode(ledFloatSwitch, OUTPUT);
+
+  //  pinMode(btnTop, INPUT);
+  //  pinMode(btnBot, INPUT);
+  turnOffAll();
+}
+
+void turnOffAll() {
+  digitalWrite(ledRelay01, LOW);
+  digitalWrite(ledRelay02, LOW);
+  digitalWrite(ledAlarm, LOW);
+
+  //   digitalWrite(ledFloatSwitch, LOW);
+  //
+  //
+  //   int buttonState = digitalRead(btnTop);
+  //    if (buttonState == HIGH) {
+  //        digitalWrite(ledRelay01, HIGH);
+  //    }
+  //
+  //     buttonState = digitalRead(btnBot);
+  //    if (buttonState == HIGH) {
+  //        digitalWrite(ledRelay02, HIGH);
+  //    }
+}
+
+bool turnOnRelay(String action) {
+  bool retCode = false;
+
+  if (action == "b1On") {
+    digitalWrite(ledRelay01, HIGH);
+    retCode = true;
+  } else if (action == "b2On") {
+    digitalWrite(ledRelay02, HIGH);
+    retCode = true;
+  } else if (action == "alOn") {
+    digitalWrite(ledAlarm, HIGH);
+    retCode = true;
+  }
+
+  return retCode;
+}
+
+bool turnOffRelay(String action) {
+  bool retCode = false;
+  if (action == "b1Off") {
+    digitalWrite(ledRelay01, LOW);
+  } else if (action == "b2Off") {
+    digitalWrite(ledRelay02, LOW);
+  } else if (action == "alOff") {
+    digitalWrite(ledAlarm, LOW);
+  }
+  return retCode;
+}
 
 bool hasTrigger() {
   bool retCode = false;
   if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
-    
+    if (hasGPIo == true) {
+      retCode = true;
+    }
   }
   return retCode;
 }
@@ -104,7 +178,11 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  WiFi.softAP(ssid + serialNumber, password);
+  if (hasGPIo == false) {
+    WiFi.softAP(ssid + serialNumber, password);
+  } else {
+    WiFi.softAP(ssid_gpio + serialNumber, password);
+  }
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -469,6 +547,7 @@ void initWiFi() {
         } else {
           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
           EEPROM.commit();
+          Serial.print("initWiFi ESP.restart\n");
           ESP.restart();
         }
       }
@@ -493,12 +572,14 @@ void initWiFi() {
 
           EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
           EEPROM.commit();
+           Serial.print("initWiFi ESP.restart\n");
           ESP.restart();
         }
       } else {
         if (isConnecting == true) {
           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
           EEPROM.commit();
+           Serial.print("initWiFi ESP.restart\n");
           ESP.restart();
         }
       }
@@ -519,7 +600,11 @@ void turnOffWiFi() {
   WiFi.disconnect();
 }
 
- 
+void initSht4x() {
+  analogReadResolution(10); 
+  //1.65V -22R - 5A
+  emon1.current(ADC_INPUT, 11);
+}
 
 void initEEPROM() {
   // Allocate The Memory Size Needed
@@ -555,10 +640,13 @@ void initEEPROM() {
 }
 
 void getData()
-{
+{ 
+  Serial.print("getData");
   double amps = emon1.calcIrms(1480);  
-  Serial.printf("getData amps = %f\n",analogVolts);
-  gData =gData + string(amps, 3)+ "-";  
+  Serial.print(" amps =  " );
+  Serial.println(amps);
+
+  gData =gData + String(amps, 3) + "-";  
 }
 
 bool sendReport(bool hasReport) {
@@ -886,12 +974,6 @@ void print_wakeup_reason() {
 void setup() {
   Serial.begin(115200);
   delay(1000);  //Take some time to open up the Serial Monitor
-  
-    analogReadResolution(10); 
-     
-     //1.65V -22R - 5A
-     emon1.current(ADC_INPUT, 11);
-
   if (bootCount >= 60) {
     bootCount = 0;
     ESP.restart();
@@ -900,42 +982,49 @@ void setup() {
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
- 
-  
+
+  if (hasGPIo == true) {
+    intGpio();
+  }
   initEEPROM();
   initWiFi();
 
-  
- 
-  // for (int i = 0; i < 15; i++) {
-  //   bool ret = sendReport(true);
-  //   if (ret == true) {
-  //     delay(1000);
-  //     for (int i = 0; i < time_to_sleep_mode; i++) {
-  //       if (sendReport(false) == false) {
-  //         break;
-  //       }
+  initSht4x();
 
-  //       Serial.println("sendReport count=" + String(i));
-  //       delay(1000);
-  //     }
-  //   } else {
-  //     break;
-  //   }
-  // }
-   
-  // turnOffWiFi();
+  if (hasGPIo == false) {
+    sendReport(true);
+  } else {
+    for (int i = 0; i < 15; i++) {
+      bool ret = sendReport(true);
+      if (ret == true) {
+        delay(1000);
+        for (int i = 0; i < time_to_sleep_mode; i++) {
+          if (sendReport(false) == false) {
+            break;
+          }
 
-  // //Print the wakeup reason for ESP32
-  // print_wakeup_reason();
-  // startSleepMode();
+          Serial.println("sendReport count=" + String(i));
+          delay(1000);
+        }
+      } else {
+        break;
+      }
+    }
+  }
+
+ // turnOffWiFi();
+
+  //Print the wakeup reason for ESP32
+  print_wakeup_reason();
+ // startSleepMode();
 }
 
 void loop() {
-   for (int i = 0; i < 30; i++){
+   for( int i = 0; i < 60; i++){
       getData();
       delay(1000);
-   }
+   }  
+
    sendReport(true);
-    gData = "0";
 }
+
