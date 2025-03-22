@@ -781,11 +781,11 @@ bool sendReport(bool hasReport) {
 
   client->setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=energyMonitor&amps=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=energyMonitor&ampList=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&amps=" + gData + "&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&ampList=" + gData + "&trigger=" + strTriggerParameter;
   }
 
   // if (hasError == true) {
