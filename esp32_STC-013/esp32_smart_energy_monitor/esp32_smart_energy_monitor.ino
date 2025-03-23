@@ -991,40 +991,41 @@ void setup() {
 
   initSht4x();
 
-  if (hasGPIo == false) {
-    sendReport(true);
-  } else {
-    for (int i = 0; i < 15; i++) {
-      bool ret = sendReport(true);
-      if (ret == true) {
-        delay(1000);
-        for (int i = 0; i < time_to_sleep_mode; i++) {
-          if (sendReport(false) == false) {
-            break;
-          }
+  // if (hasGPIo == false) {
+  //   sendReport(true);
+  // } else {
+  //   for (int i = 0; i < 15; i++) {
+  //     bool ret = sendReport(true);
+  //     if (ret == true) {
+  //       delay(1000);
+  //       for (int i = 0; i < time_to_sleep_mode; i++) {
+  //         if (sendReport(false) == false) {
+  //           break;
+  //         }
 
-          Serial.println("sendReport count=" + String(i));
-          delay(1000);
-        }
-      } else {
-        break;
-      }
-    }
-  }
+  //         Serial.println("sendReport count=" + String(i));
+  //         delay(1000);
+  //       }
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  // }
 
  // turnOffWiFi();
 
   //Print the wakeup reason for ESP32
-  print_wakeup_reason();
+ // print_wakeup_reason();
  // startSleepMode();
 }
 
 void loop() {
-   for( int i = 0; i < 60; i++){
+   for( int i = 0; i < 30; i++){
       getData();
       delay(1000);
    }  
 
    sendReport(true);
+   gData = "";
 }
 
