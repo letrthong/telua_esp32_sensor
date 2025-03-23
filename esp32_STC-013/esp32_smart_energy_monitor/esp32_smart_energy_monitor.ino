@@ -1017,6 +1017,8 @@ void setup() {
   //Print the wakeup reason for ESP32
  // print_wakeup_reason();
  // startSleepMode();
+  getData();
+  gData = "";
 }
 
 void loop() {
