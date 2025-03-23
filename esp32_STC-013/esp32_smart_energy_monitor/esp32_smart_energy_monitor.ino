@@ -1018,6 +1018,9 @@ void setup() {
  // print_wakeup_reason();
  // startSleepMode();
   getData();
+  delay(100);
+  getData();
+  
   gData = "";
 }
 
