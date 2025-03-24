@@ -23,7 +23,7 @@ void setup()
  // adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
   analogReadResolution(ADC_BITS);    // 12 bit ADC
 
-  emon1.current(ADC_INPUT, 11);            // Current: input pin, calibration.
+  emon1.current(ADC_INPUT, 22);            // Current: input pin, calibration.
 }
 
 //https://simplyexplained.com/blog/Home-Energy-Monitor-ESP32-CT-Sensor-Emonlib/
