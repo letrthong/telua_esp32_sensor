@@ -51,7 +51,8 @@ void loop()
  
        lastMeasurement = millis();
   } 
-  else {
+  else
+  {
       
       counter = counter +1;
       if(counter > 10){
