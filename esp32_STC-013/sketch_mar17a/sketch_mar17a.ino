@@ -40,8 +40,7 @@ void setup()
 //https://simplyexplained.com/blog/Home-Energy-Monitor-ESP32-CT-Sensor-Emonlib/
 void loop()
 { 
-     digitalWrite(led01, LOW);
-   digitalWrite(led02, LOW);
+ 
    unsigned long currentMillis = millis();
  if(currentMillis - lastMeasurement > 1000)
   {   
@@ -51,7 +50,8 @@ void loop()
       amps = emon1.calcIrms(1480);  
  
        lastMeasurement = millis();
-  }else{
+  } 
+  else {
       
       counter = counter +1;
       if(counter > 10){
@@ -66,9 +66,11 @@ void loop()
       }
 
     delay(500);
-    //digitalWrite(led01, HIGH);
+    digitalWrite(led01, LOW);
     digitalWrite(led02, HIGH);
     delay(500);
+    digitalWrite(led02, LOW);
+    digitalWrite(led01, HIGH);
 
   }
      
