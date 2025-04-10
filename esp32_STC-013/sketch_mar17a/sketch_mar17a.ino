@@ -17,9 +17,20 @@ float pf=0.95;
 unsigned long lastMeasurement = 0;
 unsigned long timeFinishedSetup = 0;
 int counter = 0;
+
+const int led01 = 0 ; 
+const int led02 =  2; 
+
 void setup()
 {  
   Serial.begin(115200);
+  pinMode(led01, OUTPUT);
+  pinMode(led02, OUTPUT);
+
+
+
+  digitalWrite(led01, LOW);
+  digitalWrite(led02, LOW);
  // adc1_config_channel_atten(ADC1_CHANNEL_6, ADC_ATTEN_DB_11);
   analogReadResolution(ADC_BITS);    // 12 bit ADC
 
@@ -29,6 +40,8 @@ void setup()
 //https://simplyexplained.com/blog/Home-Energy-Monitor-ESP32-CT-Sensor-Emonlib/
 void loop()
 { 
+     digitalWrite(led01, LOW);
+   digitalWrite(led02, LOW);
    unsigned long currentMillis = millis();
  if(currentMillis - lastMeasurement > 1000)
   {   
@@ -51,8 +64,11 @@ void loop()
         // Serial.print(power);
         // Serial.println(" Watts");  
       }
-    
-    delay(100);
+
+    delay(500);
+    //digitalWrite(led01, HIGH);
+    digitalWrite(led02, HIGH);
+    delay(500);
 
   }
      

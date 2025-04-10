@@ -602,8 +602,9 @@ void turnOffWiFi() {
 
 void initSht4x() {
   analogReadResolution(10); 
-  //1.65V -22R - 5A
-  emon1.current(ADC_INPUT, 11);
+  //1.65V -22R - 10A- > 46
+  //3.2V -22R - 10A -> 90.9
+  emon1.current(ADC_INPUT, 46);
 }
 
 void initEEPROM() {
@@ -642,7 +643,8 @@ void initEEPROM() {
 void getData()
 { 
   Serial.print("getData");
-  double amps = emon1.calcIrms(1480);  
+  //double amps = emon1.calcIrms(1480);  
+  double amps = emon1.calcIrms(14800);  
   Serial.print(" amps =  " );
   Serial.println(amps);
 
