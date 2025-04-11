@@ -26,3 +26,4 @@ https://github.com/OLIMEX/ESP32-POE2
 
 # vehicle_signal_specification
 https://github.com/COVESA/vehicle_signal_specification/tree/master/spec
+https://github.com/COVESA/vehicle_signal_specification/blob/master/spec/Powertrain/EngineCoolant.vspec
