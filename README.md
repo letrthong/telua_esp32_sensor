@@ -23,3 +23,6 @@ https://blackberry.qnx.com/en/ultimate-guides/software-defined-vehicle
 https://github.com/OLIMEX/ESP32-GATEWAY/blob/master/HARDWARE/Hardware%20revision%20I/ESP32-GATEWAY_Rev_I.pdf 
 https://github.com/OLIMEX/ESP32-EVB/tree/master/HARDWARE/REV-B
 https://github.com/OLIMEX/ESP32-POE2
+
+# vehicle_signal_specification
+https://github.com/COVESA/vehicle_signal_specification/tree/master/spec
