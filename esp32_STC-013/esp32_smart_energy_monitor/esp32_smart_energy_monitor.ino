@@ -29,7 +29,7 @@ String serverName = "https://telua.co/service/v1/esp32/update-sensor";
 String error_url = "https://telua.co/service/v1/esp32/error-sensor";
 String trigger_url = "https://telua.co/service/v1/esp32/trigger-sensor";
 
-String releaseDate = "14-Sep-2024";
+String releaseDate = "12-Apr-2025";
 String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
 String gVoltage = "5";
@@ -58,10 +58,12 @@ RTC_DATA_ATTR int retryTimeout = 0;
 
 int time_to_sleep_mode = TIME_TO_SLEEP;
 
- EnergyMonitor emon1; 
-
+EnergyMonitor emon1; 
+EnergyMonitor emon2; 
+EnergyMonitor emon3; 
+EnergyMonitor emon4; 
  
-const int ADC_INPUT = 34;
+const int ADC_INPUT_03 = 34;
 
 const char* ssid = "Telua_SCT_013_";
 const char* ssid_gpio = "Telua_Shtx_Gpio_";
@@ -83,6 +85,9 @@ const int ledFloatSwitch = 4;
 
 const int btnTop = 18;
 const int btnBot = 16;
+
+const int ledReport = 0 ; 
+const int ledWifi =  2; 
 
 void intGpio() {
   pinMode(ledRelay01, OUTPUT);
@@ -604,7 +609,7 @@ void initSht4x() {
   analogReadResolution(10); 
   //1.65V -22R - 10A- > 46
   //3.2V -22R - 10A -> 90.9
-  emon1.current(ADC_INPUT, 46);
+  emon1.current(ADC_INPUT_03, 46);
 }
 
 void initEEPROM() {
@@ -988,8 +993,21 @@ void setup() {
   if (hasGPIo == true) {
     intGpio();
   }
+
+
+  pinMode(ledReport, OUTPUT);
+  pinMode(ledWifi, OUTPUT);
+
+  digitalWrite(ledReport, LOW);
+  digitalWrite(ledWifi, LOW);
+
+  //  digitalWrite(ledReport, HIGH);
+  // digitalWrite(led01, HIGH);
   initEEPROM();
+  
+  digitalWrite(ledWifi, HIGH);
   initWiFi();
+  digitalWrite(ledWifi, LOW);
 
   initSht4x();
 
@@ -1027,12 +1045,14 @@ void setup() {
 }
 
 void loop() {
-   for( int i = 0; i < 30; i++){
+   for( int i = 0; i < 5; i++){
       getData();
       delay(1000);
    }  
-
-   sendReport(true);
+  
+  digitalWrite(ledReport, HIGH);
+  sendReport(true);
+  digitalWrite(ledReport, LOW);
    gData = "";
 }
 
