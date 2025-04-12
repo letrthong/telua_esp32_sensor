@@ -652,8 +652,8 @@ void getData()
   double amps = emon1.calcIrms(14800);  
   Serial.print(" amps =  " );
   Serial.println(amps);
-
-  gData =gData + String(amps, 3) + "-";  
+  gData  = String(amps, 3);
+  //gData =gData + String(amps, 3) + "-";  
 }
 
 bool sendReport(bool hasReport) {
@@ -788,11 +788,11 @@ bool sendReport(bool hasReport) {
 
   client->setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=energyMonitor&ampList=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=energyMonitor&amp=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&ampList=" + gData + "&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&amp=" + gData + "&trigger=" + strTriggerParameter;
   }
 
   // if (hasError == true) {
