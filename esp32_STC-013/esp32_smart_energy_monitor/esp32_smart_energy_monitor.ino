@@ -979,7 +979,16 @@ void print_wakeup_reason() {
 }
 
 void setup() {
+  
+  pinMode(ledReport, OUTPUT);
+  pinMode(ledWifi, OUTPUT);
+
+  digitalWrite(ledReport, LOW);
+  digitalWrite(ledWifi, LOW);
+
   Serial.begin(115200);
+
+
   delay(1000);  //Take some time to open up the Serial Monitor
   if (bootCount >= 60) {
     bootCount = 0;
@@ -995,11 +1004,7 @@ void setup() {
   }
 
 
-  pinMode(ledReport, OUTPUT);
-  pinMode(ledWifi, OUTPUT);
-
-  digitalWrite(ledReport, LOW);
-  digitalWrite(ledWifi, LOW);
+ 
 
   //  digitalWrite(ledReport, HIGH);
   // digitalWrite(led01, HIGH);
