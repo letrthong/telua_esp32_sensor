@@ -67,7 +67,7 @@ EnergyMonitor emon2;
 EnergyMonitor emon3; 
 EnergyMonitor emon4; 
 
-const int ADC_INPUT_01= 33;
+const int ADC_INPUT_01= 32;
 const int ADC_INPUT_02= 33;
 const int ADC_INPUT_03 = 34;
 const int ADC_INPUT_04 = 35;
