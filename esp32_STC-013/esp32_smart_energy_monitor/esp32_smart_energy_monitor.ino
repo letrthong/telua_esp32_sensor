@@ -41,6 +41,12 @@ String gData2= "";
 String gData3= "";
 String gData4= "";
 
+double preAmps1 = 0;
+double preAmps2 = 0;
+double preAmps3 = 0;
+double preAmps4 = 0;
+
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -589,32 +595,61 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-void getData()
+bool getData()
 { 
- 
+   bool hasNotify = false;
+
   //double amps = emon1.calcIrms(1480);  
   double amps =0;
- 
+  double threadhold = 0;
+
   amps = emon1.calcIrms(14800);  
   Serial.print("\ngetData emon1 =  " );
   Serial.println(amps);
   gData1  = String(amps, 3);
 
+  threadhold =  abs(amps - preAmps1);
+  if (threadhold> 0.2){
+      hasNotify = true;
+  }
+  preAmps1 = amps;
+
   amps = emon2.calcIrms(14800);  
   Serial.print("getData emon2 =  " );
   Serial.println(amps);
   gData2  = String(amps, 3);
+  
+  threadhold =  abs(amps - preAmps2);
+  if (threadhold> 0.2){
+      hasNotify = true;
+  }
+  preAmps2 = amps;
 
   amps= emon3.calcIrms(14800);  
   Serial.print("getData emon3 =  " );
   Serial.println(amps);
   gData3  = String(amps, 3);
 
+  threadhold =  abs(amps - preAmps3);
+  if (threadhold> 0.2){
+      hasNotify = true;
+  }
+  preAmps3 = amps;
+
+
   amps = emon4.calcIrms(14800);  
   Serial.print("getData emon4 =  " );
   Serial.println(amps);
   gData4  = String(amps, 3);
+
+  threadhold =  abs(amps - preAmps4);
+  if (threadhold> 0.2){
+      hasNotify = true;
+  }
   
+  preAmps4 = amps;
+
+  return hasNotify;
 }
 
 bool sendReport(bool hasReport) {
@@ -966,33 +1001,7 @@ void setup() {
   digitalWrite(ledWifi, LOW);
 
   initSht4x();
-
-  // if (hasGPIo == false) {
-  //   sendReport(true);
-  // } else {
-  //   for (int i = 0; i < 15; i++) {
-  //     bool ret = sendReport(true);
-  //     if (ret == true) {
-  //       delay(1000);
-  //       for (int i = 0; i < time_to_sleep_mode; i++) {
-  //         if (sendReport(false) == false) {
-  //           break;
-  //         }
-
-  //         Serial.println("sendReport count=" + String(i));
-  //         delay(1000);
-  //       }
-  //     } else {
-  //       break;
-  //     }
-  //   }
-  // }
-
- // turnOffWiFi();
-
-  //Print the wakeup reason for ESP32
- // print_wakeup_reason();
- // startSleepMode();
+ 
   getData();
   delay(100);
   getData();
@@ -1004,9 +1013,12 @@ void setup() {
 }
 
 void loop() {
-   for( int i = 0; i < 5; i++){
-      getData();
+   for( int i = 0; i < 60; i++){
+     bool hasNotify = getData();
       delay(1000);
+      if(hasNotify == true){
+         break;
+      }
    }  
   
   digitalWrite(ledReport, HIGH);
