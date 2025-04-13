@@ -661,22 +661,22 @@ void getData()
   //double amps = emon1.calcIrms(1480);  
   double amps =0;
  
-  amps = emon1.calcIrms(1480);  
-  Serial.print("getData emon1 =  " );
+  amps = emon1.calcIrms(14800);  
+  Serial.print("\ngetData emon1 =  " );
   Serial.println(amps);
   gData1  = String(amps, 3);
 
-   amps = emon2.calcIrms(1480);  
+  amps = emon2.calcIrms(14800);  
   Serial.print("getData emon2 =  " );
   Serial.println(amps);
   gData2  = String(amps, 3);
 
-  amps= emon3.calcIrms(1480);  
+  amps= emon3.calcIrms(14800);  
   Serial.print("getData emon3 =  " );
   Serial.println(amps);
   gData3  = String(amps, 3);
 
-  amps = emon4.calcIrms(1480);  
+  amps = emon4.calcIrms(14800);  
   Serial.print("getData emon4 =  " );
   Serial.println(amps);
   gData4  = String(amps, 3);
