@@ -1058,6 +1058,6 @@ void loop() {
   digitalWrite(ledReport, HIGH);
   sendReport(true);
   digitalWrite(ledReport, LOW);
-   gData = "";
+  gData = "";
 }
 
