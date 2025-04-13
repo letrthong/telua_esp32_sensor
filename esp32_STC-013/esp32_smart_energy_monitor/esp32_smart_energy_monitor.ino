@@ -753,6 +753,7 @@ bool sendReport(bool hasReport) {
     if (hasTrigger() == true) {
       return ret;
     }
+    ESP.restart();
     return false;
   }
 
@@ -774,7 +775,7 @@ bool sendReport(bool hasReport) {
   }
 
   if(WiFi.RSSI() < -93 ){
-       Serial.println("sendReport  WiFi.RSSI() week");
+      Serial.println("sendReport  WiFi.RSSI() week");
       ESP.restart();
   }
 
