@@ -657,27 +657,27 @@ void initEEPROM() {
 
 void getData()
 { 
-  Serial.print("getData");
+ 
   //double amps = emon1.calcIrms(1480);  
   double amps =0;
  
   amps = emon1.calcIrms(1480);  
-  Serial.print(" emon1 =  " );
+  Serial.print("getData emon1 =  " );
   Serial.println(amps);
   gData1  = String(amps, 3);
 
    amps = emon2.calcIrms(1480);  
-  Serial.print(" emon2 =  " );
+  Serial.print("getData emon2 =  " );
   Serial.println(amps);
   gData2  = String(amps, 3);
 
   amps= emon3.calcIrms(1480);  
-  Serial.print(" emon3 =  " );
+  Serial.print("getData emon3 =  " );
   Serial.println(amps);
   gData3  = String(amps, 3);
 
   amps = emon4.calcIrms(1480);  
-  Serial.print(" emon4 =  " );
+  Serial.print("getData emon4 =  " );
   Serial.println(amps);
   gData4  = String(amps, 3);
   
@@ -815,7 +815,7 @@ bool sendReport(bool hasReport) {
 
   client->setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=energyMonitor&amp=" + gData1 +  "&amp1=" + gData2 + "&amp2=" + gData3  +  "&amp3=" + gData4  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=energyMonitor&amp=" + gData1 +  "&amp1=" + gData2 + "&amp2=" + gData3  +  "&amp3=" + gData4 + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    
   if (strTriggerParameter.length() > 0) {
