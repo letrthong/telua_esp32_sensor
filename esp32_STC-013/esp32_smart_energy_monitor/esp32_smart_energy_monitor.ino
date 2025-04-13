@@ -84,83 +84,24 @@ unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
 // the LED is connected to GPIO 5
-bool hasGPIo = false;
-const int ledRelay01 = 17;
-const int ledRelay02 = 5;
-const int ledAlarm = 19;
-const int ledFloatSwitch = 4;
-
-const int btnTop = 18;
-const int btnBot = 16;
+ 
 
 const int ledReport = 0 ; 
 const int ledWifi =  2; 
 
 void intGpio() {
-  pinMode(ledRelay01, OUTPUT);
-  pinMode(ledRelay02, OUTPUT);
-  pinMode(ledAlarm, OUTPUT);
-  //  pinMode(ledFloatSwitch, OUTPUT);
+   pinMode(ledReport, OUTPUT);
+  pinMode(ledWifi, OUTPUT);
 
-  //  pinMode(btnTop, INPUT);
-  //  pinMode(btnBot, INPUT);
-  turnOffAll();
+  digitalWrite(ledReport, LOW);
+  digitalWrite(ledWifi, LOW);
 }
 
-void turnOffAll() {
-  digitalWrite(ledRelay01, LOW);
-  digitalWrite(ledRelay02, LOW);
-  digitalWrite(ledAlarm, LOW);
-
-  //   digitalWrite(ledFloatSwitch, LOW);
-  //
-  //
-  //   int buttonState = digitalRead(btnTop);
-  //    if (buttonState == HIGH) {
-  //        digitalWrite(ledRelay01, HIGH);
-  //    }
-  //
-  //     buttonState = digitalRead(btnBot);
-  //    if (buttonState == HIGH) {
-  //        digitalWrite(ledRelay02, HIGH);
-  //    }
-}
-
-bool turnOnRelay(String action) {
-  bool retCode = false;
-
-  if (action == "b1On") {
-    digitalWrite(ledRelay01, HIGH);
-    retCode = true;
-  } else if (action == "b2On") {
-    digitalWrite(ledRelay02, HIGH);
-    retCode = true;
-  } else if (action == "alOn") {
-    digitalWrite(ledAlarm, HIGH);
-    retCode = true;
-  }
-
-  return retCode;
-}
-
-bool turnOffRelay(String action) {
-  bool retCode = false;
-  if (action == "b1Off") {
-    digitalWrite(ledRelay01, LOW);
-  } else if (action == "b2Off") {
-    digitalWrite(ledRelay02, LOW);
-  } else if (action == "alOff") {
-    digitalWrite(ledAlarm, LOW);
-  }
-  return retCode;
-}
-
+ 
 bool hasTrigger() {
   bool retCode = false;
   if (configTrigger.length() > 2 /*&& hasSensor == true*/) {
-    if (hasGPIo == true) {
-      retCode = true;
-    }
+     
   }
   return retCode;
 }
@@ -190,11 +131,8 @@ void startLocalWeb() {
   int randNumber = random(300);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   //    WiFi.softAP(ssid + String(randNumber), password);
-  if (hasGPIo == false) {
-    WiFi.softAP(ssid + serialNumber, password);
-  } else {
-    WiFi.softAP(ssid_gpio + serialNumber, password);
-  }
+
+  WiFi.softAP(ssid + serialNumber, password);
 
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -1007,12 +945,8 @@ void print_wakeup_reason() {
 
 void setup() {
   
-  pinMode(ledReport, OUTPUT);
-  pinMode(ledWifi, OUTPUT);
-
-  digitalWrite(ledReport, LOW);
-  digitalWrite(ledWifi, LOW);
-
+  
+  intGpio();
   Serial.begin(115200);
 
 
@@ -1025,14 +959,8 @@ void setup() {
   //Increment boot number and print it every reboot
   ++bootCount;
   Serial.println("Boot number: " + String(bootCount));
-
-  if (hasGPIo == true) {
-    intGpio();
-  }
-
-
  
-
+  
   //  digitalWrite(ledReport, HIGH);
   // digitalWrite(led01, HIGH);
   initEEPROM();
