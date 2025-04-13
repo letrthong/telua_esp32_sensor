@@ -610,7 +610,7 @@ bool getData()
 
   threadhold =  abs(amps - preAmps1);
   if (threadhold> 0.2){
-      hasNotify = true;
+    hasNotify = true;
   }
   preAmps1 = amps;
 
@@ -621,7 +621,7 @@ bool getData()
   
   threadhold =  abs(amps - preAmps2);
   if (threadhold> 0.2){
-      hasNotify = true;
+    hasNotify = true;
   }
   preAmps2 = amps;
 
@@ -632,7 +632,7 @@ bool getData()
 
   threadhold =  abs(amps - preAmps3);
   if (threadhold> 0.2){
-      hasNotify = true;
+    hasNotify = true;
   }
   preAmps3 = amps;
 
@@ -643,10 +643,9 @@ bool getData()
   gData4  = String(amps, 3);
 
   threadhold =  abs(amps - preAmps4);
-  if (threadhold> 0.2){
+  if (threadhold > 0.2){
       hasNotify = true;
   }
-  
   preAmps4 = amps;
 
   return hasNotify;
