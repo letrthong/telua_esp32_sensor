@@ -35,7 +35,11 @@ String gWifiName = "";
 String gVoltage = "5";
 String gSignalStrength = "0";
 String gPollingTime = "60";
-String gData= "";
+
+String gData1= "";
+String gData2= "";
+String gData3= "";
+String gData4= "";
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -612,7 +616,10 @@ void initSht4x() {
   analogReadResolution(10); 
   //1.65V -22R - 10A- > 46
   //3.2V -22R - 10A -> 90.9
+  emon1.current(ADC_INPUT_01, 90.9);
+  emon2.current(ADC_INPUT_02, 90.9);
   emon3.current(ADC_INPUT_03, 90.9);
+  emon4.current(ADC_INPUT_04, 90.9);
 }
 
 void initEEPROM() {
@@ -652,11 +659,28 @@ void getData()
 { 
   Serial.print("getData");
   //double amps = emon1.calcIrms(1480);  
-  double amps = emon3.calcIrms(1480);  
-  Serial.print(" amps =  " );
+  double amps =0;
+ 
+  amps = emon1.calcIrms(1480);  
+  Serial.print(" emon1 =  " );
   Serial.println(amps);
-  gData  = String(amps, 3);
-  //gData =gData + String(amps, 3) + "-";  
+  gData1  = String(amps, 3);
+
+   amps = emon2.calcIrms(1480);  
+  Serial.print(" emon2 =  " );
+  Serial.println(amps);
+  gData2  = String(amps, 3);
+
+  amps= emon3.calcIrms(1480);  
+  Serial.print(" emon3 =  " );
+  Serial.println(amps);
+  gData3  = String(amps, 3);
+
+  amps = emon4.calcIrms(1480);  
+  Serial.print(" emon4 =  " );
+  Serial.println(amps);
+  gData4  = String(amps, 3);
+  
 }
 
 bool sendReport(bool hasReport) {
@@ -791,11 +815,11 @@ bool sendReport(bool hasReport) {
 
   client->setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=energyMonitor&amp=" + gData +  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
+  String serverPath = serverName + "?sensorName=energyMonitor&amp=" + gData1 +  "&amp1=" + gData2 + "&amp2=" + gData3  +  "&amp3=" + gData4  "&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
 
    
   if (strTriggerParameter.length() > 0) {
-    serverPath = trigger_url + "?deviceID=" + deviceID + "&amp=" + gData + "&trigger=" + strTriggerParameter;
+    serverPath = trigger_url + "?deviceID=" + deviceID + "&amp=" + gData1 +  "&amp1=" + gData2 +  "&amp2=" + gData3  +  "&amp3=" + gData4  + "&trigger=" + strTriggerParameter;
   }
 
   // if (hasError == true) {
@@ -1049,7 +1073,10 @@ void setup() {
   delay(100);
   getData();
   
-  gData = "";
+  gData1 = "";
+  gData2 = "";
+  gData3 = "";
+  gData4 = "";
 }
 
 void loop() {
@@ -1061,6 +1088,10 @@ void loop() {
   digitalWrite(ledReport, HIGH);
   sendReport(true);
   digitalWrite(ledReport, LOW);
-  gData = "";
+  
+  gData1 = "";
+  gData2 = "";
+  gData3 = "";
+  gData4 = "";
 }
 
