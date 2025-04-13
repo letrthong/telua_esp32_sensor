@@ -82,19 +82,16 @@ unsigned long interval = 60000;
 
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
-
-// the LED is connected to GPIO 5
  
-
 const int ledReport = 0 ; 
 const int ledWifi =  2; 
 
 void intGpio() {
-   pinMode(ledReport, OUTPUT);
-  pinMode(ledWifi, OUTPUT);
+    pinMode(ledReport, OUTPUT);
+    pinMode(ledWifi, OUTPUT);
 
-  digitalWrite(ledReport, LOW);
-  digitalWrite(ledWifi, LOW);
+    digitalWrite(ledReport, LOW);
+    digitalWrite(ledWifi, LOW);
 }
 
  
