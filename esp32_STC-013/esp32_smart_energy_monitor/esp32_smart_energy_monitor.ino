@@ -73,8 +73,7 @@ const int ADC_INPUT_03 = 34;
 const int ADC_INPUT_04 = 35;
 
 const char* ssid = "Telua_SCT_013_";
-const char* ssid_gpio = "Telua_Shtx_Gpio_";
-
+ 
 const char* password = "12345678";
 String g_ssid = "";
 unsigned long previousMillis = 0;
