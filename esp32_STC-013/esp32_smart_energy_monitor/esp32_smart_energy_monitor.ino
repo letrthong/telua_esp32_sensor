@@ -62,8 +62,11 @@ EnergyMonitor emon1;
 EnergyMonitor emon2; 
 EnergyMonitor emon3; 
 EnergyMonitor emon4; 
- 
+
+const int ADC_INPUT_01= 33;
+const int ADC_INPUT_02= 33;
 const int ADC_INPUT_03 = 34;
+const int ADC_INPUT_04 = 35;
 
 const char* ssid = "Telua_SCT_013_";
 const char* ssid_gpio = "Telua_Shtx_Gpio_";
@@ -609,7 +612,7 @@ void initSht4x() {
   analogReadResolution(10); 
   //1.65V -22R - 10A- > 46
   //3.2V -22R - 10A -> 90.9
-  emon1.current(ADC_INPUT_03, 46);
+  emon3.current(ADC_INPUT_03, 90.9);
 }
 
 void initEEPROM() {
@@ -649,7 +652,7 @@ void getData()
 { 
   Serial.print("getData");
   //double amps = emon1.calcIrms(1480);  
-  double amps = emon1.calcIrms(14800);  
+  double amps = emon3.calcIrms(1480);  
   Serial.print(" amps =  " );
   Serial.println(amps);
   gData  = String(amps, 3);
