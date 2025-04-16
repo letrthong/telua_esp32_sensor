@@ -9,7 +9,7 @@ EnergyMonitor emon1;                   // Create an instance
 #define ADC_BITS 12                     // Set ADC resolution to 12-bit
 #define ADC_COUNTS (1 << ADC_BITS)      // ADC step calculation (0-4095)
 //#define BURDEN_RESISTOR 22.0            // Burden resistor (Ohms)
-#define BURDEN_RESISTOR 36     
+#define BURDEN_RESISTOR 42     
 
 float voltage = 220.00;  // AC mains voltage (adjust based on your region)
 float powerFactor = 0.95; // Estimated power factor
@@ -39,7 +39,18 @@ void loop() {
       Serial.print("Measured Current: ");
       Serial.print(amps);
       Serial.println(" A");
+      
+      if (amps > 1.35) {
+        amps = amps - 1.35;
 
+      } else {
+         amps = 0.0;
+      }
+
+      Serial.print("Measured Current: ");
+      Serial.print(amps);
+      Serial.println(" A");
+      
       // Calculate Power (Watts)
       float power = amps * voltage * powerFactor;
       Serial.print("Estimated Power: ");
