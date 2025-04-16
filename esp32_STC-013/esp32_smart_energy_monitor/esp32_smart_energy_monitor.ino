@@ -41,10 +41,10 @@ String gData2= "";
 String gData3= "";
 String gData4= "";
 
-double preAmps1 = 0;
-double preAmps2 = 0;
-double preAmps3 = 0;
-double preAmps4 = 0;
+double preAmps1 = -1.0;
+double preAmps2 =  -1.0;
+double preAmps3 =  -1.0;
+double preAmps4 = -1.0;
 
 
 int EEPROM_ADDRESS_SSID = 0;
