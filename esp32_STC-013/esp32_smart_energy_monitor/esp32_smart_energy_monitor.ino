@@ -554,8 +554,13 @@ void turnOffWiFi() {
 
 void initSht4x() {
   analogReadResolution(10); 
-  //1.65V -22R - 10A- > 46
-  //3.2V -22R - 10A -> 90.9
+//  - Burden Resistor → You're using 22Ω.
+// - Voltage Range → Your ADC reads 0-3.3V.
+// - Max Current → You're measuring up to 10A.
+// - CT Sensor Output → The STC-013-010 has a 100mA per 1A ratio.
+
+
+
   emon1.current(ADC_INPUT_01, 90.9);
   emon2.current(ADC_INPUT_02, 90.9);
   emon3.current(ADC_INPUT_03, 90.9);
