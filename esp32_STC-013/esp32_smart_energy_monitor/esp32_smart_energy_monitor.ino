@@ -1015,6 +1015,7 @@ void setup() {
   gData2 = "";
   gData3 = "";
   gData4 = "";
+  sendReport(true);
 }
 
 void loop() {
