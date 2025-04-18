@@ -78,13 +78,15 @@ const int ledRelay02 = 5;
 const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
 
+const int ledWifiStatus = 2;  
+
 const int btnTop = 18;
 const int btnBot = 16;
 
 
 bool gIsDefaultWifi = true;
-String gDefaultWifname = "HO CHI MINH US";
-String gDefaultWifPass = "12345678";
+String gDefaultWifname = "hcmus";
+String gDefaultWifPass = "fetelxxx";
 
 TaskHandle_t taskHandle;
 
@@ -92,6 +94,7 @@ void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
+    pinMode(ledWifiStatus, OUTPUT);
    turnOffAll();
 }
 
@@ -409,6 +412,8 @@ void startSmartConfig() {
 }
 
 void initWiFi() {
+  
+  digitalWrite(ledWifiStatus, HIGH);
   WiFi.mode(WIFI_STA);
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
@@ -574,7 +579,7 @@ void initWiFi() {
           startLocalWeb();
       }
   }
-  
+  digitalWrite(ledWifiStatus, LOW);
 }
 
 void turnOffWiFi() {
@@ -705,7 +710,8 @@ bool sendReport(bool hasReport) {
     ESP.restart();
     return false;
   }
-
+  
+  digitalWrite(ledWifiStatus, HIGH);
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
@@ -735,6 +741,7 @@ bool sendReport(bool hasReport) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
+     digitalWrite(ledWifiStatus, LOW);
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
     String payload = http.getString();
