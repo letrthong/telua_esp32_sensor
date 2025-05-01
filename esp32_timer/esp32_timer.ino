@@ -84,7 +84,7 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 
-bool gIsDefaultWifi = true;
+bool gIsDefaultWifi = false;
 String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
 

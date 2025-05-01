@@ -61,7 +61,7 @@ long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
-bool hasGPIo = false;
+bool hasGPIo = true;
 const int ledRelay01 = 17; 
 const int ledRelay02 = 5; 
 const int ledAlarm =  19; 
@@ -89,6 +89,7 @@ void intGpio(){
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
     pinMode(ledWifiStatus, OUTPUT);
+    
     //powerLed(ledRelay02);
     turnOffAll();
  
