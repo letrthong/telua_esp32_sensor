@@ -84,7 +84,7 @@ long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
  
 // the LED is connected to GPIO 5
-bool hasGPIo = false;
+bool hasGPIo = true;
 int ledRelay01 = 17; 
 int ledRelay02 = 5; 
 int ledAlarm =  18; 
@@ -136,6 +136,22 @@ void turnOffAll(){
     digitalWrite(ledRelay01, LOW);
     digitalWrite(ledRelay02, LOW);
     digitalWrite(ledAlarm, LOW);
+  }
+  
+}
+
+
+void turnOnAll(){
+  if(gHas2Channel == true)
+  {
+      digitalWrite(ledRelay01, HIGH);
+      digitalWrite(ledRelay02, HIGH);
+  }
+  else
+  {
+    digitalWrite(ledRelay01, HIGH);
+    digitalWrite(ledRelay02, HIGH);
+    digitalWrite(ledAlarm, HIGH);
   }
   
 }
