@@ -121,6 +121,7 @@ void intGpio(){
     }
    
    pinMode(ledWifiStatus, OUTPUT);
+   //turnOnAll();
 
    turnOffAll();
 }
@@ -153,6 +154,8 @@ void turnOnAll(){
     digitalWrite(ledRelay02, HIGH);
     digitalWrite(ledAlarm, HIGH);
   }
+
+    delay(1000);
   
 }
 
