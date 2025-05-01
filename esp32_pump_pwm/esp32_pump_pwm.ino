@@ -36,8 +36,8 @@ bool gIsDefaultWifi = false;
 String gDefaultWifname = "telua";
 String gDefaultWifPass = "13572468";
 
-// Timer2Channels
-bool gHas2Channel = false;
+// Timer2Channels or Timer3Channels
+bool gHas2Channel = true;
 bool gPWM = true;
 
 String gSensorName = "Pump";
