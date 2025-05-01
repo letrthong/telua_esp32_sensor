@@ -90,6 +90,7 @@ int ledRelay02 = 5;
 int ledAlarm =  18; 
 const int ledFloatSwitch =  4; 
 
+const int ledWifiStatus = 2;  
 // const int btnTop = 19 ( 18-> 19);
 // const int btnBot = 16;
 
@@ -119,6 +120,8 @@ void intGpio(){
       pinMode(ledAlarm, OUTPUT);
     }
    
+   pinMode(ledWifiStatus, OUTPUT);
+
    turnOffAll();
 }
 
@@ -445,6 +448,8 @@ void startSmartConfig() {
 }
 
 void initWiFi() {
+   digitalWrite(ledWifiStatus, HIGH);
+
   WiFi.mode(WIFI_STA);
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
@@ -610,6 +615,8 @@ void initWiFi() {
           startLocalWeb();
       }
   }
+
+  digitalWrite(ledWifiStatus, LOW);
   
 }
 
@@ -749,6 +756,8 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
+  digitalWrite(ledWifiStatus, HIGH);
+
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
     time_to_sleep_mode = 60;
@@ -778,6 +787,7 @@ bool sendReport(bool hasReport) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
+     digitalWrite(ledWifiStatus, LOW);
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
     String payload = http.getString();
