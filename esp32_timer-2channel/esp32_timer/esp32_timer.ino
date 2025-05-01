@@ -66,6 +66,7 @@ const int ledRelay01 = 17;
 const int ledRelay02 = 5; 
 const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
+const int ledWifiStatus = 2; 
 
 const int btnTop = 18;
 const int btnBot = 16;
@@ -87,12 +88,13 @@ void intGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     pinMode(ledAlarm, OUTPUT);
-    
+    pinMode(ledWifiStatus, OUTPUT);
     //powerLed(ledRelay02);
+    turnOffAll();
  
 } 
 
-void turnOffAll(){
+void turnOffAll() {
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
    digitalWrite(ledAlarm, LOW);
@@ -403,6 +405,8 @@ void startSmartConfig() {
 }
 
 void initWiFi() {
+  digitalWrite(ledWifiStatus, HIGH);
+
   WiFi.mode(WIFI_STA);
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
@@ -535,6 +539,8 @@ void initWiFi() {
 //    else{
 //        startLocalWeb();
 //    }
+
+  digitalWrite(ledWifiStatus, LOW);
 
 }
 
@@ -670,7 +676,7 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
-  
+   digitalWrite(ledWifiStatus, HIGH);
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverName + "?sensorName=Timer2Channels&deviceID=" + deviceID + "&serialNumber=" + serialNumber;
@@ -684,6 +690,7 @@ bool sendReport(bool hasReport) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
+       digitalWrite(ledWifiStatus, LOW);
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
     String payload = http.getString();
@@ -943,6 +950,10 @@ void setup() {
   delay(1000); //Take some time to open up the Serial Monitor
   Serial.println("Ver:8/Aug/2023");
   intGpio();
+   
+  initEEPROM();
+  initWiFi();
+
   esp_task_wdt_config_t  config;
   config.timeout_ms = (5*1000);
   config.trigger_panic = true;
@@ -976,11 +987,7 @@ void task1(void *parameter) {
    if(hasInit == 0){
       hasInit = 1;
       delay(1000); 
-      
-      
-      initEEPROM();
-      initWiFi();
-
+       
       if(deviceID.length() > 0){
         getTimeZone();
       }
