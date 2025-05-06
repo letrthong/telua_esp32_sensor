@@ -600,7 +600,7 @@ void initEEPROM() {
   Serial.println(remote_pass);
 }
 
-bool getData()
+bool getData(bool hasUpdate)
 { 
    bool hasNotify = false;
 
@@ -617,7 +617,11 @@ bool getData()
   if (threadhold> 0.15){
     hasNotify = true;
   }
-  preAmps1 = amps;
+
+  if(hasUpdate == true){
+    preAmps1 = amps;
+  }
+  
 
   amps = emon2.calcIrms(14800);  
   Serial.print("getData emon2 =  " );
@@ -628,8 +632,11 @@ bool getData()
   if (threadhold> 0.15){
     hasNotify = true;
   }
-  preAmps2 = amps;
 
+  if(hasUpdate == true){
+    preAmps2 = amps;
+  }
+ 
   amps= emon3.calcIrms(14800);  
   Serial.print("getData emon3 =  " );
   Serial.println(amps);
@@ -639,7 +646,11 @@ bool getData()
   if ( threadhold> 0.15 ){
     hasNotify = true;
   }
-  preAmps3 = amps;
+
+  if(hasUpdate == true){
+     preAmps3 = amps;
+  }
+ 
 
 
   amps = emon4.calcIrms(14800);  
@@ -651,14 +662,17 @@ bool getData()
   if (threadhold > 0.15){
       hasNotify = true;
   }
-  preAmps4 = amps;
+  
+   if(hasUpdate == true){
+     preAmps4 = amps;
+  }
 
   return hasNotify;
 }
 
 bool sendReport(bool hasReport) {
   bool ret = false;
-  getData();
+  getData(true);
 
 
   String strTriggerParameter = "";
@@ -1007,9 +1021,9 @@ void setup() {
 
   initSht4x();
  
-  // getData();
-  // delay(100);
-  // getData();
+   getData(false);
+   delay(100);
+    getData(false);
   
   gData1 = "";
   gData2 = "";
@@ -1020,7 +1034,7 @@ void setup() {
 
 void loop() {
   for( int i = 0; i < 60; i++){
-      bool hasNotify = getData();
+      bool hasNotify = getData(true);
       delay(1000);
       if(hasNotify == true){
           break;
