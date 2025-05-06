@@ -624,7 +624,7 @@ bool getData()
   Serial.println(amps);
   gData2  = String(amps, 3);
   
-  threadhold =  abs(amps - preAmps2);
+  threadhold = abs(amps - preAmps2);
   if (threadhold> 0.15){
     hasNotify = true;
   }
@@ -635,8 +635,8 @@ bool getData()
   Serial.println(amps);
   gData3  = String(amps, 3);
 
-  threadhold =  abs(amps - preAmps3);
-  if (threadhold> 0.15){
+  threadhold = abs(amps - preAmps3);
+  if ( threadhold> 0.15 ){
     hasNotify = true;
   }
   preAmps3 = amps;
@@ -1007,9 +1007,9 @@ void setup() {
 
   initSht4x();
  
-  getData();
-  delay(100);
-  getData();
+  // getData();
+  // delay(100);
+  // getData();
   
   gData1 = "";
   gData2 = "";
@@ -1019,13 +1019,13 @@ void setup() {
 }
 
 void loop() {
-   for( int i = 0; i < 60; i++){
-     bool hasNotify = getData();
+  for( int i = 0; i < 60; i++){
+      bool hasNotify = getData();
       delay(1000);
       if(hasNotify == true){
-         break;
+          break;
       }
-   }  
+  }  
   
   digitalWrite(ledReport, HIGH);
   sendReport(true);
