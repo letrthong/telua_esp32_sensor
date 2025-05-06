@@ -1024,12 +1024,13 @@ void setup() {
   getData(false);
   delay(100);
   getData(false);
+
   
   gData1 = "";
   gData2 = "";
   gData3 = "";
   gData4 = "";
-   
+  sendReport(true);
 }
 
 void loop() {
