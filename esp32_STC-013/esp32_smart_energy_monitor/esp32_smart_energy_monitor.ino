@@ -1034,9 +1034,9 @@ void setup() {
 }
 
 void loop() {
-  for( int i = 0; i < 60; i++){
+  for( int i = 0; i < 10; i++){
       bool hasNotify = getData(true);
-      delay(1000);
+      //delay(1000);
       if(hasNotify == true){
           break;
       }
