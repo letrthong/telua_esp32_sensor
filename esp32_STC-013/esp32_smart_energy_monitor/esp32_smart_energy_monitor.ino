@@ -662,7 +662,7 @@ bool getData(bool hasUpdate)
   if (threadhold > 0.15){
       hasNotify = true;
   }
-  
+
    if(hasUpdate == true){
      preAmps4 = amps;
   }
@@ -1021,15 +1021,15 @@ void setup() {
 
   initSht4x();
  
-   getData(false);
-   delay(100);
-    getData(false);
+  getData(false);
+  delay(100);
+  getData(false);
   
   gData1 = "";
   gData2 = "";
   gData3 = "";
   gData4 = "";
-  sendReport(true);
+   
 }
 
 void loop() {
