@@ -467,7 +467,8 @@ void startSmartConfig() {
 }
 
 void initWiFi() {
-   digitalWrite(ledWifiStatus, HIGH);
+  
+  digitalWrite(ledWifiStatus, HIGH);
 
   WiFi.mode(WIFI_STA);
 
@@ -1066,11 +1067,14 @@ int getSeconds(){
 
 void setup() {
   Serial.begin(115200);
-  delay(1000); //Take some time to open up the Serial Monitor
-  
-  Serial.println("Ver:8/Aug/2024");
   intGpio();
+  digitalWrite(ledWifiStatus, HIGH);
+  delay(1000); //Take some time to open up the Serial Monitor
+  digitalWrite(ledWifiStatus, LOW);
+  Serial.println("Ver:8/Aug/2024");
+  
   initEEPROM();
+
   initWiFi();
  
   esp_task_wdt_config_t  config;
