@@ -1067,10 +1067,16 @@ int getSeconds(){
 
 void setup() {
   Serial.begin(115200);
+  
   intGpio();
-  digitalWrite(ledWifiStatus, HIGH);
-  delay(1000); //Take some time to open up the Serial Monitor
-  digitalWrite(ledWifiStatus, LOW);
+  
+  for(int i = 0; i<4 ;i++){
+      digitalWrite(ledWifiStatus, HIGH);
+      delay(500); 
+      digitalWrite(ledWifiStatus, LOW);
+      delay(500); 
+  }
+  
   Serial.println("Ver:8/Aug/2024");
   
   initEEPROM();
