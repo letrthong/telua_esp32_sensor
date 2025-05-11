@@ -1076,6 +1076,15 @@ void setup() {
   initEEPROM();
 
   initWiFi();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    for(int i = 0; i<3 ;i++){
+      digitalWrite(ledWifiStatus, HIGH);
+      delay(500); 
+      digitalWrite(ledWifiStatus, LOW);
+      delay(500); 
+    }
+  }
  
   esp_task_wdt_config_t  config;
   config.timeout_ms = (5*1000);
