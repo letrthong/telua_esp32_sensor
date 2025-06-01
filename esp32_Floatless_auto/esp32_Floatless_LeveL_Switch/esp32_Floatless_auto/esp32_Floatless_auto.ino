@@ -97,12 +97,16 @@ void loop() {
   //This is not going to be called
   if(checkGPIO() == true) {
     countOn  = countOn + 1;
+  } else {
+    countOn = 0;
   }
+  
 
   // 60 minutes
   if (countOn > 60*1) {
     countOn = 0;
     Serial.println("sleepMinutes");
+    turnOffAll();
     sleepMinutes(15);
     ESP.restart();
   }
