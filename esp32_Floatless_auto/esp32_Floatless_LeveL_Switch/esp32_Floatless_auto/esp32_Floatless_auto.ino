@@ -29,7 +29,7 @@ const int ledFloatSwitch =  4;
 const int btnTop = 16;
 const int btnBot = 18 ;
 
-void intGpio(){
+void initGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
     digitalWrite(ledAlarm, OUTPUT);  
@@ -160,10 +160,10 @@ void setup() {
   Serial.println("Boot number: " + String(bootCount));
 
   
-  initGPIO();
+  initGpio();
  
   //Print the wakeup reason for ESP32
-  print_wakeup_reason();
+  //print_wakeup_reason();
   //startSleepMode();
 
 }
