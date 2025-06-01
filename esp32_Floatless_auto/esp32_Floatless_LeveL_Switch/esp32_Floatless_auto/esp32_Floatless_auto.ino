@@ -12,12 +12,11 @@
  
 RTC_DATA_ATTR int countOn = 0;
  
- 
- 
+
 // the LED is connected to GPIO 5
 const int ledRelay01 = 17 ; 
 const int ledRelay02 =  5; 
-const int ledAlarm =  19; 
+//const int ledAlarm =  19; 
 const int ledFloatSwitch =  4; 
 
 const int btnTop = 16;
@@ -26,20 +25,20 @@ const int btnBot = 18 ;
 void initGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
-    digitalWrite(ledAlarm, OUTPUT);  
+   // digitalWrite(ledAlarm, OUTPUT);  
     turnOffAll();
 
     pinMode(ledFloatSwitch, OUTPUT);  
     pinMode(btnTop, INPUT); 
     pinMode(btnBot, INPUT);  
     digitalWrite(ledFloatSwitch, HIGH);
-    delay(5000);
+    delay(1000);
 }
 
 void turnOffAll(){
    digitalWrite(ledRelay01, LOW);
    digitalWrite(ledRelay02, LOW);
-   digitalWrite(ledAlarm, LOW);
+  // digitalWrite(ledAlarm, LOW);
 }
 
  
@@ -68,11 +67,11 @@ bool checkGPIO() {
     digitalWrite(ledRelay02, LOW);
   }
 
-   if (has_data == true) {
-       digitalWrite(ledAlarm, HIGH);
-   } else {
-      digitalWrite(ledAlarm, LOW);
-   }
+  //  if (has_data == true) {
+  //      digitalWrite(ledAlarm, HIGH);
+  //  } else {
+  //     digitalWrite(ledAlarm, LOW);
+  //  }
 
    return has_data;
 
@@ -101,8 +100,9 @@ void loop() {
   }
 
   // 60 minutes
-  if (countOn > 60*60) {
+  if (countOn > 60*1) {
     countOn = 0;
+    Serial.println("sleepMinutes");
     sleepMinutes(15);
     ESP.restart();
   }
