@@ -124,7 +124,8 @@ void print_wakeup_reason() {
   }
 }
 
-void checkGPIO(){
+bool checkGPIO() { 
+    bool ret = false;
     delay(1000);
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
@@ -142,8 +143,15 @@ void checkGPIO(){
     digitalWrite(ledRelay02, HIGH);
   } else {
     Serial.println("digitalRead fbtnBot LOW");
-    digitalWrite(ledRelay02, HIGH);
+    digitalWrite(ledRelay02, LOW);
   }
+}
+
+void sleepMinutes(int minutes) {
+    int seconds = minutes*60;
+    for( int second = 0; second < seconds; second ++) {
+       delay(1000);
+    }
 }
 
 void setup() {
@@ -163,12 +171,14 @@ void setup() {
   initGpio();
  
   //Print the wakeup reason for ESP32
-  //print_wakeup_reason();
-  //startSleepMode();
+  print_wakeup_reason();
 
 }
 
 void loop() {
   //This is not going to be called
   checkGPIO();
+
+ 
+  startSleepMode();
 }
