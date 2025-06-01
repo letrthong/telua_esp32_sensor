@@ -107,6 +107,7 @@ void loop() {
     countOn = 0;
     Serial.println("sleepMinutes");
     turnOffAll();
+     digitalWrite(ledFloatSwitch, LOW);
     sleepMinutes(15);
     ESP.restart();
   }
