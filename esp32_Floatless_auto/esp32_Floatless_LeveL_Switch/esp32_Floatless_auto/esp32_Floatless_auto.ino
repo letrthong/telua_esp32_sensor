@@ -103,7 +103,7 @@ void loop() {
   
 
   // 60 minutes
-  if (countOn > 60*1) {
+  if (countOn > 60*30) {
     countOn = 0;
     Serial.println("sleepMinutes");
     turnOffAll();
