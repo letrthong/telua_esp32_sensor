@@ -106,13 +106,13 @@ void loop() {
 
   if (has_data_bot== true || has_data_bot == true ) {
     g_count_is_running = g_count_is_running + 1; 
-    g_count_is_stopping = -2;
+    g_count_is_stopping = 0;
   }  else {
-    g_count_is_running = 0;
+    g_count_is_running = -2;
     g_count_is_stopping = g_count_is_stopping + 1;
   }
 
-  if(g_count_is_stopping < 0){
+  if(g_count_is_running < 0){
     Serial.println("loop sleepMinutes  g_count_is_stopping < 0");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
