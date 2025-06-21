@@ -17,7 +17,8 @@ const int ledFloatSwitch =  4;
 const int btnTop = 16;
 const int btnBot = 18 ;
 
-const int  sleeMunites = 15;
+int g_count_is_running =0 ;
+int g_count_is_stopping =0 ;
 
 void initGpio(){
     pinMode(ledRelay01, OUTPUT);
@@ -41,7 +42,6 @@ void turnOffAll(){
  
 
 bool checkGPIO_BOT() { 
-   delay(1000);
   bool has_data = false;
   int buttonState = digitalRead(btnBot);
   if (buttonState == HIGH) {
@@ -58,7 +58,6 @@ bool checkGPIO_BOT() {
 }
 
 bool checkGPIO_TOT() { 
-    delay(1000);
     bool has_data = false;
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
@@ -87,8 +86,8 @@ void setup() {
   delay(1000); //Take some time to open up the Serial Monitor
   
   initGpio();
-  
-
+  g_count_is_running = 0;
+  g_count_is_stopping = 0;
 }
 
 void loop() {
@@ -100,27 +99,39 @@ void loop() {
    
   bool has_data_tot = false;
   // 15 minutes -btn1
-
   has_data_tot = checkGPIO_TOT();
-  if(has_data_bot== true && has_data_tot == false ){
-    sleepMinutes(sleeMunites);
-    sleepMinutes(sleeMunites);
-  } else if(has_data_bot== false && has_data_tot == true ){
-      sleepMinutes(sleeMunites);
-  } else if(has_data_bot== true && has_data_tot == true ){
-    sleepMinutes(sleeMunites);
-    digitalWrite(ledRelay01, LOW);
-    sleepMinutes(sleeMunites);
+
+
+  if (has_data_bot== true || has_data_bot == true ) {
+    g_count_is_running = g_count_is_running + 1; 
+    g_count_is_stopping = 2;
+  }  else {
+    g_count_is_running = 0;
+    g_count_is_stopping = g_count_is_stopping + 1;
   }
 
+  if(g_count_is_stopping < 0){
+    Serial.println("loop sleepMinutes  g_count_is_stopping < 0");
+    turnOffAll();
+    digitalWrite(ledFloatSwitch, LOW);
+    sleepMinutes(120);
+    ESP.restart();
+  }
    
-  // 60 minutes
-  if (has_data_bot == true || has_data_tot == true ) {
-    
+  // 15 minutes
+  if (g_count_is_running> (15*60)) {
     Serial.println("loop sleepMinutes");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(sleeMunites);
+    sleepMinutes(60);
     ESP.restart();
+  } else {
+      if (g_count_is_stopping> (10*60) ) {
+        Serial.println("loop sleepMinutes");
+        turnOffAll();
+        digitalWrite(ledFloatSwitch, LOW);
+        sleepMinutes(60);
+        ESP.restart();
+      }
   }
 }
