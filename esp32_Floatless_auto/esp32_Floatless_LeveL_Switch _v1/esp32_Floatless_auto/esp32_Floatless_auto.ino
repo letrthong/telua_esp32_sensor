@@ -42,6 +42,7 @@ void turnOffAll(){
  
 
 bool checkGPIO_BOT() { 
+  delay(1000);
   bool has_data = false;
   int buttonState = digitalRead(btnBot);
   if (buttonState == HIGH) {
@@ -58,6 +59,7 @@ bool checkGPIO_BOT() {
 }
 
 bool checkGPIO_TOT() { 
+    delay(1000);
     bool has_data = false;
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
