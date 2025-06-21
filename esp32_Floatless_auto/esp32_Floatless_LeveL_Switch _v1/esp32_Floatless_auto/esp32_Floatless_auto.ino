@@ -104,7 +104,7 @@ void loop() {
 
   if (has_data_bot== true || has_data_bot == true ) {
     g_count_is_running = g_count_is_running + 1; 
-    g_count_is_stopping = 2;
+    g_count_is_stopping = -2;
   }  else {
     g_count_is_running = 0;
     g_count_is_stopping = g_count_is_stopping + 1;
