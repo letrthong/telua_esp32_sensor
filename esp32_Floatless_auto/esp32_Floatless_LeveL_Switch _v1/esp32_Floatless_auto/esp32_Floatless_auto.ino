@@ -86,7 +86,7 @@ bool checkGPIO_TOT() {
 
     delay(500);
     if(has_data == false){
-            buttonState = digitalRead(btnTop);
+        buttonState = digitalRead(btnTop);
         if (buttonState == HIGH) {
           Serial.println("checkGPIO_TOT fbtnTop HIGH again");
           digitalWrite(ledRelay01, HIGH);
