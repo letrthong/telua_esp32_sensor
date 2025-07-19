@@ -149,14 +149,14 @@ void loop() {
   // 15 minutes
   int count_minutes = 1;
   if (g_count_is_running> (count_minutes*60)) {
-    Serial.println("loop sleepMinutes");
+    Serial.println("loop sleepMinutes g_count_is_running> (count_minutes*60)");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
     sleepMinutes(60);
     ESP.restart();
   } else {
       if (g_count_is_stopping> (10*60) ) {
-        Serial.println("loop sleepMinutes");
+        Serial.println("loop sleepMinutes g_count_is_stopping> (10*60)");
         turnOffAll();
         digitalWrite(ledFloatSwitch, LOW);
         sleepMinutes(60);
