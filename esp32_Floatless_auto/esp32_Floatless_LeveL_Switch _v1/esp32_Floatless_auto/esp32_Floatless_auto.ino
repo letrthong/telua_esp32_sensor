@@ -84,17 +84,17 @@ bool checkGPIO_TOT() {
       digitalWrite(ledRelay01, LOW);
     }
 
-     delay(500);
-      if(has_data == false){
-          buttonState = digitalRead(btnTop);
-      if (buttonState == HIGH) {
-        Serial.println("checkGPIO_TOT fbtnTop HIGH");
-        digitalWrite(ledRelay01, HIGH);
-        has_data = true;
-      } else {
-        //Serial.println("digitalRead fbtnTop LOW");
-        digitalWrite(ledRelay01, LOW);
-      }
+    delay(500);
+    if(has_data == false){
+            buttonState = digitalRead(btnTop);
+        if (buttonState == HIGH) {
+          Serial.println("checkGPIO_TOT fbtnTop HIGH");
+          digitalWrite(ledRelay01, HIGH);
+          has_data = true;
+        } else {
+          //Serial.println("digitalRead fbtnTop LOW");
+          digitalWrite(ledRelay01, LOW);
+        }
      }
  
    return has_data;
