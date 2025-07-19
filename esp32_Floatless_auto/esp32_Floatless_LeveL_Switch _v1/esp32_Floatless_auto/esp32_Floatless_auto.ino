@@ -42,7 +42,7 @@ void turnOffAll(){
  
 
 bool checkGPIO_BOT() { 
-  delay(1000);
+  delay(500);
   bool has_data = false;
   int buttonState = digitalRead(btnBot);
   if (buttonState == HIGH) {
@@ -53,13 +53,26 @@ bool checkGPIO_BOT() {
    // Serial.println("digitalRead fbtnBot LOW");
     digitalWrite(ledRelay02, LOW);
   }
- 
-   return has_data;
 
+   delay(500);
+  if( has_data == false){
+    int buttonState = digitalRead(btnBot);
+    if (buttonState == HIGH) {
+      Serial.println("checkGPIO_BOT fbtnBot HIGH");
+      digitalWrite(ledRelay02, HIGH);
+      has_data = true;
+    } else {
+    // Serial.println("digitalRead fbtnBot LOW");
+      digitalWrite(ledRelay02, LOW);
+    }
+ 
+  }
+  
+   return has_data;
 }
 
 bool checkGPIO_TOT() { 
-    delay(1000);
+    delay(500);
     bool has_data = false;
     int buttonState = digitalRead(btnTop);
     if (buttonState == HIGH) {
@@ -70,6 +83,19 @@ bool checkGPIO_TOT() {
       //Serial.println("digitalRead fbtnTop LOW");
       digitalWrite(ledRelay01, LOW);
     }
+
+     delay(500);
+      if(has_data == false){
+          buttonState = digitalRead(btnTop);
+      if (buttonState == HIGH) {
+        Serial.println("checkGPIO_TOT fbtnTop HIGH");
+        digitalWrite(ledRelay01, HIGH);
+        has_data = true;
+      } else {
+        //Serial.println("digitalRead fbtnTop LOW");
+        digitalWrite(ledRelay01, LOW);
+      }
+     }
  
    return has_data;
 
@@ -116,7 +142,7 @@ void loop() {
     Serial.println("loop sleepMinutes  g_count_is_stopping < 0");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(120);
+    sleepMinutes(1);
     ESP.restart();
   }
    
