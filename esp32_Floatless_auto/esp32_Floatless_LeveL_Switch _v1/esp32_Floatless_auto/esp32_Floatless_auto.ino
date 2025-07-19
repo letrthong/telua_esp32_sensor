@@ -58,7 +58,7 @@ bool checkGPIO_BOT() {
   if( has_data == false){
     int buttonState = digitalRead(btnBot);
     if (buttonState == HIGH) {
-      Serial.println("checkGPIO_BOT fbtnBot HIGH");
+      Serial.println("checkGPIO_BOT fbtnBot HIGH again");
       digitalWrite(ledRelay02, HIGH);
       has_data = true;
     } else {
@@ -88,7 +88,7 @@ bool checkGPIO_TOT() {
     if(has_data == false){
             buttonState = digitalRead(btnTop);
         if (buttonState == HIGH) {
-          Serial.println("checkGPIO_TOT fbtnTop HIGH");
+          Serial.println("checkGPIO_TOT fbtnTop HIGH again");
           digitalWrite(ledRelay01, HIGH);
           has_data = true;
         } else {
