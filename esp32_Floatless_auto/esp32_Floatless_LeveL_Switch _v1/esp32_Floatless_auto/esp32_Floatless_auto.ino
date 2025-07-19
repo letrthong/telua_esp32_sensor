@@ -143,6 +143,9 @@ void loop() {
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
     sleepMinutes(1);
+    // sleepMinutes(1);
+    // sleepMinutes(1);
+    // sleepMinutes(1);
     ESP.restart();
   }
    
@@ -152,14 +155,16 @@ void loop() {
     Serial.println("loop sleepMinutes g_count_is_running> (count_minutes*60)");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(60);
+    sleepMinutes(30);
+     sleepMinutes(30);
     ESP.restart();
   } else {
       if (g_count_is_stopping> (10*60) ) {
         Serial.println("loop sleepMinutes g_count_is_stopping> (10*60)");
         turnOffAll();
         digitalWrite(ledFloatSwitch, LOW);
-        sleepMinutes(60);
+        sleepMinutes(30);
+        sleepMinutes(30);
         ESP.restart();
       }
   }
