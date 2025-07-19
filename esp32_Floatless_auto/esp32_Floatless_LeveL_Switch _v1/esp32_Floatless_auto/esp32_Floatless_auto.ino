@@ -104,7 +104,7 @@ void loop() {
   has_data_tot = checkGPIO_TOT();
 
 
-  if (has_data_bot== true || has_data_bot == true ) {
+  if (has_data_bot == true || has_data_tot == true ) {
     g_count_is_running = g_count_is_running + 1; 
     g_count_is_stopping = 0;
   }  else {
@@ -121,7 +121,8 @@ void loop() {
   }
    
   // 15 minutes
-  if (g_count_is_running> (15*60)) {
+  int count_minutes = 1;
+  if (g_count_is_running> (count_minutes*60)) {
     Serial.println("loop sleepMinutes");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
