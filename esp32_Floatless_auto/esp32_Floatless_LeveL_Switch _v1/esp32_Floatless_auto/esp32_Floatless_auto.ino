@@ -142,21 +142,21 @@ void loop() {
     Serial.println("loop sleepMinutes  g_count_is_stopping < 0");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(1);
-    // sleepMinutes(1);
-    // sleepMinutes(1);
-    // sleepMinutes(1);
+    sleepMinutes(30);
+    sleepMinutes(30);
+    sleepMinutes(30);
+    sleepMinutes(30);
     ESP.restart();
   }
    
   // 15 minutes
-  int count_minutes = 1;
+  int count_minutes = 30;
   if (g_count_is_running> (count_minutes*60)) {
     Serial.println("loop sleepMinutes g_count_is_running> (count_minutes*60)");
     turnOffAll();
     digitalWrite(ledFloatSwitch, LOW);
     sleepMinutes(30);
-     sleepMinutes(30);
+    sleepMinutes(30);
     ESP.restart();
   } else {
       if (g_count_is_stopping> (10*60) ) {
