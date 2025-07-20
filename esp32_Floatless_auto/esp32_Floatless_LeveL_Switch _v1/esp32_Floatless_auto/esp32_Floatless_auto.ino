@@ -20,6 +20,9 @@ const int btnBot = 18 ;
 int g_count_is_running =0 ;
 int g_count_is_stopping =0 ;
 
+bool g_has_sleep = false;
+int g_sleep_seconds = 0;
+
 void initGpio(){
     pinMode(ledRelay01, OUTPUT);
     pinMode(ledRelay02, OUTPUT);
@@ -120,6 +123,19 @@ void setup() {
 
 void loop() {
   delay(1000);
+  if (g_has_sleep == true) {
+    g_sleep_seconds = g_sleep_seconds +1;
+    if(g_sleep_seconds > (1*60*2) ) {
+        g_sleep_seconds = 0;
+        g_has_sleep = false;
+        turnOffAll();
+        digitalWrite(ledFloatSwitch, LOW);
+        ESP.restart();
+    }
+    Serial.println("loop sleep");
+    return;
+  }
+
   //This is not going to be called
   bool has_data_bot = false;
   // 30 minutes -btn2
@@ -138,34 +154,19 @@ void loop() {
     g_count_is_stopping = g_count_is_stopping + 1;
   }
 
+
+
   if(g_count_is_running < 0){
-    Serial.println("loop sleepMinutes  g_count_is_stopping < 0");
-    turnOffAll();
-    digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(30);
-    sleepMinutes(30);
-    sleepMinutes(30);
-    sleepMinutes(30);
-    ESP.restart();
+     g_has_sleep = true;
   }
    
   // 15 minutes
   int count_minutes = 30;
   if (g_count_is_running> (count_minutes*60)) {
-    Serial.println("loop sleepMinutes g_count_is_running> (count_minutes*60)");
-    turnOffAll();
-    digitalWrite(ledFloatSwitch, LOW);
-    sleepMinutes(30);
-    sleepMinutes(30);
-    ESP.restart();
+    g_has_sleep = true;
   } else {
-      if (g_count_is_stopping> (10*60) ) {
-        Serial.println("loop sleepMinutes g_count_is_stopping> (10*60)");
-        turnOffAll();
-        digitalWrite(ledFloatSwitch, LOW);
-        sleepMinutes(30);
-        sleepMinutes(30);
-        ESP.restart();
+      if (g_count_is_stopping> (count_minutes*60) ) {
+         g_has_sleep = true;
       }
   }
 }
