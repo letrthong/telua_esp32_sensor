@@ -125,11 +125,13 @@ void loop() {
   delay(1000);
   if (g_has_sleep == true) {
     g_sleep_seconds = g_sleep_seconds +1;
+    
+    turnOffAll();
+    digitalWrite(ledFloatSwitch, LOW);
     if(g_sleep_seconds > (1*60*2) ) {
         g_sleep_seconds = 0;
         g_has_sleep = false;
-        turnOffAll();
-        digitalWrite(ledFloatSwitch, LOW);
+       
         ESP.restart();
     }
     Serial.println("loop sleep");
