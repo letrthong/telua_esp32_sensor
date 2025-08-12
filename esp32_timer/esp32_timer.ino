@@ -1023,7 +1023,8 @@ void init_ntp() {
     g_ntpServer.c_str(),       // Primary NTP server (e.g., "pool.ntp.org")
     "time.google.com",         // Backup server 1
     "vn.pool.ntp.org",         // Backup server 2
-    "asia.pool.ntp.org"        // Backup server 3
+    "asia.pool.ntp.org",        // Backup server 3
+    "time.cloudflare.com"
   };
 
   struct tm timeinfo;
