@@ -67,7 +67,7 @@ unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
 const char* ntpServer = "pool.ntp.org";
-// time.google.com
+const char* ntpServer_google = "time.google.com";
  
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
