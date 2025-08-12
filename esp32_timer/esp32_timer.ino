@@ -969,13 +969,11 @@ bool getTimeZone( ) {
           if (hasKey == true) {
             String ntpServer = doc["ntpServer"];
             g_ntpServer= ntpServer;
-
-            
-          Serial.print("getTimeZone g_ntpServer=");
-          Serial.println(g_ntpServer);
+            Serial.print("getTimeZone g_ntpServer=");
+            Serial.println(g_ntpServer);
           }
           else{
-            Serial.print("getTimeZone No ntpServer ");
+            Serial.println("getTimeZone No ntpServer ");
           }
 
       }
@@ -1108,7 +1106,7 @@ void loop() {
 
 void task1(void *parameter) {
    
-    init_ntp();
+  init_ntp();
 
   if(startEpchoTime == 0){
      startEpchoTime = getSeconds();
