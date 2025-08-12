@@ -1015,7 +1015,48 @@ int getSeconds(){
   return  seconds ;
 }
 
+void init_ntp() {
+  if (deviceID.length() > 0) {
+    Serial.println("Fetching timezone from server...");
+    getTimeZone();  // Updates gmtOffset_sec and daylightOffset_sec if needed
+  }
 
+  const char* ntpServers[] = {
+    g_ntpServer.c_str(),       // Primary NTP server (e.g., "pool.ntp.org")
+    "time.google.com",         // Backup server 1
+    "vn.pool.ntp.org",         // Backup server 2
+    "asia.pool.ntp.org"        // Backup server 3
+  };
+
+  struct tm timeinfo;
+  const int maxRetries = 10;
+  bool timeSynced = false;
+
+  for (int i = 0; i < sizeof(ntpServers) / sizeof(ntpServers[0]); i++) {
+    Serial.printf("Trying to sync time with NTP server: %s\n", ntpServers[i]);
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServers[i]);
+
+    for (int retry = 0; retry < maxRetries; retry++) {
+      if (getLocalTime(&timeinfo)) {
+        Serial.println("Time synchronization successful!");
+        Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+        timeSynced = true;
+        break;
+      }
+      Serial.print(".");
+      delay(1000);
+    }
+
+    if (timeSynced) {
+      break;
+    }
+    Serial.println("\n  Failed to sync with this server. Trying next...");
+  }
+
+  if (!timeSynced) {
+    Serial.println("All NTP sync attempts failed. Please check Wi-Fi or UDP port 123.");
+  }
+}
 void setup() {
   Serial.begin(115200);
   delay(1000); //Take some time to open up the Serial Monitor
@@ -1066,16 +1107,9 @@ void loop() {
 
 
 void task1(void *parameter) {
-  
-   if(deviceID.length() > 0){
-     Serial.println("task1 getTimeZone");
-     getTimeZone();
-     
-  }
+   
+    init_ntp();
 
-  configTime(gmtOffset_sec, daylightOffset_sec, g_ntpServer.c_str());
-
-  
   if(startEpchoTime == 0){
      startEpchoTime = getSeconds();
   }
