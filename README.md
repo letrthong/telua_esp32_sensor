@@ -32,3 +32,6 @@ https://github.com/eclipse-kuksa/kuksa-databroker
 
 # https://www.modbustools.com/mbpoll-user-manual.html
 mbpoll 
+
+# ntp
+https://microdigisoft.com/getting-epoch-unix-time-with-esp32-through-ntp-server-using-arduino-ide/
