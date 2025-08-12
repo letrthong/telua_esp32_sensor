@@ -1024,7 +1024,7 @@ void init_ntp() {
     "time.google.com",         // Backup server 1
     "vn.pool.ntp.org",         // Backup server 2
     "asia.pool.ntp.org",        // Backup server 3
-    "time.cloudflare.com"
+    "time.cloudflare.com"       // Backup server 4
   };
 
   struct tm timeinfo;
