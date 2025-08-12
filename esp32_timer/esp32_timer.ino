@@ -66,12 +66,13 @@ unsigned long interval = 60000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
-const char* ntpServer = "pool.ntp.org";
-const char* ntpServer_google = "time.google.com";
+ 
+ 
  
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
+String g_ntpServer = "pool.ntp.org";
  
 // the LED is connected to GPIO 5
 bool hasGPIo = false;
@@ -86,9 +87,9 @@ const int btnTop = 18;
 const int btnBot = 16;
 
 
-bool gIsDefaultWifi = false;
-String gDefaultWifname = "telua";
-String gDefaultWifPass = "13572468";
+bool gIsDefaultWifi = true;
+String gDefaultWifname = "hcmus";
+String gDefaultWifPass = "fetelxxx";
 
 TaskHandle_t taskHandle;
 
@@ -948,22 +949,36 @@ bool getTimeZone( ) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
-    String payload = http.getString();
-   
-    DynamicJsonDocument doc(256);
+      String payload = http.getString();
+    
+      DynamicJsonDocument doc(256);
 
-    DeserializationError error = deserializeJson(doc, payload);
-    if (error) {
-      Serial.println("deserializeJson() failed");
-    } else {
-        bool hasKey = doc.containsKey("gmtOffset");
-        if (hasKey == true) {
-          int gmtOffset = doc["gmtOffset"];
-          gmtOffset_sec = gmtOffset;
-          Serial.print("getTimeZone gmtOffset_sec=");
-          Serial.println(gmtOffset_sec);
-        }
-    }   
+      DeserializationError error = deserializeJson(doc, payload);
+      if (error) {
+        Serial.println("deserializeJson() failed");
+      } else {
+          bool hasKey = doc.containsKey("gmtOffset");
+          if (hasKey == true) {
+            int gmtOffset = doc["gmtOffset"];
+            gmtOffset_sec = gmtOffset;
+            Serial.print("getTimeZone gmtOffset_sec=");
+            Serial.println(gmtOffset_sec);
+          }
+
+          hasKey = doc.containsKey("ntpServer");
+          if (hasKey == true) {
+            String ntpServer = doc["ntpServer"];
+            g_ntpServer= ntpServer;
+
+            
+          Serial.print("getTimeZone g_ntpServer=");
+          Serial.println(g_ntpServer);
+          }
+          else{
+            Serial.print("getTimeZone No ntpServer ");
+          }
+
+      }
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
@@ -1058,7 +1073,7 @@ void task1(void *parameter) {
      
   }
 
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  configTime(gmtOffset_sec, daylightOffset_sec, g_ntpServer.c_str());
 
   
   if(startEpchoTime == 0){
