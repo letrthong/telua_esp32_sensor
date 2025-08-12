@@ -94,11 +94,11 @@ String gDefaultWifPass = "fetelxxx";
 TaskHandle_t taskHandle;
 
 void intGpio(){
-    pinMode(ledRelay01, OUTPUT);
-    pinMode(ledRelay02, OUTPUT);
-    pinMode(ledAlarm, OUTPUT);
-    pinMode(ledWifiStatus, OUTPUT);
-   turnOffAll();
+  pinMode(ledRelay01, OUTPUT);
+  pinMode(ledRelay02, OUTPUT);
+  pinMode(ledAlarm, OUTPUT);
+  pinMode(ledWifiStatus, OUTPUT);
+  turnOffAll();
 }
 
 void turnOffAll(){
