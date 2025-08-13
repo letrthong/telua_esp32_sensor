@@ -1054,6 +1054,7 @@ void init_ntp() {
 
   if (!timeSynced) {
     Serial.println("All NTP sync attempts failed. Please check Wi-Fi or UDP port 123.");
+    ESP.restart();
   }
 }
 void setup() {
