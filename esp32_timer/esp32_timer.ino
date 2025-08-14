@@ -1041,6 +1041,7 @@ void init_ntp() {
         Serial.println("Time synchronization successful!");
         Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
         timeSynced = true;
+        g_ntpServer = ntpServers[i];
         break;
       }
       Serial.print(".");
