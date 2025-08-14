@@ -78,7 +78,7 @@ unsigned long interval = 60000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
-const char* g_ntpServer = "pool.ntp.org";
+String g_ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
