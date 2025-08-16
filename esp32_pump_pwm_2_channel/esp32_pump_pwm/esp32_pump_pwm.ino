@@ -33,11 +33,11 @@ String gProtocol = "&protocol=RESTfulAPI";
 String gPollingTime = "60";
 
 bool gIsDefaultWifi = true;
-String gDefaultWifname = "hcmus";
-String gDefaultWifPass = "fetelxxx";
+String gDefaultWifname = "telua";
+String gDefaultWifPass = "13572468";
 
 // Timer2Channels or Timer3Channels
-bool gHas2Channel = true;
+bool gHas2Channel = false;
 bool gPWM = true;
 
 String gSensorName = "Pump";
