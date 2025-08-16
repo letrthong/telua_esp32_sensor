@@ -88,8 +88,9 @@ const int btnBot = 16;
 
 
 bool gIsDefaultWifi = true;
-String gDefaultWifname = "hcmus";
-String gDefaultWifPass = "fetelxxx";
+//HO CHI MINH US 12345678
+String gDefaultWifname = "HO CHI MINH US";
+String gDefaultWifPass = "12345678";
 
 TaskHandle_t taskHandle;
 
