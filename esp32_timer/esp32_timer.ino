@@ -68,7 +68,6 @@ unsigned long intervalLocalWeb = 60000;
 
  
  
- 
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
@@ -89,8 +88,8 @@ const int btnBot = 16;
 
 bool gIsDefaultWifi = true;
 //HO CHI MINH US 12345678
-String gDefaultWifname = "HO CHI MINH US";
-String gDefaultWifPass = "12345678";
+String gDefaultWifname = "hcmus";
+String gDefaultWifPass = "fetelxxx";
 
 TaskHandle_t taskHandle;
 
@@ -423,7 +422,7 @@ void initWiFi() {
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   unsigned int Length_of_ssid = current_ssid.length();
-  g_ssid = current_ssid;
+ 
 
   gWifiName = current_ssid;
 
@@ -433,6 +432,8 @@ void initWiFi() {
     current_pass = gDefaultWifPass;
     gWifiName = "const " + current_ssid;
   }
+   g_ssid = current_ssid;
+
   gWifiName.replace(" ", "+");
 
   hasRouter = false;
