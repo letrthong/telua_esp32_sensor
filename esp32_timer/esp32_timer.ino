@@ -432,7 +432,7 @@ void initWiFi() {
     current_pass = gDefaultWifPass;
     gWifiName = "const " + current_ssid;
   }
-  unsigned int Length_of_ssid = current_ssid.length();
+  unsigned int length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
 
   gWifiName.replace(" ", "+");
@@ -458,7 +458,7 @@ void initWiFi() {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-          if (Length_of_ssid > 0) {
+          if (length_of_ssid > 0) {
             if (current_ssid.equals(SSID)) {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
