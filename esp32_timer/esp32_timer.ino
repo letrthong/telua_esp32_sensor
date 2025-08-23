@@ -421,10 +421,6 @@ void initWiFi() {
 
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
-  
- 
-
-  gWifiName = current_ssid;
 
   if(gIsDefaultWifi == true)
   {
@@ -432,6 +428,8 @@ void initWiFi() {
     current_pass = gDefaultWifPass;
     gWifiName = "const " + current_ssid;
   }
+
+  gWifiName = current_ssid;
   unsigned int length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
 
