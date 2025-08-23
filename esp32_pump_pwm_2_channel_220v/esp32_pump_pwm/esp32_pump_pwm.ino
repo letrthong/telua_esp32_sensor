@@ -1185,13 +1185,14 @@ void setup() {
   );
 }
 
-void loop() {
+void loop() 
+{
   delay(1000);
   gUptimeCounter = gUptimeCounter + 1;
   // restartt if the device can not access the interne after 10 minutes
-  if(gUptimeCounter >  600){
+  if (gUptimeCounter >  600){
       gUptimeCounter = 0;
-      if( gPreUptime != gUptime )
+      if (gPreUptime != gUptime )
       {
         gPreUptime = gUptime; 
       }
@@ -1206,13 +1207,11 @@ void loop() {
 }
 
 
-void task1(void *parameter) {
-  
-      
+void task1(void *parameter) {  
   init_ntp();
 
   if(startEpchoTime == 0){
-     startEpchoTime = getSeconds();
+    startEpchoTime = getSeconds();
   }
 
   while (1) {
