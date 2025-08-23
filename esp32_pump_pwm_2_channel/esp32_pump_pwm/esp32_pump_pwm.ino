@@ -1031,6 +1031,17 @@ bool getTimeZone( ) {
           Serial.print("getTimeZone gmtOffset_sec=");
           Serial.println(gmtOffset_sec);
         }
+
+        hasKey = doc.containsKey("ntpServer");
+        if (hasKey == true) {
+          String ntpServer = doc["ntpServer"];
+          g_ntpServer= ntpServer;
+          Serial.print("getTimeZone g_ntpServer=");
+          Serial.println(g_ntpServer);
+        }
+        else{
+          Serial.println("getTimeZone No ntpServer ");
+        }
     }   
   } else {
      Serial.print("getTimeZone Error code: ");
