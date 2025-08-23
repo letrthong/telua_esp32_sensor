@@ -100,26 +100,27 @@ const int ledWifiStatus = 2;
 
 TaskHandle_t taskHandle;
 
-void intGpio(){
+void intGpio()
+{
 
     if(gHas2Channel == true)
     {
-        ledRelay01 = 5 ;
-        ledRelay02 = 18  ;
-        ledAlarm = 17;
-        gSensorName = "Timer2Channels";
-        if(gPWM == true){
+      ledRelay01 = 5 ;
+      ledRelay02 = 18  ;
+      ledAlarm = 17;
+      gSensorName = "Timer2Channels";
+      if(gPWM == true)
+      {
+        gSensorName = "PWM2Channels";
+      }
 
-          gSensorName = "PWM2Channels";
-        }
-
-         pinMode(ledRelay01, OUTPUT);
-         pinMode(ledRelay02, OUTPUT);
-         pinMode(ledAlarm, OUTPUT);
+      pinMode(ledRelay01, OUTPUT);
+      pinMode(ledRelay02, OUTPUT);
+      pinMode(ledAlarm, OUTPUT);
     }
     else
     {
-       pinMode(ledRelay01, OUTPUT);
+      pinMode(ledRelay01, OUTPUT);
       pinMode(ledRelay02, OUTPUT);
       pinMode(ledAlarm, OUTPUT);
     }
@@ -159,8 +160,7 @@ void turnOnAll(){
     digitalWrite(ledAlarm, HIGH);
   }
 
-    delay(1000);
-  
+  delay(1000);
 }
 
 bool turnOnRelay(String action){
@@ -487,7 +487,7 @@ void initWiFi() {
     gWifiName = "const " + current_ssid;
   }
   
-  unsigned int Length_of_ssid = current_ssid.length();
+  unsigned int length_of_ssid = current_ssid.length();
   g_ssid = current_ssid;
   gWifiName = current_ssid;
   
@@ -514,33 +514,34 @@ void initWiFi() {
             select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
           }
 
-            if (Length_of_ssid > 0) {
-            if (current_ssid.equals(SSID)) {
-              hasRouter = true;
-              g_encryption_Type = WiFi.encryptionType(i);
-              gSignalStrength = String(WiFi.RSSI(i));
-            }else if(gDefaultWifname_telua.equals(SSID)){
-               hasRouter = true;
-               g_encryption_Type = WiFi.encryptionType(i);
-               gSignalStrength = String(WiFi.RSSI(i));
+            if (length_of_ssid > 0) {
+              if (current_ssid.equals(SSID)) {
+                hasRouter = true;
+                g_encryption_Type = WiFi.encryptionType(i);
+                gSignalStrength = String(WiFi.RSSI(i));
+              }else if(gDefaultWifname_telua.equals(SSID)){
+                hasRouter = true;
+                g_encryption_Type = WiFi.encryptionType(i);
+                gSignalStrength = String(WiFi.RSSI(i));
 
-              current_ssid = gDefaultWifname_telua;
-              current_pass  = gDefaultWifPass_telua;
-              g_ssid = current_ssid;
-              gWifiName = current_ssid;
-              gWifiName.replace(" ", "+");
-            }
-            else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
-             
-              g_remtoe_encryption_Type = WiFi.encryptionType(i);
-              if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
-                  if(remote_pass.length() > 1){
-                      gSignalStrength = String(WiFi.RSSI(i));  
-                      hasRemoteRouter = true;
-                  }
+                current_ssid = gDefaultWifname_telua;
+                current_pass  = gDefaultWifPass_telua;
+                g_ssid = current_ssid;
+                gWifiName = "const " + current_ssid;
+                gWifiName.replace(" ", "+");
+              }
+              else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
+              
+                g_remtoe_encryption_Type = WiFi.encryptionType(i);
+                if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN)
+                {
+                    if(remote_pass.length() > 1){
+                        gSignalStrength = String(WiFi.RSSI(i));  
+                        hasRemoteRouter = true;
+                    }
+                }
               }
             }
-          }
         }
 
         if (n < 1) {
@@ -554,7 +555,6 @@ void initWiFi() {
         break;
       }
       delay(500);
-
     }
   }
 
