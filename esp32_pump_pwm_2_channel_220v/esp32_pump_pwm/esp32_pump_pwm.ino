@@ -36,8 +36,11 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
+String gDefaultWifname_backup = "telua";
+String gDefaultWifPass_backup = "13572468";
+
 // Timer2Channels or Timer3Channels
-bool gHas2Channel = false;
+bool gHas2Channel = true;
 bool gPWM = true;
 
 // Timer3Channels
