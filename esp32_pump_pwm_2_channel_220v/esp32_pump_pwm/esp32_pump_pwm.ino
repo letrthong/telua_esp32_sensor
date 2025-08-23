@@ -36,8 +36,8 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-String gDefaultWifname_backup = "telua";
-String gDefaultWifPass_backup = "13572468";
+String gDefaultWifname_telua = "telua";
+String gDefaultWifPass_telua = "13572468";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = true;
@@ -519,6 +519,16 @@ void initWiFi() {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
               gSignalStrength = String(WiFi.RSSI(i));
+            }else if(gDefaultWifname_telua.equals(SSID)){
+               hasRouter = true;
+               g_encryption_Type = WiFi.encryptionType(i);
+               gSignalStrength = String(WiFi.RSSI(i));
+
+              current_ssid = gDefaultWifname_telua;
+              current_pass  = gDefaultWifPass_telua;
+              g_ssid = current_ssid;
+              gWifiName = current_ssid;
+              gWifiName.replace(" ", "+");
             }
             else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
              
