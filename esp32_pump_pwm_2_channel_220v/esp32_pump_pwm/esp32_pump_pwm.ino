@@ -25,7 +25,7 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
-String releaseDate = "14-Aug-2025";
+String releaseDate = "23-Aug-2025";
 String gWifiName = "";
 String gVoltage = "220";
 String gSignalStrength = "0";
