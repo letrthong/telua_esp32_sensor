@@ -1151,7 +1151,7 @@ void setup() {
       delay(500); 
   }
   
-  Serial.println("Ver:8/Aug/2024");
+  Serial.println("Ver:20/Aug/2025");
   
   initEEPROM();
 
