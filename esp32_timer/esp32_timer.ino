@@ -26,7 +26,7 @@ String btnStatus = "&b1=off&b2=off&al=off";
 String releaseDate = "12-Aug-2025";
 String gProtocol = "&protocol=RESTfulAPI";
 String gWifiName = "";
-String gVoltage = "12";
+String gVoltage = "220v";
 String gSignalStrength = "0";
 String gPollingTime = "60";
 
