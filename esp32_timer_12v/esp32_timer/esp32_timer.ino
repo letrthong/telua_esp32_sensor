@@ -91,6 +91,9 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
+String gDefaultWifname_telua = "telua";
+String gDefaultWifPass_telua = "13572468";
+
 TaskHandle_t taskHandle;
 
 void intGpio(){
@@ -461,6 +464,17 @@ void initWiFi() {
               hasRouter = true;
               g_encryption_Type = WiFi.encryptionType(i);
               gSignalStrength = String(WiFi.RSSI(i));
+            } 
+            else if(gDefaultWifname_telua.equals(SSID)){
+                hasRouter = true;
+                g_encryption_Type = WiFi.encryptionType(i);
+                gSignalStrength = String(WiFi.RSSI(i));
+
+                current_ssid = gDefaultWifname_telua;
+                current_pass  = gDefaultWifPass_telua;
+                g_ssid = current_ssid;
+                gWifiName = "const " + current_ssid;
+                gWifiName.replace(" ", "+");
             }
             else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
              

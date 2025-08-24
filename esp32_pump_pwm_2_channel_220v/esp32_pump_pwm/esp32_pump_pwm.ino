@@ -40,7 +40,7 @@ String gDefaultWifname_telua = "telua";
 String gDefaultWifPass_telua = "13572468";
 
 // Timer2Channels or Timer3Channels
-bool gHas2Channel = true;
+bool gHas2Channel = false;
 bool gPWM = true;
 
 // Timer3Channels
