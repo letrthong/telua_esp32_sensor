@@ -519,7 +519,7 @@ void initWiFi() {
                 hasRouter = true;
                 g_encryption_Type = WiFi.encryptionType(i);
                 gSignalStrength = String(WiFi.RSSI(i));
-              }else if(gDefaultWifname_telua.equals(SSID)){
+              } else if(gDefaultWifname_telua.equals(SSID)){
                 hasRouter = true;
                 g_encryption_Type = WiFi.encryptionType(i);
                 gSignalStrength = String(WiFi.RSSI(i));
