@@ -39,6 +39,13 @@ String gProtocol = "&protocol=RESTfulAPI";
 String gPollingTime = "60";
 
 
+bool gIsDefaultWifi = true;
+String gDefaultWifname = "hcmus";
+String gDefaultWifPass = "fetelxxx";
+
+String gDefaultWifname_telua = "telua";
+String gDefaultWifPass_telua = "13572468";
+
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
@@ -70,7 +77,7 @@ unsigned long interval = 60000;
 unsigned long previousMillisLocalWeb = 0;
 unsigned long intervalLocalWeb = 60000;
 
-const char* ntpServer = "pool.ntp.org";
+String g_ntpServer = "pool.ntp.org";
 // 25200 = 7*60*60  +7
 long gmtOffset_sec = 25200;
 const int daylightOffset_sec = 0;
@@ -448,9 +455,20 @@ void initWiFi() {
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   gWifiName =  current_ssid;
 
-  // current_ssid = "telua";
-  // current_pass = "13572468";
-  // gWifiName = "const " + current_ssid;
+ 
+   gWifiName = current_ssid;	
+  if(gIsDefaultWifi == true)
+  {
+    current_ssid = gDefaultWifname;
+    current_pass = gDefaultWifPass;
+    gWifiName = "const " + current_ssid;
+  }
+  
+  unsigned int length_of_ssid = current_ssid.length();
+  g_ssid = current_ssid;
+  
+  
+  gWifiName.replace(" ", "+");
 
   gWifiName.replace(" ", "+");
     
@@ -933,6 +951,18 @@ bool getTimeZone( ) {
           Serial.print("getTimeZone gmtOffset_sec=");
           Serial.println(gmtOffset_sec);
         }
+
+
+         hasKey = doc.containsKey("ntpServer");
+        if (hasKey == true) {
+          String ntpServer = doc["ntpServer"];
+          g_ntpServer= ntpServer;
+          Serial.print("getTimeZone g_ntpServer=");
+          Serial.println(g_ntpServer);
+        }
+        else{
+          Serial.println("getTimeZone No ntpServer ");
+        }
     }   
   } else {
      Serial.print("getTimeZone Error code: ");
@@ -1028,6 +1058,51 @@ int getSeconds(){
   return   seconds ;
 }
 
+void init_ntp() {
+  if (deviceID.length() > 0) {
+    Serial.println("Fetching timezone from server...");
+    getTimeZone();  // Updates gmtOffset_sec and daylightOffset_sec if needed
+  }
+
+  const char* ntpServers[] = {
+    g_ntpServer.c_str(),       // Primary NTP server (e.g., "pool.ntp.org")
+    "time.google.com",         // Backup server 1
+    "vn.pool.ntp.org",         // Backup server 2
+    "asia.pool.ntp.org",        // Backup server 3
+    "time.cloudflare.com"       // Backup server 4
+  };
+
+  struct tm timeinfo;
+  const int maxRetries = 10;
+  bool timeSynced = false;
+
+  for (int i = 0; i < sizeof(ntpServers) / sizeof(ntpServers[0]); i++) {
+    Serial.printf("Trying to sync time with NTP server: %s\n", ntpServers[i]);
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServers[i]);
+
+    for (int retry = 0; retry < maxRetries; retry++) {
+      if (getLocalTime(&timeinfo)) {
+        Serial.println("Time synchronization successful!");
+        Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+        timeSynced = true;
+        g_ntpServer = ntpServers[i];
+        break;
+      }
+      Serial.print(".");
+      delay(1000);
+    }
+
+    if (timeSynced) {
+      break;
+    }
+    Serial.println("\n  Failed to sync with this server. Trying next...");
+  }
+
+  if (!timeSynced) {
+    Serial.println("All NTP sync attempts failed. Please check Wi-Fi or UDP port 123.");
+    ESP.restart();
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -1040,10 +1115,8 @@ void setup() {
   initEEPROM();
   initWiFi();
 
-  if(deviceID.length() > 0){
-    getTimeZone();
-  }
-
+  init_ntp(); 
+  
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   if(startEpchoTime == 0){
      startEpchoTime = getSeconds();
