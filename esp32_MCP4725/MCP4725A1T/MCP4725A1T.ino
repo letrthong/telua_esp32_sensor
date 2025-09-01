@@ -755,6 +755,7 @@ bool sendReport(bool hasReport) {
   HTTPClient http;
   String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength  + gProtocol + "&pollingTime=" +gPollingTime;
+ serverPath = serverPath + "&ntpServer=" + g_ntpServer;
   Serial.println(serverPath);
 
   http.setTimeout(60000);
