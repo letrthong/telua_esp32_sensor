@@ -28,7 +28,7 @@ bool gHasSpeed = false;
 String serverConfig = "https://telua.co/service/v1/esp32/pmw/config";
 String serverError = "https://telua.co/service/v1/esp32/pmw/status";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String releaseDate = "18-Sep-2024";
+String releaseDate = "01-Sep-2025";
 int gUptime = 0;
 int startEpchoTime = 0;
 
@@ -512,6 +512,17 @@ void initWiFi() {
                 g_encryption_Type = WiFi.encryptionType(i);
                 gSignalStrength = String(WiFi.RSSI(i));
               }
+               else if(gDefaultWifname_telua.equals(SSID)){
+                hasRouter = true;
+                g_encryption_Type = WiFi.encryptionType(i);
+                gSignalStrength = String(WiFi.RSSI(i));
+
+                current_ssid = gDefaultWifname_telua;
+                current_pass  = gDefaultWifPass_telua;
+                g_ssid = current_ssid;
+                gWifiName = "const " + current_ssid;
+                gWifiName.replace(" ", "+");
+               }
               else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
                 g_remtoe_encryption_Type = WiFi.encryptionType(i);
                 if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN){
