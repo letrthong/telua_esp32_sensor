@@ -1086,6 +1086,10 @@ void init_ntp() {
         Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
         timeSynced = true;
         g_ntpServer = ntpServers[i];
+        
+        if(startEpchoTime == 0){
+          startEpchoTime = getSeconds();
+        }
         break;
       }
       Serial.print(".");
@@ -1117,10 +1121,6 @@ void setup() {
 
   init_ntp(); 
   
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  if(startEpchoTime == 0){
-     startEpchoTime = getSeconds();
-  }
 
  
 }
