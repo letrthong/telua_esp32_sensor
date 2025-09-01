@@ -96,6 +96,7 @@ void initSensor(){
       Serial.println("  Can not detect MCP4725 ");
       hasSensorError = true;
     } else {
+       Serial.println(" initSensor pwm ");
         setSpeed("0", false);
         //createTrianglewave();
     }
@@ -125,7 +126,7 @@ void createTrianglewave(){
 void setSpeed(String percent,  bool hasRestat){
 
     if(gCount > 100){
-      currentPercent  ="";
+      currentPercent  = "";
     }
 
     currentPwm = String(percent);
