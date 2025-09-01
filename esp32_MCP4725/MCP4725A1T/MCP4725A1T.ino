@@ -61,6 +61,8 @@ RTC_DATA_ATTR int g_encryption_Type = WIFI_AUTH_OPEN;
 bool hasRemoteRouter = false;
 RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
 
+const int ledWifiStatus = 2;  
+
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
@@ -90,6 +92,10 @@ const float max_Voltage = 3.3;
 int gCount = 0;
 
 void initSensor(){
+  
+     pinMode(ledWifiStatus, OUTPUT);
+     digitalWrite(ledWifiStatus, HIGH);
+
   // MCP4725_I2CADDR_DEFAULT = 0x62
     bool ret = MCP4725.begin(MCP4725_I2CADDR_DEFAULT); // The I2C Address of my module  
     if(ret == false){
@@ -100,6 +106,7 @@ void initSensor(){
         setSpeed("0", false);
         //createTrianglewave();
     }
+    digitalWrite(ledWifiStatus, LOW);
 }
 
 
@@ -452,6 +459,7 @@ void startSmartConfig() {
 void initWiFi() {
   WiFi.mode(WIFI_STA);
 
+   digitalWrite(ledWifiStatus, HIGH);
   String current_ssid = EEPROM.readString(EEPROM_ADDRESS_SSID);
   String current_pass = EEPROM.readString(EEPROM_ADDRESS_PASS);
   gWifiName =  current_ssid;
@@ -560,6 +568,8 @@ void initWiFi() {
       isCorrectPassword = true;
     }
   }
+   
+  digitalWrite(ledWifiStatus, LOW);
 
   if (isCorrectPassword == false) {
     // Retry again
@@ -740,6 +750,7 @@ bool sendReport(bool hasReport) {
 
   gSignalStrength = String(WiFi.RSSI());  
   
+  digitalWrite(ledWifiStatus, HIGH);
   client -> setInsecure();
   HTTPClient http;
   String serverPath = serverConfig+ "?sensorName=Pwm&deviceID=" + deviceID + "&serialNumber=" + serialNumber +  "&release=" + releaseDate + "&uptime=" + String(gUptime)  + "&pwm=" + currentPwm;
@@ -752,6 +763,8 @@ bool sendReport(bool hasReport) {
   // Send HTTP GET request
   int httpResponseCode = http.GET();
 
+  digitalWrite(ledWifiStatus, LOW);
+  
   if (httpResponseCode == 200) {
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
