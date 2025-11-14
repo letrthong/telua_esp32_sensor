@@ -24,6 +24,11 @@ https://github.com/OLIMEX/ESP32-GATEWAY/blob/master/HARDWARE/Hardware%20revision
 https://github.com/OLIMEX/ESP32-EVB/tree/master/HARDWARE/REV-B
 https://github.com/OLIMEX/ESP32-POE2
 
+WiFi.BSSIDstr()
+Returns the MAC address of the access point you are connected to as a String (e.g., "AA:BB:CC:DD:EE:FF").
+Helpful when multiple APs share the same SSID.
+
+
 # vehicle_signal_specification
 https://github.com/COVESA/vehicle_signal_specification/tree/master/spec
 https://github.com/COVESA/vehicle_signal_specification/blob/master/spec/Powertrain/EngineCoolant.vspec
