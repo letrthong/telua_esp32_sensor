@@ -45,3 +45,5 @@ https://microdigisoft.com/getting-epoch-unix-time-with-esp32-through-ntp-server-
 #
 https://github.com/espressif/esp-iot-solution
 # Led MPQ76233FSGRE
+
+# https://docs.beagleboard.org/beaglebone-black.pdf
