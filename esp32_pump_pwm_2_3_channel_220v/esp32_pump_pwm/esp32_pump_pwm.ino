@@ -1170,7 +1170,7 @@ void setup() {
   }
  
   esp_task_wdt_config_t  config;
-  config.timeout_ms = (15*1000); // Tang WDT len 15s de an toan hon
+  config.timeout_ms = (70*1000); // Tang WDT len 70s (> 60s HTTP timeout)
   config.trigger_panic = true;
  
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
