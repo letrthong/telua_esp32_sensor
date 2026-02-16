@@ -24,13 +24,13 @@ String remote_pass = "";
 
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
-String btnStatus = "&b1=off&b2=off&al=off";
+// String btnStatus = "&b1=off&b2=off&al=off"; // Removed global String
 String releaseDate = "16-Feb-2026";
 String gWifiName = "";
 String gVoltage = "220";
-String gSignalStrength = "0";
+int gSignalStrength = 0; // Changed to int to avoid heap fragmentation
 String gProtocol = "&protocol=RESTfulAPI";
-String gPollingTime = "60";
+int gPollingTime = 60; // Changed to int
 
 bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
@@ -208,7 +208,9 @@ void startSleepMode() {
    We set our ESP32 to wake up every 5 seconds
    */
   esp_sleep_enable_timer_wakeup(time_to_sleep_mode * uS_TO_S_FACTOR);
-  Serial.println("Setup ESP32 to sleep for every " + String(time_to_sleep_mode) + " Seconds");
+  Serial.print("Setup ESP32 to sleep for every ");
+  Serial.print(time_to_sleep_mode);
+  Serial.println(" Seconds");
 
   Serial.println("Going to sleep now");
   Serial.flush();
@@ -526,11 +528,11 @@ void initWiFi() {
               if (current_ssid.equals(SSID)) {
                 hasRouter = true;
                 g_encryption_Type = WiFi.encryptionType(i);
-                gSignalStrength = String(WiFi.RSSI(i));
+                gSignalStrength = WiFi.RSSI(i);
               } else if(gDefaultWifname_telua.equals(SSID)){
                 hasRouter = true;
                 g_encryption_Type = WiFi.encryptionType(i);
-                gSignalStrength = String(WiFi.RSSI(i));
+                gSignalStrength = WiFi.RSSI(i);
 
                 current_ssid = gDefaultWifname_telua;
                 current_pass  = gDefaultWifPass_telua;
@@ -544,7 +546,7 @@ void initWiFi() {
                 if(g_remote_encryption_Type != WIFI_AUTH_OPEN)
                 {
                     if(remote_pass.length() > 1){
-                        gSignalStrength = String(WiFi.RSSI(i));  
+                        gSignalStrength = WiFi.RSSI(i);  
                         hasRemoteRouter = true;
                     }
                 }
@@ -755,33 +757,35 @@ bool sendReport(bool hasReport) {
     }
   }
   
-  btnStatus = "";
-  btnStatus.reserve(64);
+  // Use local String instead of global to free memory after use
+  String localBtnStatus = "";
+  localBtnStatus.reserve(64);
+  
   if(hasBtn0 == true){
       turnOnRelay("b1On");
-      btnStatus += "&b1=on";
+      localBtnStatus += "&b1=on";
   } else {
     turnOffRelay("b1Off");
-      btnStatus += "&b1=off";
+      localBtnStatus += "&b1=off";
   }
 
   if(hasBtn1 == true){
       turnOnRelay("b2On");
-      btnStatus += "&b2=on";
+      localBtnStatus += "&b2=on";
   } else {
     turnOffRelay("b2Off");
-      btnStatus += "&b2=off";
+      localBtnStatus += "&b2=off";
   }
 
   if(gHas2Channel == false){
       if(hasAl == true){
         turnOnRelay("alOn");
-        btnStatus += "&al=on";
+        localBtnStatus += "&al=on";
       } 
       else
        {
         turnOffRelay("alOff");
-        btnStatus += "&al=off";
+        localBtnStatus += "&al=off";
       }
 
 
@@ -809,7 +813,7 @@ bool sendReport(bool hasReport) {
   // Su dung Stack allocation thay vi Heap (new/delete) de tranh phan manh bo nho
   WiFiClientSecure client;
 
-   gSignalStrength = String(WiFi.RSSI()); 
+   gSignalStrength = WiFi.RSSI(); 
   
   client.setInsecure();
   HTTPClient http;
@@ -823,12 +827,12 @@ bool sendReport(bool hasReport) {
   serverPath += "&serialNumber="; serverPath += serialNumber;
   serverPath += "&release="; serverPath += releaseDate;
   serverPath += "&uptime="; serverPath += gUptime;
-  serverPath += btnStatus;
+  serverPath += localBtnStatus;
   serverPath += "&wiFiName="; serverPath += gWifiName;
   serverPath += "&volt="; serverPath += gVoltage;
   serverPath += "&signalStrength="; serverPath += gSignalStrength;
   serverPath += gProtocol;
-  serverPath += "&pollingTime="; serverPath += gPollingTime;
+  serverPath += "&pollingTime="; serverPath += g_count; // Use g_count directly
   serverPath += "&ntpServer="; serverPath += g_ntpServer;
 
   Serial.print("Free Heap: ");
@@ -1244,7 +1248,6 @@ void task1(void *parameter) {
     g_count = g_count +1;
     if (g_count >= 60)
     {
-        gPollingTime = String(g_count);
         sendReport(true); 
         g_count= 0;
     } 
