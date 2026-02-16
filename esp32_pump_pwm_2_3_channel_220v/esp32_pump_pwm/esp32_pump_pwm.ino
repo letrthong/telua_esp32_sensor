@@ -793,10 +793,8 @@ bool sendReport(bool hasReport) {
    }
    
   if (WiFi.status() != WL_CONNECTED) {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport WiFi.status() != WL_CONNECTED");
-    delay(5000); 
-    ESP.restart();
+    // Khong restart ngay lap tuc, de loop() xu ly timeout 10 phut
+    Serial.println("sendReport: WiFi not connected, skipping...");
     return false;
   }
 
@@ -804,26 +802,16 @@ bool sendReport(bool hasReport) {
 
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport  localIP= 0.0.0.0");
-    delay(5000); 
-    ESP.restart();
+    Serial.println("sendReport: Invalid IP 0.0.0.0");
     return false;
   }
 
-  WiFiClientSecure * client = new WiFiClientSecure;
-  if (!client) {
-    Serial.println("Failed to create client - Low Heap");
-    retryTimeout++;
-    if (retryTimeout > 4) {
-       ESP.restart();
-    }
-    return false;
-  }
+  // Su dung Stack allocation thay vi Heap (new/delete) de tranh phan manh bo nho
+  WiFiClientSecure client;
 
    gSignalStrength = String(WiFi.RSSI()); 
   
-  client -> setInsecure();
+  client.setInsecure();
   HTTPClient http;
   
   // Optimize String concatenation to reduce heap fragmentation
@@ -848,7 +836,7 @@ bool sendReport(bool hasReport) {
   Serial.println(serverPath);
 
   http.setTimeout(60000);
-  http.begin( * client, serverPath.c_str());
+  http.begin(client, serverPath.c_str());
 
   // Send HTTP GET request
   int httpResponseCode = http.GET();
@@ -993,7 +981,7 @@ bool sendReport(bool hasReport) {
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
       if(httpResponseCode == -11){
         http.end();
-        delete client;
+        // delete client; // Khong can delete vi dung stack
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true){
@@ -1014,7 +1002,7 @@ bool sendReport(bool hasReport) {
   }
   // Free resources
   http.end();
-  delete client;
+  // delete client; // Tu dong huy khi ra khoi scope
 
   return ret;
 }
@@ -1022,30 +1010,20 @@ bool sendReport(bool hasReport) {
 bool getTimeZone( ) {
   bool ret = false;
   if (WiFi.status() != WL_CONNECTED) {
-    time_to_sleep_mode = 60;
-    Serial.println("getTimeZone WiFi.status() != WL_CONNECTED");
-    delay(1000); 
-    ESP.restart();
+    Serial.println("getTimeZone: WiFi not connected, skipping...");
     return ret;
   }
 
   String localIP = WiFi.localIP().toString();
   if (localIP == "0.0.0.0") {
-    time_to_sleep_mode = 60;
-    Serial.println("sendReport  localIP= 0.0.0.0");
-    delay(1000); 
-    ESP.restart();
+    Serial.println("getTimeZone: Invalid IP 0.0.0.0");
     return false;
   }
 
-  WiFiClientSecure * client = new WiFiClientSecure;
-  if (!client) {
-    ESP.restart();
-    return ret;
-  }
+  WiFiClientSecure client;
 
   
-  client -> setInsecure();
+  client.setInsecure();
   HTTPClient http;
   String serverPath = serverOffset + "?deviceID=" + deviceID;
 
@@ -1053,7 +1031,7 @@ bool getTimeZone( ) {
   Serial.println(serverPath);
 
   http.setTimeout(60000);
-  http.begin( * client, serverPath.c_str());
+  http.begin(client, serverPath.c_str());
 
   // Send HTTP GET request
   int httpResponseCode = http.GET();
@@ -1089,11 +1067,9 @@ bool getTimeZone( ) {
   } else {
      Serial.print("getTimeZone Error code: ");
      Serial.println(httpResponseCode);
-     ESP.restart();
   }
   // Free resources
   http.end();
-  delete client;
 
   return ret;
 }
