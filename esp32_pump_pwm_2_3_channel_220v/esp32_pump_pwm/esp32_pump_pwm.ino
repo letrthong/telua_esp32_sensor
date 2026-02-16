@@ -1184,17 +1184,6 @@ void setup() {
   
   initEEPROM();
 
-  initWiFi();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    for(int i = 0; i<3 ;i++){
-      digitalWrite(ledWifiStatus, HIGH);
-      delay(500); 
-      digitalWrite(ledWifiStatus, LOW);
-      delay(500); 
-    }
-  }
- 
   esp_task_wdt_deinit();
 
   esp_task_wdt_config_t config = {0};
@@ -1211,6 +1200,16 @@ void setup() {
   
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
 
+  initWiFi();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    for(int i = 0; i<3 ;i++){
+      digitalWrite(ledWifiStatus, HIGH);
+      delay(500); 
+      digitalWrite(ledWifiStatus, LOW);
+      delay(500); 
+    }
+  }
 
   // Create task1
   xTaskCreate(
