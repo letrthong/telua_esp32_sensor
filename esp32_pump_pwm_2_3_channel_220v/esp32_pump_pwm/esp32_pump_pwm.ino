@@ -511,9 +511,9 @@ void initWiFi() {
         Serial.print(n);
         Serial.println(" networks found");
         
-        // Toi uu hoa String de tranh phan manh Heap ngay tu khi khoi dong
+        // Optimize String to avoid Heap fragmentation right from startup
         select_html = "";
-        select_html.reserve(2048); // Dat truoc bo nho cho danh sach Wifi
+        select_html.reserve(2048); // Reserve memory for Wifi list
         select_html += " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
         
         for (int i = 0; i < n; ++i) {
@@ -797,7 +797,7 @@ bool sendReport(bool hasReport) {
    }
    
   if (WiFi.status() != WL_CONNECTED) {
-    // Khong restart ngay lap tuc, de loop() xu ly timeout 10 phut
+    // Do not restart immediately, let loop() handle 10-minute timeout
     Serial.println("sendReport: WiFi not connected, skipping...");
     return false;
   }
@@ -810,7 +810,7 @@ bool sendReport(bool hasReport) {
     return false;
   }
 
-  // Su dung Stack allocation thay vi Heap (new/delete) de tranh phan manh bo nho
+  // Use Stack allocation instead of Heap (new/delete) to avoid memory fragmentation
   WiFiClientSecure client;
 
    gSignalStrength = WiFi.RSSI(); 
@@ -839,7 +839,7 @@ bool sendReport(bool hasReport) {
   Serial.println(ESP.getFreeHeap());
   Serial.println(serverPath);
 
-  http.setTimeout(55000); // Giam xuong 55s de nhu du thoi gian cho Watchdog (75s)
+  http.setTimeout(55000); // Reduce to 55s to leave enough time for Watchdog (75s)
   http.begin(client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -985,7 +985,7 @@ bool sendReport(bool hasReport) {
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
       if(httpResponseCode == -11){
         http.end();
-        // delete client; // Khong can delete vi dung stack
+        // delete client; // No need to delete because stack is used
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true){
@@ -1006,7 +1006,7 @@ bool sendReport(bool hasReport) {
   }
   // Free resources
   http.end();
-  // delete client; // Tu dong huy khi ra khoi scope
+  // delete client; // Automatically destroyed when out of scope
 
   return ret;
 }
@@ -1105,7 +1105,7 @@ int getSeconds(){
 void init_ntp() {
   if (deviceID.length() > 0) {
     Serial.println("Fetching timezone from server...");
-    esp_task_wdt_reset(); // Reset WDT truoc khi goi HTTP lau
+    esp_task_wdt_reset(); // Reset WDT before long HTTP call
     getTimeZone();  // Updates gmtOffset_sec and daylightOffset_sec if needed
   }
 
@@ -1123,7 +1123,7 @@ void init_ntp() {
 
   for (int i = 0; i < sizeof(ntpServers) / sizeof(ntpServers[0]); i++) {
     Serial.printf("Trying to sync time with NTP server: %s\n", ntpServers[i]);
-    esp_task_wdt_reset(); // Reset WDT truoc khi thu server moi
+    esp_task_wdt_reset(); // Reset WDT before trying new server
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServers[i]);
 
     for (int retry = 0; retry < maxRetries; retry++) {
@@ -1135,7 +1135,7 @@ void init_ntp() {
         break;
       }
       Serial.print(".");
-      esp_task_wdt_reset(); // Reset WDT trong khi cho doi NTP
+      esp_task_wdt_reset(); // Reset WDT while waiting for NTP
       delay(1000);
     }
 
@@ -1182,7 +1182,7 @@ void setup() {
   esp_task_wdt_deinit();
 
   esp_task_wdt_config_t config = {0};
-  config.timeout_ms = 75000; // Tang WDT len 75s (> 55s HTTP timeout + overhead)
+  config.timeout_ms = 75000; // Increase WDT to 75s (> 55s HTTP timeout + overhead)
   config.trigger_panic = true;
   // config.idle_core_mask = (1 << 0) | (1 << 1); // Comment out to avoid errors on single-core chips
  
@@ -1240,7 +1240,7 @@ void loop()
 
 
 void task1(void *parameter) {  
-  // 1. Dang ky task1 voi Watchdog
+  // 1. Register task1 with Watchdog
   esp_task_wdt_add(NULL);
   
   init_ntp();
@@ -1278,7 +1278,7 @@ void task1(void *parameter) {
         sendReport(false); 
     }
     
-    // 2. Bao cao cho Watchdog biet task1 van song
+    // 2. Report to Watchdog that task1 is still alive
     esp_task_wdt_reset();
     vTaskDelay(1000);
   }
