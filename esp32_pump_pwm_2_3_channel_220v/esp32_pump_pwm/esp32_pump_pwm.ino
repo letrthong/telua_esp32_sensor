@@ -820,7 +820,7 @@ bool sendReport(bool hasReport) {
   serverPath = serverPath + "&ntpServer=" + g_ntpServer;
   Serial.println(serverPath);
 
-  http.setTimeout(10000); // Giam timeout HTTP < WDT timeout (15s)
+  http.setTimeout(60000);
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -1025,7 +1025,7 @@ bool getTimeZone( ) {
   
   Serial.println(serverPath);
 
-  http.setTimeout(10000); // Giam timeout HTTP < WDT timeout (15s)
+  http.setTimeout(60000);
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -1098,6 +1098,7 @@ int getSeconds(){
 void init_ntp() {
   if (deviceID.length() > 0) {
     Serial.println("Fetching timezone from server...");
+    esp_task_wdt_reset(); // Reset WDT truoc khi goi HTTP lau
     getTimeZone();  // Updates gmtOffset_sec and daylightOffset_sec if needed
   }
 
@@ -1115,6 +1116,7 @@ void init_ntp() {
 
   for (int i = 0; i < sizeof(ntpServers) / sizeof(ntpServers[0]); i++) {
     Serial.printf("Trying to sync time with NTP server: %s\n", ntpServers[i]);
+    esp_task_wdt_reset(); // Reset WDT truoc khi thu server moi
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServers[i]);
 
     for (int retry = 0; retry < maxRetries; retry++) {
@@ -1126,6 +1128,7 @@ void init_ntp() {
         break;
       }
       Serial.print(".");
+      esp_task_wdt_reset(); // Reset WDT trong khi cho doi NTP
       delay(1000);
     }
 
