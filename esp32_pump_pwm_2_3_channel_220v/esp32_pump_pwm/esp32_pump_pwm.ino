@@ -245,6 +245,8 @@ void startLocalWeb() {
   unsigned long currentMillisLocalWeb = millis();
   previousMillisLocalWeb = currentMillisLocalWeb;
   while (1) {
+    esp_task_wdt_reset(); // Reset WDT to prevent crash during long configuration
+
     WiFiClient client = server.available();
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= interval) {
@@ -271,8 +273,13 @@ void startLocalWeb() {
       String currentLine = ""; // make a String to hold incoming data from the client
       bool hasWrongFormat = false;
       String privateIpv4 = "";
+      
+      // Optimize: Reserve memory to prevent fragmentation during char-by-char addition
+      header.reserve(2048);
+
       while (client.connected()) { // loop while the client's connected
         if (client.available()) { // if there's bytes to read from the client,
+           esp_task_wdt_reset(); // Keep WDT happy during data transfer
            unsigned long currentMillisLocalWeb = millis();
            previousMillisLocalWeb = currentMillisLocalWeb;
            countWaitRequest = 0; 
@@ -328,6 +335,7 @@ void startLocalWeb() {
                     int count = 0;
                     while (WiFi.status() != WL_CONNECTED) {
                       Serial.print('.');
+                      esp_task_wdt_reset(); // Keep WDT happy while connecting
                       delay(500);
                       // 15 seconds
                       count = count + 1;
@@ -585,6 +593,7 @@ void initWiFi() {
     }
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
+      esp_task_wdt_reset(); // Keep WDT happy
       delay(500);
       // 15 seconds
       count = count + 1;
@@ -624,6 +633,7 @@ void initWiFi() {
       int retryTime = 30;
       while (WiFi.status() != WL_CONNECTED &&  (isConnecting == true)) {
         Serial.print('.');
+        esp_task_wdt_reset(); // Keep WDT happy
         delay(500);
         // 15 seconds
         count = count + 1;
@@ -713,7 +723,8 @@ bool sendReport(bool hasReport) {
     bool hasAl = false; 
 
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
-    StaticJsonDocument < 2048 > docTrigger;
+    // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
+    StaticJsonDocument<2048> docTrigger;
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
@@ -821,7 +832,7 @@ bool sendReport(bool hasReport) {
   // Optimize String concatenation to reduce heap fragmentation
   String serverPath;
   serverPath.reserve(512);
-  serverPath = serverName;
+  serverPath += serverName;
   serverPath += "?sensorName="; serverPath += gSensorName;
   serverPath += "&deviceID="; serverPath += deviceID;
   serverPath += "&serialNumber="; serverPath += serialNumber;
@@ -835,8 +846,11 @@ bool sendReport(bool hasReport) {
   serverPath += "&pollingTime="; serverPath += gPollingTime; // Use configured polling time
   serverPath += "&ntpServer="; serverPath += g_ntpServer;
 
-  Serial.print("Free Heap: ");
-  Serial.println(ESP.getFreeHeap());
+  uint32_t freeHeap = ESP.getFreeHeap();
+  uint32_t totalHeap = ESP.getHeapSize();
+  float usedRam = (float)(totalHeap - freeHeap) / totalHeap * 100.0;
+  Serial.printf("Heap: Free %u / %u (%.1f%% Used) | Min Free: %u\n", freeHeap, totalHeap, usedRam, ESP.getMinFreeHeap());
+  
   Serial.println(serverPath);
 
   http.setTimeout(55000); // Reduce to 55s to leave enough time for Watchdog (75s)
@@ -853,7 +867,8 @@ bool sendReport(bool hasReport) {
     //      Serial.println(payload);
 
     //https://arduinojson.org/v6/doc/upgrade/
-    DynamicJsonDocument doc(2048);
+    // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
+    StaticJsonDocument<2048> doc;
 
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
@@ -1043,7 +1058,8 @@ bool getTimeZone( ) {
   if (httpResponseCode == 200) {
     String payload = http.getString();
    
-    DynamicJsonDocument doc(256);
+    // Use StaticJsonDocument to avoid Heap fragmentation
+    StaticJsonDocument<256> doc;
 
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
@@ -1211,6 +1227,17 @@ void loop()
 {
   delay(1000);
   gUptimeCounter = gUptimeCounter + 1;
+
+  // Monitor Memory: Check every 5 minutes (300s) instead of every second
+  if (gUptimeCounter % 300 == 0) {
+      // Monitor Memory: Restart if usage > 90% (Free Heap < 10%)
+      uint32_t freeHeapLoop = ESP.getFreeHeap();
+      uint32_t totalHeapLoop = ESP.getHeapSize();
+      if (freeHeapLoop < (totalHeapLoop * 0.1)) {
+          Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
+          ESP.restart();
+      }
+  }
 
   if (gUptimeCounter >  600){
       gUptimeCounter = 0;
