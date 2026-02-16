@@ -832,7 +832,7 @@ bool sendReport(bool hasReport) {
   serverPath += "&volt="; serverPath += gVoltage;
   serverPath += "&signalStrength="; serverPath += gSignalStrength;
   serverPath += gProtocol;
-  serverPath += "&pollingTime="; serverPath += g_count; // Use g_count directly
+  serverPath += "&pollingTime="; serverPath += gPollingTime; // Use configured polling time
   serverPath += "&ntpServer="; serverPath += g_ntpServer;
 
   Serial.print("Free Heap: ");
@@ -1234,7 +1234,12 @@ void loop()
       }
    }
   // Kick the dog
-  Serial.println("esp_task_wdt_reset");
+  struct tm timeinfo;
+  if(getLocalTime(&timeinfo)){
+      Serial.printf("esp_task_wdt_reset %02d:%02d:%02d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+  } else {
+      Serial.println("esp_task_wdt_reset");
+  }
   esp_task_wdt_reset();
 }
 
@@ -1249,37 +1254,43 @@ void task1(void *parameter) {
     startEpchoTime = getSeconds();
   }
 
+  // Force immediate report on startup
+  unsigned long lastReportTime = millis() - (gPollingTime * 1000);
+  unsigned long lastTriggerTime = 0;
+
   while (1) {
-    int currntEpchoTime =  getSeconds();
-    gUptime=  currntEpchoTime - startEpchoTime;
-
-    if(gUptime < 0)
+    unsigned long currentMillis = millis();
+    
+    // 1. Check Report (Priority - every gPollingTime seconds)
+    if (currentMillis - lastReportTime >= (gPollingTime * 1000))
     {
-      startEpchoTime = currntEpchoTime;
-      gUptime = 0;
-    }
+        lastReportTime = currentMillis;
+        
+        // Update Uptime immediately before reporting
+        int currntEpchoTime = getSeconds();
+        gUptime = currntEpchoTime - startEpchoTime;
+        if(gUptime < 0) { startEpchoTime = currntEpchoTime; gUptime = 0; }
 
-
-    Serial.print("MCU hang event!!!: ");
-    Serial.println(g_count);
-     
-    // printLocalTime();
-    g_count = g_count +1;
-    if (g_count >= 60)
-    {
         esp_task_wdt_reset();
         unsigned long start = millis();
         sendReport(true); 
         Serial.printf("sendReport took: %lu ms\n", millis() - start);
-        g_count= 0;
     } 
-    else 
+    // 2. Check Triggers (every 1 second, non-blocking)
+    else if (currentMillis - lastTriggerTime >= 1000)
     {
+        lastTriggerTime = currentMillis;
+
+        // Update Uptime for triggers
+        int currntEpchoTime = getSeconds();
+        gUptime = currntEpchoTime - startEpchoTime;
+        if(gUptime < 0) { startEpchoTime = currntEpchoTime; gUptime = 0; }
+
         sendReport(false); 
     }
     
-    // 2. Report to Watchdog that task1 is still alive
+    // 3. Yield to OS and Watchdog (Non-blocking)
     esp_task_wdt_reset();
-    vTaskDelay(1000);
+    vTaskDelay(10); // Delay 10ms to yield CPU, increasing responsiveness
   }
 }
