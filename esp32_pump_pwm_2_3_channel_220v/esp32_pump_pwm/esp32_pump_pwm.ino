@@ -4,7 +4,7 @@
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
- #include <esp_task_wdt.h>
+#include <esp_task_wdt.h>
 
 #define uS_TO_S_FACTOR 1000000ULL /* Conversion factor for micro seconds to seconds */
 #define EEPROM_SIZE 512
@@ -25,7 +25,7 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 String btnStatus = "&b1=off&b2=off&al=off";
-String releaseDate = "30-Aug-2025";
+String releaseDate = "16-Feb-2026";
 String gWifiName = "";
 String gVoltage = "220";
 String gSignalStrength = "0";
@@ -54,7 +54,7 @@ int startEpchoTime = 0;
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
 int EEPROM_ADDRESS_REMOTE_SSID = 48;
-int EEPROM_ADDRESS_REOMVE_PASS = 64;
+int EEPROM_ADDRESS_REMOTE_PASS = 64;
 int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
 int EEPROM_ADDRESS_DEVICE_ID = 128;
 int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
@@ -64,7 +64,7 @@ bool hasRouter = false;
 RTC_DATA_ATTR int g_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasRemoteRouter = false;
-RTC_DATA_ATTR int g_remtoe_encryption_Type = WIFI_AUTH_OPEN;
+RTC_DATA_ATTR int g_remote_encryption_Type = WIFI_AUTH_OPEN;
 
 bool hasSensor = false;
 bool hasError = true;
@@ -99,8 +99,9 @@ const int ledWifiStatus = 2;
 // const int btnBot = 16;
 
 TaskHandle_t taskHandle;
+void task1(void *parameter);
 
-void intGpio()
+void initGpio()
 {
 
     if(gHas2Channel == true)
@@ -301,24 +302,24 @@ void startLocalWeb() {
                   String ssid = info.substring(0, index);
                   ssid.replace("+", " ");
 
-                  String passowrd = info.substring(index + 10);
-                  passowrd.replace(" ", "");
+                  String wifiPassword = info.substring(index + 10);
+                  wifiPassword.replace(" ", "");
 
                   Serial.print("ssid=[");
                   Serial.print(ssid);
                   Serial.print("]");
 
-                  Serial.print("passowrd=[");
-                  Serial.print(passowrd);
+                  Serial.print("password=[");
+                  Serial.print(wifiPassword);
                   Serial.print("]");
 
                   if (ssid.length() > 0) {
-                    if (passowrd.length() == 0) {
+                    if (wifiPassword.length() == 0) {
                       Serial.println("WIFI_AUTH_OPEN");
                       WiFi.begin(ssid);
-                      passowrd = "12345678";
+                      wifiPassword = "12345678";
                     } else {
-                      WiFi.begin(ssid, passowrd);
+                      WiFi.begin(ssid, wifiPassword);
                     }
 
                     Serial.print("Connecting to WiFi ..");
@@ -341,7 +342,7 @@ void startLocalWeb() {
                       EEPROM.writeString(EEPROM_ADDRESS_SSID, ssid);
                       EEPROM.commit();
 
-                      EEPROM.writeString(EEPROM_ADDRESS_PASS, passowrd);
+                      EEPROM.writeString(EEPROM_ADDRESS_PASS, wifiPassword);
                       EEPROM.commit();
                     } else {
                       hasWrongFormat = true;
@@ -534,8 +535,8 @@ void initWiFi() {
               }
               else if (remote_ssid.equals(SSID) && (hasRouter == false)  ) {
               
-                g_remtoe_encryption_Type = WiFi.encryptionType(i);
-                if(g_remtoe_encryption_Type != WIFI_AUTH_OPEN)
+                g_remote_encryption_Type = WiFi.encryptionType(i);
+                if(g_remote_encryption_Type != WIFI_AUTH_OPEN)
                 {
                     if(remote_pass.length() > 1){
                         gSignalStrength = String(WiFi.RSSI(i));  
@@ -597,7 +598,7 @@ void initWiFi() {
     if (hasRemoteRouter == true) {
       WiFi.disconnect();
       delay(500);
-      if (g_remtoe_encryption_Type == WIFI_AUTH_OPEN) {
+      if (g_remote_encryption_Type == WIFI_AUTH_OPEN) {
         Serial.println("WIFI_AUTH_OPEN");
         WiFi.begin(remote_ssid);
         isConnecting = true;
@@ -691,7 +692,7 @@ void initEEPROM() {
   Serial.print("initEEPROM remote_ssid=");
   Serial.println(remote_ssid);
 
-  remote_pass = EEPROM.readString(EEPROM_ADDRESS_REOMVE_PASS);
+  remote_pass = EEPROM.readString(EEPROM_ADDRESS_REMOTE_PASS);
   Serial.print("initEEPROM remote_pass=");
   Serial.println(remote_pass);
 }
@@ -819,7 +820,7 @@ bool sendReport(bool hasReport) {
   serverPath = serverPath + "&ntpServer=" + g_ntpServer;
   Serial.println(serverPath);
 
-  http.setTimeout(60000);
+  http.setTimeout(10000); // Giam timeout HTTP < WDT timeout (15s)
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -875,7 +876,7 @@ bool sendReport(bool hasReport) {
   
           if (remote_pass != password) {
             remote_pass = password;
-            EEPROM.writeString(EEPROM_ADDRESS_REOMVE_PASS, remote_pass);
+            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_PASS, remote_pass);
             EEPROM.commit();
           }
         }
@@ -1024,7 +1025,7 @@ bool getTimeZone( ) {
   
   Serial.println(serverPath);
 
-  http.setTimeout(60000);
+  http.setTimeout(10000); // Giam timeout HTTP < WDT timeout (15s)
   http.begin( * client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -1144,7 +1145,7 @@ void setup() {
   
   Serial.begin(115200);
   
-  intGpio();
+  initGpio();
   
   for(int i = 0; i<4 ;i++){
       digitalWrite(ledWifiStatus, HIGH);
@@ -1153,7 +1154,7 @@ void setup() {
       delay(500); 
   }
   
-  Serial.println("Ver:20/Aug/2025");
+  Serial.println("Ver:16/Feb/2026");
   
   initEEPROM();
 
@@ -1169,7 +1170,7 @@ void setup() {
   }
  
   esp_task_wdt_config_t  config;
-  config.timeout_ms = (5*1000);
+  config.timeout_ms = (15*1000); // Tang WDT len 15s de an toan hon
   config.trigger_panic = true;
  
   esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
@@ -1210,6 +1211,9 @@ void loop()
 
 
 void task1(void *parameter) {  
+  // 1. Dang ky task1 voi Watchdog
+  esp_task_wdt_add(NULL);
+  
   init_ntp();
 
   if(startEpchoTime == 0){
@@ -1243,6 +1247,8 @@ void task1(void *parameter) {
         sendReport(false); 
     }
     
+    // 2. Bao cao cho Watchdog biet task1 van song
+    esp_task_wdt_reset();
     vTaskDelay(1000);
   }
 }
