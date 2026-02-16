@@ -1205,6 +1205,11 @@ void loop()
   // restartt if the device can not access the interne after 10 minutes
   if (gUptimeCounter >  600){
       gUptimeCounter = 0;
+      if (WiFi.status() != WL_CONNECTED) {
+          Serial.println("Loop: WiFi not connected, restarting...");
+          ESP.restart();
+      }
+
       if (gPreUptime != gUptime )
       {
         gPreUptime = gUptime; 
