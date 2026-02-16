@@ -1269,7 +1269,9 @@ void task1(void *parameter) {
         // Update Uptime immediately before reporting
         int currntEpchoTime = getSeconds();
         gUptime = currntEpchoTime - startEpchoTime;
-        if(gUptime < 0) { startEpchoTime = currntEpchoTime; gUptime = 0; }
+        if(gUptime < 0) { 
+          startEpchoTime = currntEpchoTime; gUptime = 0;
+       }
 
         esp_task_wdt_reset();
         unsigned long start = millis();
