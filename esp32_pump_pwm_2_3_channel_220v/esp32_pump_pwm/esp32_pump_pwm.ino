@@ -1179,11 +1179,20 @@ void setup() {
     }
   }
  
-  esp_task_wdt_config_t  config;
-  config.timeout_ms = (70*1000); // Tang WDT len 70s (> 60s HTTP timeout)
+  esp_task_wdt_deinit();
+
+  esp_task_wdt_config_t config = {0};
+  config.timeout_ms = 70000; // Tang WDT len 70s (> 60s HTTP timeout)
   config.trigger_panic = true;
+  // config.idle_core_mask = (1 << 0) | (1 << 1); // Comment out to avoid errors on single-core chips
  
-  esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
+  esp_err_t err = esp_task_wdt_init(&config); // Initialize ESP32 Task WDT
+  if (err != ESP_OK) {
+    Serial.printf("Task WDT Init Failed: %s\n", esp_err_to_name(err));
+  } else {
+    Serial.println("Task WDT Init Success");
+  }
+  
   esp_task_wdt_add(NULL);   // Subscribe to the Task WDT
 
 
@@ -1258,6 +1267,7 @@ void task1(void *parameter) {
     g_count = g_count +1;
     if (g_count >= 60)
     {
+        esp_task_wdt_reset();
         sendReport(true); 
         g_count= 0;
     } 
