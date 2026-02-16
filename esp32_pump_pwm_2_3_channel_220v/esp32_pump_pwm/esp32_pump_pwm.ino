@@ -839,7 +839,7 @@ bool sendReport(bool hasReport) {
   Serial.println(ESP.getFreeHeap());
   Serial.println(serverPath);
 
-  http.setTimeout(60000);
+  http.setTimeout(55000); // Giam xuong 55s de nhu du thoi gian cho Watchdog (75s)
   http.begin(client, serverPath.c_str());
 
   // Send HTTP GET request
@@ -1182,7 +1182,7 @@ void setup() {
   esp_task_wdt_deinit();
 
   esp_task_wdt_config_t config = {0};
-  config.timeout_ms = 70000; // Tang WDT len 70s (> 60s HTTP timeout)
+  config.timeout_ms = 75000; // Tang WDT len 75s (> 55s HTTP timeout + overhead)
   config.trigger_panic = true;
   // config.idle_core_mask = (1 << 0) | (1 << 1); // Comment out to avoid errors on single-core chips
  
@@ -1268,7 +1268,9 @@ void task1(void *parameter) {
     if (g_count >= 60)
     {
         esp_task_wdt_reset();
+        unsigned long start = millis();
         sendReport(true); 
+        Serial.printf("sendReport took: %lu ms\n", millis() - start);
         g_count= 0;
     } 
     else 
