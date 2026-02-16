@@ -508,13 +508,18 @@ void initWiFi() {
 		    hasNetworks  = true;
         Serial.print(n);
         Serial.println(" networks found");
-        select_html = " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
+        
+        // Toi uu hoa String de tranh phan manh Heap ngay tu khi khoi dong
+        select_html = "";
+        select_html.reserve(2048); // Dat truoc bo nho cho danh sach Wifi
+        select_html += " <select  id=\"ssid\"  style=\"height:30px; width:120px;\"   name=\"ssid\">";
+        
         for (int i = 0; i < n; ++i) {
           String SSID = WiFi.SSID(i);
           Serial.print("scanNetworks SSID=");
           Serial.println(SSID);
           if (i < 10) {
-            select_html = select_html + "<option value=\"" + SSID + "\">" + SSID + "</option>";
+            select_html += "<option value=\""; select_html += SSID; select_html += "\">"; select_html += SSID; select_html += "</option>";
           }
 
             if (length_of_ssid > 0) {
@@ -548,9 +553,9 @@ void initWiFi() {
         }
 
         if (n < 1) {
-          select_html = select_html + "<option value=\" \"> </option>";
+          select_html += "<option value=\" \"> </option>";
         }
-        select_html = select_html + " </select> <br>";
+        select_html += " </select> <br>";
       }
       WiFi.scanDelete();
 
@@ -751,32 +756,32 @@ bool sendReport(bool hasReport) {
   }
   
   btnStatus = "";
+  btnStatus.reserve(64);
   if(hasBtn0 == true){
       turnOnRelay("b1On");
-      btnStatus   = btnStatus + "&b1=on";
+      btnStatus += "&b1=on";
   } else {
     turnOffRelay("b1Off");
-      btnStatus   = btnStatus + "&b1=off";
+      btnStatus += "&b1=off";
   }
 
   if(hasBtn1 == true){
       turnOnRelay("b2On");
-      btnStatus = btnStatus + "&b2=on";
+      btnStatus += "&b2=on";
   } else {
     turnOffRelay("b2Off");
-      btnStatus   = btnStatus + "&b2=off";
+      btnStatus += "&b2=off";
   }
 
   if(gHas2Channel == false){
       if(hasAl == true){
         turnOnRelay("alOn");
-        btnStatus = btnStatus + "&al=on";
-
+        btnStatus += "&al=on";
       } 
       else
        {
         turnOffRelay("alOff");
-        btnStatus = btnStatus + "&al=off";
+        btnStatus += "&al=off";
       }
 
 
@@ -808,6 +813,11 @@ bool sendReport(bool hasReport) {
 
   WiFiClientSecure * client = new WiFiClientSecure;
   if (!client) {
+    Serial.println("Failed to create client - Low Heap");
+    retryTimeout++;
+    if (retryTimeout > 4) {
+       ESP.restart();
+    }
     return false;
   }
 
@@ -815,9 +825,26 @@ bool sendReport(bool hasReport) {
   
   client -> setInsecure();
   HTTPClient http;
-  String serverPath = serverName + "?sensorName=" + gSensorName + "&deviceID=" + deviceID + "&serialNumber=" + serialNumber +"&release=" + releaseDate +"&uptime=" + String(gUptime) +  btnStatus ;
-  serverPath = serverPath + "&wiFiName=" + gWifiName  + "&volt=" + gVoltage + "&signalStrength=" + gSignalStrength + gProtocol + "&pollingTime=" +gPollingTime;
-  serverPath = serverPath + "&ntpServer=" + g_ntpServer;
+  
+  // Optimize String concatenation to reduce heap fragmentation
+  String serverPath;
+  serverPath.reserve(512);
+  serverPath = serverName;
+  serverPath += "?sensorName="; serverPath += gSensorName;
+  serverPath += "&deviceID="; serverPath += deviceID;
+  serverPath += "&serialNumber="; serverPath += serialNumber;
+  serverPath += "&release="; serverPath += releaseDate;
+  serverPath += "&uptime="; serverPath += gUptime;
+  serverPath += btnStatus;
+  serverPath += "&wiFiName="; serverPath += gWifiName;
+  serverPath += "&volt="; serverPath += gVoltage;
+  serverPath += "&signalStrength="; serverPath += gSignalStrength;
+  serverPath += gProtocol;
+  serverPath += "&pollingTime="; serverPath += gPollingTime;
+  serverPath += "&ntpServer="; serverPath += g_ntpServer;
+
+  Serial.print("Free Heap: ");
+  Serial.println(ESP.getFreeHeap());
   Serial.println(serverPath);
 
   http.setTimeout(60000);
