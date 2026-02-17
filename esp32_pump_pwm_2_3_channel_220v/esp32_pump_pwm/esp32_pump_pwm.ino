@@ -849,19 +849,19 @@ bool sendReport(bool hasReport) {
   client.setInsecure();
   HTTPClient http;
   
-  // Use large char buffer on Stack for URL construction
-  char serverPath[1024];
-  snprintf(serverPath, sizeof(serverPath), 
-           "%s?sensorName=%s&deviceID=%s&serialNumber=%s&release=%s&uptime=%d%s&wiFiName=%s&volt=%s&signalStrength=%d%s&pollingTime=%d&ntpServer=%s",
-           serverName.c_str(), gSensorName.c_str(), deviceID.c_str(), serialNumber.c_str(), releaseDate.c_str(),
-           gUptime, localBtnStatus, gWifiName.c_str(), gVoltage.c_str(), gSignalStrength, gProtocol.c_str(),
-           gPollingTime, g_ntpServer.c_str());
-
   uint32_t freeHeap = ESP.getFreeHeap();
   uint32_t totalHeap = ESP.getHeapSize();
   uint32_t maxAllocHeap = ESP.getMaxAllocHeap();
   float usedRam = (float)(totalHeap - freeHeap) / totalHeap * 100.0;
   float fragmentation = 100.0 - ((float)maxAllocHeap / freeHeap) * 100.0;
+
+  // Use large char buffer on Stack for URL construction
+  char serverPath[1024];
+  snprintf(serverPath, sizeof(serverPath), 
+           "%s?sensorName=%s&deviceID=%s&serialNumber=%s&release=%s&uptime=%d%s&wiFiName=%s&volt=%s&signalStrength=%d%s&pollingTime=%d&ntpServer=%s&usedRam=%.2f&fragmentation=%.2f",
+           serverName.c_str(), gSensorName.c_str(), deviceID.c_str(), serialNumber.c_str(), releaseDate.c_str(),
+           gUptime, localBtnStatus, gWifiName.c_str(), gVoltage.c_str(), gSignalStrength, gProtocol.c_str(),
+           gPollingTime, g_ntpServer.c_str(), usedRam, fragmentation);
   Serial.printf("Heap: Free %u | MaxAlloc %u | Frag %.1f%% | Used %.1f%%\n", freeHeap, maxAllocHeap, fragmentation, usedRam);
   
   Serial.println(serverPath);
@@ -1255,8 +1255,8 @@ void printHeapStatus(const char* tag) {
 }
 
 void checkMemory() {
-  // Monitor Memory: Check every 30 seconds (for debugging) instead of 300s
-  if (gUptimeCounter % 30 == 0) {
+  // Monitor Memory: Check every 300 seconds (5 mins) for production
+  if (gUptimeCounter % 300 == 0) {
       uint32_t freeHeapLoop = ESP.getFreeHeap();
       uint32_t totalHeapLoop = ESP.getHeapSize();
       
