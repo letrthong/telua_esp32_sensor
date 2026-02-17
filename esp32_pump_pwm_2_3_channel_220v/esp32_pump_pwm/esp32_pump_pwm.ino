@@ -675,7 +675,7 @@ void initWiFi() {
           restartDevice();
         }
       } else {
-        if(isConnecting == true){
+        if (isConnecting == true) {
            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
            EEPROM.commit();
            restartDevice();
@@ -688,8 +688,8 @@ void initWiFi() {
   // Neu khong co mang hoac ket noi that bai, vao che do AP (startLocalWeb) thay vi restart lien tuc
   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
         if (gIsDefaultWifi == true) {
-             Serial.println("Default WiFi not found. Restarting...");
-             restartDevice();
+            Serial.println("Default WiFi not found. Restarting...");
+            restartDevice();
         }
         startLocalWeb();
     }
@@ -701,7 +701,6 @@ void initWiFi() {
 void turnOffWiFi() {
   WiFi.disconnect();
 }
-
  
 void initEEPROM() {
   // Allocate The Memory Size Needed
@@ -740,9 +739,9 @@ bool sendReport(bool hasReport) {
   bool ret = false;
   String strTriggerParameter = "";
   //process trigger
-    bool hasBtn0 = false;
-    bool hasBtn1 = false; 
-    bool hasAl = false; 
+  bool hasBtn0 = false;
+  bool hasBtn1 = false; 
+  bool hasAl = false; 
 
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
@@ -772,55 +771,54 @@ bool sendReport(bool hasReport) {
           
           // OPTIMIZE: Use const char* instead of String to avoid Heap allocation/fragmentation
           const char* action = v["action"];
-          if (!action) action = ""; // Safety check
+          if (!action) {
+            action = ""; // Safety check
+          }
    
-          if( valueStart <= currentSeconds && currentSeconds < valueStop){
+          if (valueStart <= currentSeconds && currentSeconds < valueStop) {
                // Use strstr instead of String.indexOf
-               if( strstr(action, "b1") != NULL){
+               if( strstr(action, "b1") != NULL) {
                  hasBtn0 =  true;
-               } else if( strstr(action, "b2") != NULL){
+               } else if( strstr(action, "b2") != NULL) {
                  hasBtn1 =  true;
-               } else if( strstr(action, "al") != NULL){
+               } else if( strstr(action, "al") != NULL) {
                  hasAl =  true;
                }
           }
       }
-
-    
     }
   }
   
   // Use char array (Stack) instead of String (Heap) to prevent fragmentation
   char localBtnStatus[64] = {0};
-  
   if(hasBtn0 == true){
-      turnOnRelay("b1On");
-      strcat(localBtnStatus, "&b1=on");
+    turnOnRelay("b1On");
+    strcat(localBtnStatus, "&b1=on");
   } else {
     turnOffRelay("b1Off");
-      strcat(localBtnStatus, "&b1=off");
+    strcat(localBtnStatus, "&b1=off");
   }
 
   if(hasBtn1 == true){
-      turnOnRelay("b2On");
-      strcat(localBtnStatus, "&b2=on");
+    turnOnRelay("b2On");
+    strcat(localBtnStatus, "&b2=on");
   } else {
     turnOffRelay("b2Off");
-      strcat(localBtnStatus, "&b2=off");
+    strcat(localBtnStatus, "&b2=off");
   }
 
   if(gHas2Channel == false){
       if(hasAl == true){
         turnOnRelay("alOn");
         strcat(localBtnStatus, "&al=on");
-      }  else {
+      } else {
         turnOffRelay("alOff");
         strcat(localBtnStatus, "&al=off");
       }
   }
   
 
-   if(hasReport == false){
+   if (hasReport == false) {
       return ret;
    }
    
@@ -1013,19 +1011,18 @@ bool sendReport(bool hasReport) {
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true) {
-              if(retryTimeout > 3){
-                 restartDevice();
-              } else {
-                return ret;
+            if(retryTimeout > 3){
+                restartDevice();
+            } else {
+              return ret;
             } 
-         }else{
-              restartDevice();
-         }
-       
-      } else {
-         if(retryTimeout > 4){
+         } else {
             restartDevice();
-          }
+         }
+      } else {
+        if(retryTimeout > 4){
+          restartDevice();
+        }
       }
   }
   // Free resources
@@ -1102,7 +1099,7 @@ bool getTimeZone( ) {
 
 void printLocalTime(){
   struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
+  if (!getLocalTime(&timeinfo)){
     Serial.println("Failed to obtain time");
     return;
   }
@@ -1215,7 +1212,7 @@ void setup() {
   initWiFi();
 
   if (WiFi.status() == WL_CONNECTED) {
-    for(int i = 0; i<3 ;i++){
+    for (int i = 0; i<3 ;i++){
       digitalWrite(ledWifiStatus, HIGH);
       delay(500); 
       digitalWrite(ledWifiStatus, LOW);
@@ -1286,7 +1283,7 @@ void checkTaskStuck() {
 
 void checkWiFiConnection() {
   // Restart if the device can not access the internet after 5 minutes (warm-up time)
-  if (gUptimeCounter >= 300){
+  if (gUptimeCounter >= 300) {
     if (WiFi.status() != WL_CONNECTED) {
           Serial.println("Loop: WiFi not connected, restarting...");
           restartDevice();
@@ -1294,8 +1291,7 @@ void checkWiFiConnection() {
    }
 }
 
-void loop() 
-{
+void loop()  {
   static unsigned long previousLoopMillis = 0;
   unsigned long currentMillis = millis();
 
@@ -1332,7 +1328,7 @@ void loop()
        
       // Log WDT reset (keep inside 1s interval to avoid spamming serial)
       struct tm timeinfo;
-      if(getLocalTime(&timeinfo)){
+      if (getLocalTime(&timeinfo)) {
           Serial.printf("esp_task_wdt_reset %02d:%02d:%02d gUptimeCounter=%d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec ,gUptimeCounter);
       } else {
           Serial.println("esp_task_wdt_reset");
@@ -1356,7 +1352,7 @@ void task1(void *parameter) {
   
   init_ntp();
 
-  if(startEpchoTime == 0){
+  if (startEpchoTime == 0) {
     startEpchoTime = getSeconds();
   }
 
@@ -1370,14 +1366,13 @@ void task1(void *parameter) {
     // Update Uptime (Gom logic nay ra ngoai de tranh lap lai code)
     int currntEpchoTime = getSeconds();
     gUptime = currntEpchoTime - startEpchoTime;
-    if(gUptime < 0) { 
+    if (gUptime < 0) { 
        startEpchoTime = currntEpchoTime; 
        gUptime = 0; 
     }
 
     // 1. Check Report (Priority - every gPollingTime seconds)
-    if (currentMillis - lastReportTime >= (gPollingTime * 1000UL))
-    {
+    if (currentMillis - lastReportTime >= (gPollingTime * 1000UL)) {
         lastReportTime = currentMillis;
         
         esp_task_wdt_reset();
@@ -1390,8 +1385,7 @@ void task1(void *parameter) {
     }
     
     // 2. Check Triggers (every 1 second, non-blocking)
-    if (currentMillis - lastTriggerTime >= 1000)
-    {
+    if (currentMillis - lastTriggerTime >= 1000) {
         lastTriggerTime = currentMillis;
         sendReport(false); 
     }
