@@ -858,8 +858,10 @@ bool sendReport(bool hasReport) {
 
   uint32_t freeHeap = ESP.getFreeHeap();
   uint32_t totalHeap = ESP.getHeapSize();
+  uint32_t maxAllocHeap = ESP.getMaxAllocHeap();
   float usedRam = (float)(totalHeap - freeHeap) / totalHeap * 100.0;
-  Serial.printf("Heap: Free %u / %u (%.1f%% Used) | Min Free: %u\n", freeHeap, totalHeap, usedRam, ESP.getMinFreeHeap());
+  float fragmentation = 100.0 - ((float)maxAllocHeap / freeHeap) * 100.0;
+  Serial.printf("Heap: Free %u | MaxAlloc %u | Frag %.1f%% | Used %.1f%%\n", freeHeap, maxAllocHeap, fragmentation, usedRam);
   
   Serial.println(serverPath);
 
@@ -1241,6 +1243,11 @@ void checkMemory() {
   if (gUptimeCounter % 300 == 0) {
       uint32_t freeHeapLoop = ESP.getFreeHeap();
       uint32_t totalHeapLoop = ESP.getHeapSize();
+      uint32_t maxAllocLoop = ESP.getMaxAllocHeap();
+      float fragmentation = 100.0 - ((float)maxAllocLoop / freeHeapLoop) * 100.0;
+
+      Serial.printf("[CheckMem] Free: %u | MaxAlloc: %u | Frag: %.1f%%\n", freeHeapLoop, maxAllocLoop, fragmentation);
+
       if (freeHeapLoop < (totalHeapLoop * 0.1)) {
           Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
           restartDevice();
