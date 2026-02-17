@@ -769,17 +769,17 @@ bool sendReport(bool hasReport) {
           //Serial.print("currentSeconds=");
           //Serial.println(currentSeconds);
           
-          String action = v["action"];
-          Serial.print("action=");
-          Serial.println(action);
+          // OPTIMIZE: Use const char* instead of String to avoid Heap allocation/fragmentation
+          const char* action = v["action"];
+          if (!action) action = ""; // Safety check
    
           if( valueStart <= currentSeconds && currentSeconds < valueStop){
-               Serial.println("turn on");
-               if( action.indexOf("b1") > -1){
+               // Use strstr instead of String.indexOf
+               if( strstr(action, "b1") != NULL){
                  hasBtn0 =  true;
-               } else if( action.indexOf("b2") > -1){
+               } else if( strstr(action, "b2") != NULL){
                  hasBtn1 =  true;
-               } else if( action.indexOf("al") > -1){
+               } else if( strstr(action, "al") != NULL){
                  hasAl =  true;
                }
           }
@@ -1244,12 +1244,18 @@ void checkMemory() {
       uint32_t freeHeapLoop = ESP.getFreeHeap();
       uint32_t totalHeapLoop = ESP.getHeapSize();
       uint32_t maxAllocLoop = ESP.getMaxAllocHeap();
+      uint32_t minFreeHeap = ESP.getMinFreeHeap(); // Lowest memory point since boot
       float fragmentation = 100.0 - ((float)maxAllocLoop / freeHeapLoop) * 100.0;
 
-      Serial.printf("[CheckMem] Free: %u | MaxAlloc: %u | Frag: %.1f%%\n", freeHeapLoop, maxAllocLoop, fragmentation);
+      Serial.printf("[CheckMem] Free: %u | MinFree: %u | MaxAlloc: %u | Frag: %.1f%%\n", freeHeapLoop, minFreeHeap, maxAllocLoop, fragmentation);
 
       if (freeHeapLoop < (totalHeapLoop * 0.1)) {
           Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
+          restartDevice();
+      }
+
+      if (fragmentation > 60.0) {
+          Serial.printf("Memory Fragmentation Critical: %.1f%% > 60%%. Restarting...\n", fragmentation);
           restartDevice();
       }
   }
