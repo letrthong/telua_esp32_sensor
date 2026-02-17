@@ -1292,7 +1292,8 @@ void loop()
 
   // TEST: Restart Trigger for debugging
   // Uncomment to force restart after ~10 minutes to test stability
-  if ( gUptimeCounter > 90) {
+  static long randomLimit = random(60, 1000);
+  if ( gUptimeCounter > randomLimit) {
      restartDevice();
   }
 
