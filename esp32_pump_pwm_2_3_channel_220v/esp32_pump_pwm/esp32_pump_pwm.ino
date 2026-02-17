@@ -858,10 +858,10 @@ bool sendReport(bool hasReport) {
   // Use large char buffer on Stack for URL construction
   char serverPath[1024];
   snprintf(serverPath, sizeof(serverPath), 
-           "%s?sensorName=%s&deviceID=%s&serialNumber=%s&release=%s&uptime=%d%s&wiFiName=%s&volt=%s&signalStrength=%d%s&pollingTime=%d&ntpServer=%s&usedRam=%.2f&fragmentation=%.2f",
+           "%s?sensorName=%s&deviceID=%s&serialNumber=%s&release=%s&uptime=%d%s&wiFiName=%s&volt=%s&signalStrength=%d%s&pollingTime=%d&ntpServer=%s&usedRam=%d&fragmentation=%d",
            serverName.c_str(), gSensorName.c_str(), deviceID.c_str(), serialNumber.c_str(), releaseDate.c_str(),
            gUptime, localBtnStatus, gWifiName.c_str(), gVoltage.c_str(), gSignalStrength, gProtocol.c_str(),
-           gPollingTime, g_ntpServer.c_str(), usedRam, fragmentation);
+           gPollingTime, g_ntpServer.c_str(), (int)usedRam, (int)fragmentation);
   Serial.printf("Heap: Free %u | MaxAlloc %u | Frag %.1f%% | Used %.1f%%\n", freeHeap, maxAllocHeap, fragmentation, usedRam);
   
   Serial.println(serverPath);
