@@ -146,7 +146,7 @@ void turnOffAll(){
     digitalWrite(ledRelay02, LOW);
     digitalWrite(ledAlarm, LOW);
   }
-   pinMode(ledWifiStatus, OUTPUT);
+  
 }
 
 
@@ -1251,55 +1251,74 @@ void setup() {
 
 void loop() 
 {
-  delay(1000);
-  gUptimeCounter = gUptimeCounter + 1;
+  static unsigned long previousLoopMillis = 0;
+  unsigned long currentMillis = millis();
+
+  // TEST: Restart Trigger for debugging
+  // Uncomment to force restart after ~10 minutes to test stability
+  // if ( gUptimeCounter > 605) {
+  //    restartDevice();
+  // }
+
+  // Run logic every 1000ms (1 second)
+  if (currentMillis - previousLoopMillis >= 1000) {
+      previousLoopMillis = currentMillis;
+
+      gUptimeCounter = gUptimeCounter + 1;
   
-  // Prevent overflow: Reset to 300 (not 0) to keep ">= 300" logic active
-  // Although unsigned long takes ~136 years to overflow, this is a safe guard.
-  if (gUptimeCounter > 2000000000) {
-      gUptimeCounter = 300;
+      // Prevent overflow: Reset to 300 (not 0) to keep ">= 300" logic active
+      // Although unsigned long takes ~136 years to overflow, this is a safe guard.
+      if (gUptimeCounter > 2000000000) {
+          gUptimeCounter = 300;
+      }
+
+      // Monitor Memory: Check every 5 minutes (300s) instead of every second
+      if (gUptimeCounter % 300 == 0) {
+          // Monitor Memory: Restart if usage > 90% (Free Heap < 10%)
+          uint32_t freeHeapLoop = ESP.getFreeHeap();
+          uint32_t totalHeapLoop = ESP.getHeapSize();
+          if (freeHeapLoop < (totalHeapLoop * 0.1)) {
+              Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
+              restartDevice();
+          }
+      }
+
+      // Check for "Dead Task" every 10 minutes (600s) without resetting the main counter
+      if (gUptimeCounter % 600 == 0) {
+          if (gPreUptime != gUptime )
+          {
+            gPreUptime = gUptime; 
+          }
+          else
+          {
+              Serial.println("Loop: Task1 appears stuck (Uptime not changing). Restarting...");
+              restartDevice();  
+          }
+      }
+
+      // Restart if the device can not access the internet after 5 minutes (warm-up time)
+      // Using >= 300 ensures we don't have a "blind spot" caused by resetting the counter
+      if (gUptimeCounter >= 300){
+        if (WiFi.status() != WL_CONNECTED) {
+              Serial.println("Loop: WiFi not connected, restarting...");
+              restartDevice();
+          }
+       }
+       
+      // Log WDT reset (keep inside 1s interval to avoid spamming serial)
+      struct tm timeinfo;
+      if(getLocalTime(&timeinfo)){
+          Serial.printf("esp_task_wdt_reset %02d:%02d:%02d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+      } else {
+          Serial.println("esp_task_wdt_reset");
+      }
   }
 
-  // Monitor Memory: Check every 5 minutes (300s) instead of every second
-  if (gUptimeCounter % 300 == 0) {
-      // Monitor Memory: Restart if usage > 90% (Free Heap < 10%)
-      uint32_t freeHeapLoop = ESP.getFreeHeap();
-      uint32_t totalHeapLoop = ESP.getHeapSize();
-      if (freeHeapLoop < (totalHeapLoop * 0.1)) {
-          Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
-          restartDevice();
-      }
-  }
-
-  // Check for "Dead Task" every 10 minutes (600s) without resetting the main counter
-  if (gUptimeCounter % 600 == 0) {
-      if (gPreUptime != gUptime )
-      {
-        gPreUptime = gUptime; 
-      }
-      else
-      {
-          Serial.println("Loop: Task1 appears stuck (Uptime not changing). Restarting...");
-          restartDevice();  
-      }
-  }
-
-  // Restart if the device can not access the internet after 5 minutes (warm-up time)
-  // Using >= 300 ensures we don't have a "blind spot" caused by resetting the counter
-  if (gUptimeCounter >= 300){
-    if (WiFi.status() != WL_CONNECTED) {
-          Serial.println("Loop: WiFi not connected, restarting...");
-          restartDevice();
-      }
-   }
-  // Kick the dog
-  struct tm timeinfo;
-  if(getLocalTime(&timeinfo)){
-      Serial.printf("esp_task_wdt_reset %02d:%02d:%02d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
-  } else {
-      Serial.println("esp_task_wdt_reset");
-  }
+  // Kick the dog frequently
   esp_task_wdt_reset();
+  
+  // Yield to other tasks
+  delay(10);
 }
 
 
