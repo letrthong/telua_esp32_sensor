@@ -888,16 +888,16 @@ bool sendReport(bool hasReport) {
      digitalWrite(ledWifiStatus, LOW);
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
-    String payload = http.getString();
-    //      Serial.println(payload);
-
     //https://arduinojson.org/v6/doc/upgrade/
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
     StaticJsonDocument<2048> doc;
 
-    DeserializationError error = deserializeJson(doc, payload);
+    // FIX: Use getStream() instead of getString() to avoid Heap fragmentation after long uptime
+    DeserializationError error = deserializeJson(doc, http.getStream());
     if (error) {
-      Serial.println("deserializeJson() failed");
+      Serial.print("deserializeJson() failed: ");
+      Serial.println(error.c_str()); // Print error reason (e.g. NoMemory, InvalidInput)
+      restartDevice();
     } else {
         bool hasIntervalTime = doc.containsKey("intervalTime");
         if (hasIntervalTime == true) {
@@ -1196,6 +1196,8 @@ void init_ntp() {
 void setup() {
   
   Serial.begin(115200);
+  Serial.print("Setup/Loop running on Core: ");
+  Serial.println(xPortGetCoreID());
   
   initGpio();
   
@@ -1339,6 +1341,9 @@ void loop()
 void task1(void *parameter) {  
   // 1. Register task1 with Watchdog
   esp_task_wdt_add(NULL);
+
+  Serial.print("Task1 running on Core: ");
+  Serial.println(xPortGetCoreID());
   
   init_ntp();
 
@@ -1370,6 +1375,9 @@ void task1(void *parameter) {
         unsigned long start = millis();
         sendReport(true); 
         Serial.printf("sendReport took: %lu ms\n", millis() - start);
+        
+        // FIX: Update currentMillis immediately to prevent logic drift after long HTTP call
+        currentMillis = millis();
     }
     
     // 2. Check Triggers (every 1 second, non-blocking)
