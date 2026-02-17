@@ -1352,18 +1352,19 @@ void task1(void *parameter) {
   while (1) {
     unsigned long currentMillis = millis();
     
+    // Update Uptime (Gom logic nay ra ngoai de tranh lap lai code)
+    int currntEpchoTime = getSeconds();
+    gUptime = currntEpchoTime - startEpchoTime;
+    if(gUptime < 0) { 
+       startEpchoTime = currntEpchoTime; 
+       gUptime = 0; 
+    }
+
     // 1. Check Report (Priority - every gPollingTime seconds)
-    if (currentMillis - lastReportTime >= (gPollingTime * 1000))
+    if (currentMillis - lastReportTime >= (gPollingTime * 1000UL))
     {
         lastReportTime = currentMillis;
         
-        // Update Uptime immediately before reporting
-        int currntEpchoTime = getSeconds();
-        gUptime = currntEpchoTime - startEpchoTime;
-        if(gUptime < 0) { 
-          startEpchoTime = currntEpchoTime; gUptime = 0;
-       }
-
         esp_task_wdt_reset();
         unsigned long start = millis();
         sendReport(true); 
@@ -1373,17 +1374,11 @@ void task1(void *parameter) {
     else if (currentMillis - lastTriggerTime >= 1000)
     {
         lastTriggerTime = currentMillis;
-
-        // Update Uptime for triggers
-        int currntEpchoTime = getSeconds();
-        gUptime = currntEpchoTime - startEpchoTime;
-        if(gUptime < 0) { startEpchoTime = currntEpchoTime; gUptime = 0; }
-
         sendReport(false); 
     }
     
     // 3. Yield to OS and Watchdog (Non-blocking)
     esp_task_wdt_reset();
-    vTaskDelay(10); // Delay 10ms to yield CPU, increasing responsiveness
+    vTaskDelay(pdMS_TO_TICKS(10)); // Delay 10ms (chuan FreeRTOS)
   }
 }
