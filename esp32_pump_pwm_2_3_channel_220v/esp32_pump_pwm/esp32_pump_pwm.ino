@@ -264,7 +264,8 @@ void startLocalWeb() {
       WiFi.disconnect();
       delay(100);
       time_to_sleep_mode = 30;
-      startSleepMode();
+      startSleepMode
+      ESP.restart(); // Restart instead of Deep Sleep to keep the device active
       return;
     }
 
@@ -832,18 +833,22 @@ bool sendReport(bool hasReport) {
   // Optimize String concatenation to reduce heap fragmentation
   String serverPath;
   serverPath.reserve(512);
+  char buf[32]; // Buffer for number conversion
+
   serverPath += serverName;
   serverPath += "?sensorName="; serverPath += gSensorName;
   serverPath += "&deviceID="; serverPath += deviceID;
   serverPath += "&serialNumber="; serverPath += serialNumber;
   serverPath += "&release="; serverPath += releaseDate;
-  serverPath += "&uptime="; serverPath += gUptime;
+  
+  serverPath += "&uptime="; itoa(gUptime, buf, 10); serverPath += buf;
+  
   serverPath += localBtnStatus;
   serverPath += "&wiFiName="; serverPath += gWifiName;
   serverPath += "&volt="; serverPath += gVoltage;
-  serverPath += "&signalStrength="; serverPath += gSignalStrength;
+  serverPath += "&signalStrength="; itoa(gSignalStrength, buf, 10); serverPath += buf;
   serverPath += gProtocol;
-  serverPath += "&pollingTime="; serverPath += gPollingTime; // Use configured polling time
+  serverPath += "&pollingTime="; itoa(gPollingTime, buf, 10); serverPath += buf;
   serverPath += "&ntpServer="; serverPath += g_ntpServer;
 
   uint32_t freeHeap = ESP.getFreeHeap();
@@ -1021,6 +1026,7 @@ bool sendReport(bool hasReport) {
   }
   // Free resources
   http.end();
+  client.stop(); // Explicitly close the SSL connection
   // delete client; // Automatically destroyed when out of scope
 
   return ret;
