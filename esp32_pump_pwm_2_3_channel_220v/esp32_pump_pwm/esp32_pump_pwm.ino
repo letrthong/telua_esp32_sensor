@@ -47,7 +47,7 @@ bool gPWM = true;
 String gSensorName = "Pump";
 
 int gUptime = 0;
-int gUptimeCounter = 0;
+unsigned long gUptimeCounter = 0;
 int gPreUptime = 0;
 int startEpchoTime = 0;
 
@@ -217,6 +217,9 @@ void restartDevice() {
   
   turnOffAll(); // Turn off all relays to prevent power spikes
   delay(1000);  // Wait for power to stabilize
+  
+  // Unsubscribe from WDT to avoid panic during the final delay/restart phase
+  esp_task_wdt_delete(NULL);
   ESP.restart();
 }
 
@@ -1250,6 +1253,12 @@ void loop()
 {
   delay(1000);
   gUptimeCounter = gUptimeCounter + 1;
+  
+  // Prevent overflow: Reset to 300 (not 0) to keep ">= 300" logic active
+  // Although unsigned long takes ~136 years to overflow, this is a safe guard.
+  if (gUptimeCounter > 2000000000) {
+      gUptimeCounter = 300;
+  }
 
   // Monitor Memory: Check every 5 minutes (300s) instead of every second
   if (gUptimeCounter % 300 == 0) {
@@ -1262,22 +1271,22 @@ void loop()
       }
   }
 
-  if (gUptimeCounter >  600){
-      gUptimeCounter = 0;
-      
-
+  // Check for "Dead Task" every 10 minutes (600s) without resetting the main counter
+  if (gUptimeCounter % 600 == 0) {
       if (gPreUptime != gUptime )
       {
         gPreUptime = gUptime; 
       }
       else
       {
+          Serial.println("Loop: Task1 appears stuck (Uptime not changing). Restarting...");
           restartDevice();  
       }
   }
 
-  // restartt if the device can not access the interne after 5 minutes
-  if (gUptimeCounter >  300){
+  // Restart if the device can not access the internet after 5 minutes (warm-up time)
+  // Using >= 300 ensures we don't have a "blind spot" caused by resetting the counter
+  if (gUptimeCounter >= 300){
     if (WiFi.status() != WL_CONNECTED) {
           Serial.println("Loop: WiFi not connected, restarting...");
           restartDevice();
