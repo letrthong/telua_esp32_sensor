@@ -1272,7 +1272,7 @@ void checkMemory() {
       float fragmentation = 100.0 - ((float)maxAllocLoop / freeHeapLoop) * 100.0;
       
       // OPTIMIZE: Only restart if fragmentation is high AND MaxAlloc is too low for SSL (e.g., < 30KB)
-      if (fragmentation > 70.0) {
+      if (fragmentation > 70.0 && maxAllocLoop < 30000) {
           Serial.printf("Memory Critical: Frag %.1f%% & MaxAlloc %u < 30KB. Restarting...\n", fragmentation, maxAllocLoop);
           restartDevice();
       }
