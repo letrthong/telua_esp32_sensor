@@ -1237,14 +1237,15 @@ void setup() {
     }
   }
 
-  // Create task1
-  xTaskCreate(
+  // Create task1 pinned to Core 1 (Application Core) to avoid interfering with WiFi on Core 0
+  xTaskCreatePinnedToCore(
     task1,       // Task function pointer
     "Task1",     // Task name
     10000,        // Stack depth in words
     NULL,        // Task parameter
     2,           // Task priority
-    &taskHandle  // Task handle
+    &taskHandle, // Task handle
+    1            // Core ID (0 or 1)
   );
 }
 
@@ -1369,9 +1370,10 @@ void task1(void *parameter) {
         unsigned long start = millis();
         sendReport(true); 
         Serial.printf("sendReport took: %lu ms\n", millis() - start);
-    } 
+    }
+    
     // 2. Check Triggers (every 1 second, non-blocking)
-    else if (currentMillis - lastTriggerTime >= 1000)
+    if (currentMillis - lastTriggerTime >= 1000)
     {
         lastTriggerTime = currentMillis;
         sendReport(false); 
