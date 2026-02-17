@@ -813,14 +813,10 @@ bool sendReport(bool hasReport) {
       if(hasAl == true){
         turnOnRelay("alOn");
         strcat(localBtnStatus, "&al=on");
-      } 
-      else
-       {
+      }  else {
         turnOffRelay("alOff");
         strcat(localBtnStatus, "&al=off");
       }
-
-
   }
   
 
@@ -1016,10 +1012,10 @@ bool sendReport(bool hasReport) {
         // delete client; // No need to delete because stack is used
         delay(3000);
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
-         if(hasGPIo == true){
+         if(hasGPIo == true) {
               if(retryTimeout > 3){
                  restartDevice();
-              }else{
+              } else {
                 return ret;
             } 
          }else{
@@ -1053,8 +1049,6 @@ bool getTimeZone( ) {
   }
 
   WiFiClientSecure client;
-
-  
   client.setInsecure();
   HTTPClient http;
   String serverPath = serverOffset + "?deviceID=" + deviceID;
@@ -1091,8 +1085,7 @@ bool getTimeZone( ) {
           g_ntpServer= ntpServer;
           Serial.print("getTimeZone g_ntpServer=");
           Serial.println(g_ntpServer);
-        }
-        else{
+        } else {
           Serial.println("getTimeZone No ntpServer ");
         }
     }   
