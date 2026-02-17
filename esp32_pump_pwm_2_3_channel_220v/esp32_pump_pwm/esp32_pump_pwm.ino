@@ -1249,6 +1249,40 @@ void setup() {
   );
 }
 
+void checkMemory() {
+  // Monitor Memory: Check every 5 minutes (300s)
+  if (gUptimeCounter % 300 == 0) {
+      uint32_t freeHeapLoop = ESP.getFreeHeap();
+      uint32_t totalHeapLoop = ESP.getHeapSize();
+      if (freeHeapLoop < (totalHeapLoop * 0.1)) {
+          Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
+          restartDevice();
+      }
+  }
+}
+
+void checkTaskStuck() {
+  // Check for "Dead Task" every 10 minutes (600s)
+  if (gUptimeCounter % 600 == 0) {
+      if (gPreUptime != gUptime ) {
+        gPreUptime = gUptime; 
+      } else {
+          Serial.println("Loop: Task1 appears stuck (Uptime not changing). Restarting...");
+          restartDevice();  
+      }
+  }
+}
+
+void checkWiFiConnection() {
+  // Restart if the device can not access the internet after 5 minutes (warm-up time)
+  if (gUptimeCounter >= 300){
+    if (WiFi.status() != WL_CONNECTED) {
+          Serial.println("Loop: WiFi not connected, restarting...");
+          restartDevice();
+      }
+   }
+}
+
 void loop() 
 {
   static unsigned long previousLoopMillis = 0;
@@ -1272,38 +1306,10 @@ void loop()
           gUptimeCounter = 300;
       }
 
-      // Monitor Memory: Check every 5 minutes (300s) instead of every second
-      if (gUptimeCounter % 300 == 0) {
-          // Monitor Memory: Restart if usage > 90% (Free Heap < 10%)
-          uint32_t freeHeapLoop = ESP.getFreeHeap();
-          uint32_t totalHeapLoop = ESP.getHeapSize();
-          if (freeHeapLoop < (totalHeapLoop * 0.1)) {
-              Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
-              restartDevice();
-          }
-      }
-
-      // Check for "Dead Task" every 10 minutes (600s) without resetting the main counter
-      if (gUptimeCounter % 600 == 0) {
-          if (gPreUptime != gUptime )
-          {
-            gPreUptime = gUptime; 
-          }
-          else
-          {
-              Serial.println("Loop: Task1 appears stuck (Uptime not changing). Restarting...");
-              restartDevice();  
-          }
-      }
-
-      // Restart if the device can not access the internet after 5 minutes (warm-up time)
-      // Using >= 300 ensures we don't have a "blind spot" caused by resetting the counter
-      if (gUptimeCounter >= 300){
-        if (WiFi.status() != WL_CONNECTED) {
-              Serial.println("Loop: WiFi not connected, restarting...");
-              restartDevice();
-          }
-       }
+      // Modularized checks for better readability
+      checkMemory();
+      checkTaskStuck();
+      checkWiFiConnection();
        
       // Log WDT reset (keep inside 1s interval to avoid spamming serial)
       struct tm timeinfo;
