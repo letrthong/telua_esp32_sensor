@@ -36,8 +36,10 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-String gDefaultWifname_telua = "telua";
-String gDefaultWifPass_telua = "13572468";
+// String gDefaultWifname_telua = "telua";
+// String gDefaultWifPass_telua = "13572468";
+String gDefaultWifname_telua = "HO CHI MINH US";
+String gDefaultWifPass_telua = "12345678";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = false;
@@ -1290,9 +1292,9 @@ void loop()
 
   // TEST: Restart Trigger for debugging
   // Uncomment to force restart after ~10 minutes to test stability
-  // if ( gUptimeCounter > 605) {
-  //    restartDevice();
-  // }
+  if ( gUptimeCounter > 90) {
+     restartDevice();
+  }
 
   // Run logic every 1000ms (1 second)
   if (currentMillis - previousLoopMillis >= 1000) {
@@ -1314,7 +1316,7 @@ void loop()
       // Log WDT reset (keep inside 1s interval to avoid spamming serial)
       struct tm timeinfo;
       if(getLocalTime(&timeinfo)){
-          Serial.printf("esp_task_wdt_reset %02d:%02d:%02d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+          Serial.printf("esp_task_wdt_reset %02d:%02d:%02d gUptimeCounter=%d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec ,gUptimeCounter);
       } else {
           Serial.println("esp_task_wdt_reset");
       }
