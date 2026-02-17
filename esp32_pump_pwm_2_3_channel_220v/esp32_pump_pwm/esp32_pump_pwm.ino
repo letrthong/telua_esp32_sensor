@@ -201,6 +201,23 @@ bool turnOffRelay(String action){
    return retCode;
 }
 
+void restartDevice() {
+  Serial.println("Restarting device...");
+  // Suspend task1 to prevent GPIO manipulation during shutdown
+  if (taskHandle != NULL) {
+    // Prevent self-suspension: Only suspend task1 if we are NOT currently running inside task1.
+    // If called from task1, suspending itself would cause a deadlock before ESP.restart() runs.
+    TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
+    if (currentTask != taskHandle) {
+      vTaskSuspend(taskHandle);
+    }
+  }
+  
+  turnOffAll(); // Turn off all relays to prevent power spikes
+  delay(1000);  // Wait for power to stabilize
+  Serial.flush();
+  ESP.restart();
+}
 
 void startSleepMode() {
   /*
@@ -265,7 +282,7 @@ void startLocalWeb() {
       delay(100);
       time_to_sleep_mode = 30;
       //startLocalWeb();
-      ESP.restart(); // Restart instead of Deep Sleep to keep the device active
+      restartDevice(); // Restart instead of Deep Sleep to keep the device active
       return;
     }
 
@@ -447,7 +464,7 @@ void startSmartConfig() {
       // 180seconds = 3 minutes 
       count = count + 1;
       if (count > 360) {
-        ESP.restart();
+        restartDevice();
       }
     }
 
@@ -461,7 +478,7 @@ void startSmartConfig() {
       count = count + 1;
       // 180seconds = 3 minutes 
       if (count > 360) {
-        ESP.restart();
+        restartDevice();
       }
     }
 
@@ -626,7 +643,7 @@ void initWiFi() {
         }  else {
           EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
           EEPROM.commit();
-          ESP.restart();
+          restartDevice();
         }
       }
       Serial.print("Connecting to Remote WiFi ..");
@@ -651,13 +668,13 @@ void initWiFi() {
 
           EEPROM.writeString(EEPROM_ADDRESS_PASS, remote_pass);
           EEPROM.commit();
-          ESP.restart();
+          restartDevice();
         }
       } else {
         if(isConnecting == true){
            EEPROM.writeString(EEPROM_ADDRESS_REMOTE_SSID, "");
            EEPROM.commit();
-           ESP.restart();
+           restartDevice();
         }
       }
     }
@@ -668,7 +685,7 @@ void initWiFi() {
   if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
         if (gIsDefaultWifi == true) {
              Serial.println("Default WiFi not found. Restarting...");
-             ESP.restart();
+             restartDevice();
         }
         startLocalWeb();
     }
@@ -1010,17 +1027,17 @@ bool sendReport(bool hasReport) {
         Serial.println("sendReport retryTimeout=" + String(retryTimeout));
          if(hasGPIo == true){
               if(retryTimeout > 3){
-                 ESP.restart();
+                 restartDevice();
               }else{
                 return ret;
             } 
          }else{
-              ESP.restart();
+              restartDevice();
          }
        
       } else {
          if(retryTimeout > 4){
-            ESP.restart();
+            restartDevice();
           }
       }
   }
@@ -1115,7 +1132,7 @@ int getSeconds(){
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
     delay(1000); 
-    ESP.restart();
+    restartDevice();
     return seconds;
   }
   seconds = timeinfo.tm_hour*(60*60);
@@ -1169,7 +1186,7 @@ void init_ntp() {
 
   if (!timeSynced) {
     Serial.println("All NTP sync attempts failed. Please check Wi-Fi or UDP port 123.");
-    ESP.restart();
+    restartDevice();
   }
 }
 
@@ -1240,7 +1257,7 @@ void loop()
       uint32_t totalHeapLoop = ESP.getHeapSize();
       if (freeHeapLoop < (totalHeapLoop * 0.1)) {
           Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
-          ESP.restart();
+          restartDevice();
       }
   }
 
@@ -1254,7 +1271,7 @@ void loop()
       }
       else
       {
-          ESP.restart();  
+          restartDevice();  
       }
   }
 
@@ -1262,7 +1279,7 @@ void loop()
   if (gUptimeCounter >  300){
     if (WiFi.status() != WL_CONNECTED) {
           Serial.println("Loop: WiFi not connected, restarting...");
-          ESP.restart();
+          restartDevice();
       }
    }
   // Kick the dog
