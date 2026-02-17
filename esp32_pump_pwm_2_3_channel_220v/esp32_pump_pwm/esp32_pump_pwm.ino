@@ -1109,10 +1109,10 @@ void printLocalTime(){
   Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 }
 
-int getSeconds(){
+int getSeconds() {
   int seconds = 0;
   struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
+  if (!getLocalTime(&timeinfo)) {
     delay(1000); 
     restartDevice();
     return seconds;
@@ -1180,14 +1180,14 @@ void setup() {
   
   initGpio();
   
-  for(int i = 0; i<4 ;i++){
+  for (int i = 0; i<4 ;i++) {
       digitalWrite(ledWifiStatus, HIGH);
       delay(500); 
       digitalWrite(ledWifiStatus, LOW);
       delay(500); 
   }
   
-  Serial.println("Ver:16/Feb/2026");
+  Serial.println("Ver:17/Feb/2026");
   
   initEEPROM();
 
