@@ -146,7 +146,7 @@ void turnOffAll(){
     digitalWrite(ledRelay02, LOW);
     digitalWrite(ledAlarm, LOW);
   }
-  
+   pinMode(ledWifiStatus, OUTPUT);
 }
 
 
