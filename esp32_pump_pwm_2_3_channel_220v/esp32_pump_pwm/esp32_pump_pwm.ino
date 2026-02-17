@@ -203,6 +203,8 @@ bool turnOffRelay(String action){
 
 void restartDevice() {
   Serial.println("Restarting device...");
+  Serial.flush(); // Flush before suspending to avoid deadlock if task1 holds Serial mutex
+
   // Suspend task1 to prevent GPIO manipulation during shutdown
   if (taskHandle != NULL) {
     // Prevent self-suspension: Only suspend task1 if we are NOT currently running inside task1.
@@ -215,7 +217,6 @@ void restartDevice() {
   
   turnOffAll(); // Turn off all relays to prevent power spikes
   delay(1000);  // Wait for power to stabilize
-  Serial.flush();
   ESP.restart();
 }
 
