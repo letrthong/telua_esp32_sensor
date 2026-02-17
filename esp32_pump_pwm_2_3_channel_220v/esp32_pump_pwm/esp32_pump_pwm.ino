@@ -36,10 +36,10 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-String gDefaultWifname_telua = "telua";
-String gDefaultWifPass_telua = "13572468";
-// String gDefaultWifname_telua = "HO CHI MINH US";
-// String gDefaultWifPass_telua = "12345678";
+// String gDefaultWifname_telua = "telua";
+// String gDefaultWifPass_telua = "13572468";
+String gDefaultWifname_telua = "HO CHI MINH US";
+String gDefaultWifPass_telua = "12345678";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = false;
@@ -169,21 +169,21 @@ void turnOnAll(){
   delay(1000);
 }
 
-bool turnOnRelay(String action){
+bool turnOnRelay(const char* action){
    if (g_isRestarting) return false; // Block action if restarting
    bool retCode  = false;
    
-   if( action =="b1On"){
+   if( strcmp(action, "b1On") == 0){
        Serial.println("turnOnRelay b1On");
        //delay(3000); 
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
-   }else  if( action =="b2On"){
+   }else  if( strcmp(action, "b2On") == 0){
       Serial.println("turnOnRelay b2On");
       //delay(3000); 
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
-   } else  if( action == "alOn"){
+   } else  if( strcmp(action, "alOn") == 0){
        Serial.println("turnOnRelay alOn");
       // delay(1000); 
        digitalWrite(ledAlarm, HIGH);
@@ -193,14 +193,14 @@ bool turnOnRelay(String action){
    return retCode;
 }
 
-bool turnOffRelay(String action){
+bool turnOffRelay(const char* action){
    if (g_isRestarting) return false; // Block action if restarting
    bool retCode  = false;
-   if( action =="b1Off"){
+   if( strcmp(action, "b1Off") == 0){
        digitalWrite(ledRelay01, LOW);
-   }else  if( action =="b2Off"){
+   }else  if( strcmp(action, "b2Off") == 0){
       digitalWrite(ledRelay02, LOW);
-   } else  if( action == "alOff"){
+   } else  if( strcmp(action, "alOff") == 0){
        digitalWrite(ledAlarm, LOW);
    } 
    return retCode;
@@ -1046,8 +1046,7 @@ bool getTimeZone( ) {
     return ret;
   }
 
-  String localIP = WiFi.localIP().toString();
-  if (localIP == "0.0.0.0") {
+  if (WiFi.localIP() == IPAddress(0, 0, 0, 0)) {
     Serial.println("getTimeZone: Invalid IP 0.0.0.0");
     return false;
   }
