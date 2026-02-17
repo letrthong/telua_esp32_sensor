@@ -259,7 +259,7 @@ void startLocalWeb() {
       }
     }
 
-    if (count >= 10) {
+    if (count >= 3) { // Giam thoi gian cho xuong 3 phut (thay vi 10 phut) de tranh bi "treo" qua lau
       server.close();
       WiFi.disconnect();
       delay(100);
@@ -664,14 +664,14 @@ void initWiFi() {
   }
 
   Serial.println(WiFi.localIP());
-  if(hasNetworks == false){
-	 ESP.restart();
-  }
-  else{
-    if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
-          startLocalWeb();
-      }
-  }
+  // Neu khong co mang hoac ket noi that bai, vao che do AP (startLocalWeb) thay vi restart lien tuc
+  if (WiFi.status() != WL_CONNECTED && isCorrectPassword == false) {
+        if (gIsDefaultWifi == true) {
+             Serial.println("Default WiFi not found. Restarting...");
+             ESP.restart();
+        }
+        startLocalWeb();
+    }
 
   digitalWrite(ledWifiStatus, LOW);
   
