@@ -71,6 +71,7 @@ RTC_DATA_ATTR int g_remote_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
+bool g_isRestarting = false; // Flag to prevent race conditions during restart
 int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
@@ -169,6 +170,7 @@ void turnOnAll(){
 }
 
 bool turnOnRelay(String action){
+   if (g_isRestarting) return false; // Block action if restarting
    bool retCode  = false;
    
    if( action =="b1On"){
@@ -192,6 +194,7 @@ bool turnOnRelay(String action){
 }
 
 bool turnOffRelay(String action){
+   if (g_isRestarting) return false; // Block action if restarting
    bool retCode  = false;
    if( action =="b1Off"){
        digitalWrite(ledRelay01, LOW);
@@ -204,18 +207,12 @@ bool turnOffRelay(String action){
 }
 
 void restartDevice() {
+  g_isRestarting = true; // Signal all tasks to stop touching hardware
   Serial.println("Restarting device...");
   Serial.flush(); // Flush before suspending to avoid deadlock if task1 holds Serial mutex
 
-  // Suspend task1 to prevent GPIO manipulation during shutdown
-  if (taskHandle != NULL) {
-    // Prevent self-suspension: Only suspend task1 if we are NOT currently running inside task1.
-    // If called from task1, suspending itself would cause a deadlock before ESP.restart() runs.
-    TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
-    if (currentTask != taskHandle) {
-      vTaskSuspend(taskHandle);
-    }
-  }
+  // REMOVED vTaskSuspend: Suspending a task holding a mutex (e.g. inside malloc or Serial) 
+  // causes Deadlock. It is safer to just let it run and block GPIO via g_isRestarting flag.
   
   turnOffAll(); // Turn off all relays to prevent power spikes
   delay(1000);  // Wait for power to stabilize
