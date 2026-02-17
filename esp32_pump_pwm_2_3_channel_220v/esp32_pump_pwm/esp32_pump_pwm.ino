@@ -1293,9 +1293,16 @@ void loop()
   // TEST: Restart Trigger for debugging
   // Uncomment to force restart after ~10 minutes to test stability
   static long randomLimit = random(60, 1000);
+  static bool isPrinted = false;
+  if (!isPrinted) {
+      Serial.printf("DEBUG: Random Restart Limit set to: %ld seconds\n", randomLimit);
+      isPrinted = true;
+  }
+
   if ( gUptimeCounter > randomLimit) {
      restartDevice();
   }
+  
 
   // Run logic every 1000ms (1 second)
   if (currentMillis - previousLoopMillis >= 1000) {
