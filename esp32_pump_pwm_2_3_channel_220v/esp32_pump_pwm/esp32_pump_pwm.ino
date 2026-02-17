@@ -789,35 +789,34 @@ bool sendReport(bool hasReport) {
     }
   }
   
-  // Use local String instead of global to free memory after use
-  String localBtnStatus = "";
-  localBtnStatus.reserve(64);
+  // Use char array (Stack) instead of String (Heap) to prevent fragmentation
+  char localBtnStatus[64] = {0};
   
   if(hasBtn0 == true){
       turnOnRelay("b1On");
-      localBtnStatus += "&b1=on";
+      strcat(localBtnStatus, "&b1=on");
   } else {
     turnOffRelay("b1Off");
-      localBtnStatus += "&b1=off";
+      strcat(localBtnStatus, "&b1=off");
   }
 
   if(hasBtn1 == true){
       turnOnRelay("b2On");
-      localBtnStatus += "&b2=on";
+      strcat(localBtnStatus, "&b2=on");
   } else {
     turnOffRelay("b2Off");
-      localBtnStatus += "&b2=off";
+      strcat(localBtnStatus, "&b2=off");
   }
 
   if(gHas2Channel == false){
       if(hasAl == true){
         turnOnRelay("alOn");
-        localBtnStatus += "&al=on";
+        strcat(localBtnStatus, "&al=on");
       } 
       else
        {
         turnOffRelay("alOff");
-        localBtnStatus += "&al=off";
+        strcat(localBtnStatus, "&al=off");
       }
 
 
@@ -836,8 +835,7 @@ bool sendReport(bool hasReport) {
 
   digitalWrite(ledWifiStatus, HIGH);
 
-  String localIP = WiFi.localIP().toString();
-  if (localIP == "0.0.0.0") {
+  if (WiFi.localIP() == IPAddress(0, 0, 0, 0)) {
     Serial.println("sendReport: Invalid IP 0.0.0.0");
     return false;
   }
@@ -850,26 +848,13 @@ bool sendReport(bool hasReport) {
   client.setInsecure();
   HTTPClient http;
   
-  // Optimize String concatenation to reduce heap fragmentation
-  String serverPath;
-  serverPath.reserve(512);
-  char buf[32]; // Buffer for number conversion
-
-  serverPath += serverName;
-  serverPath += "?sensorName="; serverPath += gSensorName;
-  serverPath += "&deviceID="; serverPath += deviceID;
-  serverPath += "&serialNumber="; serverPath += serialNumber;
-  serverPath += "&release="; serverPath += releaseDate;
-  
-  serverPath += "&uptime="; itoa(gUptime, buf, 10); serverPath += buf;
-  
-  serverPath += localBtnStatus;
-  serverPath += "&wiFiName="; serverPath += gWifiName;
-  serverPath += "&volt="; serverPath += gVoltage;
-  serverPath += "&signalStrength="; itoa(gSignalStrength, buf, 10); serverPath += buf;
-  serverPath += gProtocol;
-  serverPath += "&pollingTime="; itoa(gPollingTime, buf, 10); serverPath += buf;
-  serverPath += "&ntpServer="; serverPath += g_ntpServer;
+  // Use large char buffer on Stack for URL construction
+  char serverPath[1024];
+  snprintf(serverPath, sizeof(serverPath), 
+           "%s?sensorName=%s&deviceID=%s&serialNumber=%s&release=%s&uptime=%d%s&wiFiName=%s&volt=%s&signalStrength=%d%s&pollingTime=%d&ntpServer=%s",
+           serverName.c_str(), gSensorName.c_str(), deviceID.c_str(), serialNumber.c_str(), releaseDate.c_str(),
+           gUptime, localBtnStatus, gWifiName.c_str(), gVoltage.c_str(), gSignalStrength, gProtocol.c_str(),
+           gPollingTime, g_ntpServer.c_str());
 
   uint32_t freeHeap = ESP.getFreeHeap();
   uint32_t totalHeap = ESP.getHeapSize();
@@ -879,7 +864,7 @@ bool sendReport(bool hasReport) {
   Serial.println(serverPath);
 
   http.setTimeout(55000); // Reduce to 55s to leave enough time for Watchdog (75s)
-  http.begin(client, serverPath.c_str());
+  http.begin(client, serverPath);
 
   // Send HTTP GET request
   int httpResponseCode = http.GET();
@@ -975,15 +960,15 @@ bool sendReport(bool hasReport) {
           //                 Serial.println(property);
           //            }
   
-          String strTrigger = "";
-          serializeJson(triggerList, strTrigger);
+          char strTrigger[256] = {0};
+          serializeJson(triggerList, strTrigger, sizeof(strTrigger));
           Serial.print("strTrigger=");
           Serial.println(strTrigger);
-          Serial.println("strTrigger.length()=" + String(strTrigger.length()));
-          if (configTrigger != strTrigger) {
+          Serial.println("strTrigger.length()=" + String(strlen(strTrigger)));
+          if (!configTrigger.equals(strTrigger)) {
            
              if(hasGPIo == true){
-              if (strTrigger.length() < 256){
+              if (strlen(strTrigger) < 256){
                  configTrigger = strTrigger;
                   turnOffAll();
               } 
@@ -1007,11 +992,11 @@ bool sendReport(bool hasReport) {
         bool hasScheduler = doc.containsKey("schedulers");
         if (hasScheduler == true) {
             JsonArray schedulerList = doc["schedulers"];
-            String strSchedulers = "";
-            serializeJson(schedulerList, strSchedulers);
+            char strSchedulers[1024] = {0};
+            serializeJson(schedulerList, strSchedulers, sizeof(strSchedulers));
             Serial.print("strSchedulers=");
             Serial.println(strSchedulers);
-            Serial.println("strSchedulers.length()=" + String(strSchedulers.length()));
+            Serial.println("strSchedulers.length()=" + String(strlen(strSchedulers)));
             configScheduler = strSchedulers;
         }
     }
