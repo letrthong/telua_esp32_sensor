@@ -36,10 +36,10 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-// String gDefaultWifname_telua = "telua";
-// String gDefaultWifPass_telua = "13572468";
-String gDefaultWifname_telua = "HO CHI MINH US";
-String gDefaultWifPass_telua = "12345678";
+String gDefaultWifname_telua = "telua";
+String gDefaultWifPass_telua = "13572468";
+// String gDefaultWifname_telua = "HO CHI MINH US";
+// String gDefaultWifPass_telua = "12345678";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = false;
@@ -1290,16 +1290,16 @@ void loop()
 
   // TEST: Restart Trigger for debugging
   // Uncomment to force restart after ~10 minutes to test stability
-  static long randomLimit = random(60, 1000);
-  static bool isPrinted = false;
-  if (!isPrinted) {
-      Serial.printf("DEBUG: Random Restart Limit set to: %ld seconds\n", randomLimit);
-      isPrinted = true;
-  }
+  // static long randomLimit = random(60, 1000);
+  // static bool isPrinted = false;
+  // if (!isPrinted) {
+  //     Serial.printf("DEBUG: Random Restart Limit set to: %ld seconds\n", randomLimit);
+  //     isPrinted = true;
+  // }
 
-  if ( gUptimeCounter > randomLimit) {
-     restartDevice();
-  }
+  // if ( gUptimeCounter > randomLimit) {
+  //    restartDevice();
+  // }
   
 
   // Run logic every 1000ms (1 second)
