@@ -36,10 +36,10 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-String gDefaultWifname_telua = "telua";
-String gDefaultWifPass_telua = "13572468";
-// String gDefaultWifname_telua = "HO CHI MINH US";
-// String gDefaultWifPass_telua = "12345678";
+// String gDefaultWifname_telua = "telua";
+// String gDefaultWifPass_telua = "13572468";
+String gDefaultWifname_telua = "HO CHI MINH US";
+String gDefaultWifPass_telua = "12345678";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = false;
@@ -292,6 +292,7 @@ void startLocalWeb() {
     if (client) { // If a new client connects,
       Serial.println("New Client."); // print a message out in the serial port
       String currentLine = ""; // make a String to hold incoming data from the client
+      currentLine.reserve(256); // Optimize: Reserve memory to avoid fragmentation per char
       bool hasWrongFormat = false;
       String privateIpv4 = "";
       
@@ -1068,12 +1069,11 @@ bool getTimeZone( ) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
-    String payload = http.getString();
-   
     // Use StaticJsonDocument to avoid Heap fragmentation
     StaticJsonDocument<256> doc;
 
-    DeserializationError error = deserializeJson(doc, payload);
+    // FIX: Use getStream() instead of getString() to avoid allocating payload on Heap
+    DeserializationError error = deserializeJson(doc, http.getStream());
     if (error) {
       Serial.println("deserializeJson() failed");
     } else {
@@ -1198,6 +1198,11 @@ void setup() {
   
   initEEPROM();
 
+  // Optimize: Reserve memory for global Strings to prevent moving them around in Heap
+  configTrigger.reserve(256);
+  configScheduler.reserve(1024);
+  deviceID.reserve(64);
+
   esp_task_wdt_deinit();
 
   esp_task_wdt_config_t config = {0};
@@ -1237,22 +1242,35 @@ void setup() {
   );
 }
 
+// Helper function to print detailed memory status
+void printHeapStatus(const char* tag) {
+  uint32_t free = ESP.getFreeHeap();
+  uint32_t maxAlloc = ESP.getMaxAllocHeap();
+  uint32_t minFree = ESP.getMinFreeHeap();
+  float frag = 100.0;
+  if (free > 0) {
+      frag = 100.0 - ((float)maxAlloc / free) * 100.0;
+  }
+  Serial.printf("[%s] Free: %u | MaxAlloc: %u | MinFree: %u | Frag: %.2f%%\n", tag, free, maxAlloc, minFree, frag);
+}
+
 void checkMemory() {
-  // Monitor Memory: Check every 5 minutes (300s)
-  if (gUptimeCounter % 300 == 0) {
+  // Monitor Memory: Check every 30 seconds (for debugging) instead of 300s
+  if (gUptimeCounter % 30 == 0) {
       uint32_t freeHeapLoop = ESP.getFreeHeap();
       uint32_t totalHeapLoop = ESP.getHeapSize();
-      uint32_t maxAllocLoop = ESP.getMaxAllocHeap();
-      uint32_t minFreeHeap = ESP.getMinFreeHeap(); // Lowest memory point since boot
-      float fragmentation = 100.0 - ((float)maxAllocLoop / freeHeapLoop) * 100.0;
-
-      Serial.printf("[CheckMem] Free: %u | MinFree: %u | MaxAlloc: %u | Frag: %.1f%%\n", freeHeapLoop, minFreeHeap, maxAllocLoop, fragmentation);
+      
+      printHeapStatus("CheckMem");
 
       if (freeHeapLoop < (totalHeapLoop * 0.1)) {
           Serial.printf("Memory Critical: Used > 90%% (Free: %u / %u). Restarting...\n", freeHeapLoop, totalHeapLoop);
           restartDevice();
       }
 
+      // Recalculate for logic check
+      uint32_t maxAllocLoop = ESP.getMaxAllocHeap();
+      float fragmentation = 100.0 - ((float)maxAllocLoop / freeHeapLoop) * 100.0;
+      
       // OPTIMIZE: Only restart if fragmentation is high AND MaxAlloc is too low for SSL (e.g., < 30KB)
       // If we have 110KB MaxAlloc, 60% fragmentation is totally fine.
       if (fragmentation > 70.0) {
