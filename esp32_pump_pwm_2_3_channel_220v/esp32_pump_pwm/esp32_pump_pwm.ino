@@ -1137,7 +1137,7 @@ int getSeconds() {
 }
 
 void showCurrrentDate() {
-      // struct tm timeinfo;
+       struct tm timeinfo;
       if (getLocalTime(&timeinfo)) {
           Serial.printf("showCurrrentDate %02d:%02d:%02d  \n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec  );
       } else {
