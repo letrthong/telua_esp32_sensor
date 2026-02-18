@@ -836,6 +836,8 @@ bool sendReport(bool hasReport) {
       return ret;
    }
    
+  showCurrrentDate();
+
   if (WiFi.status() != WL_CONNECTED) {
     // Do not restart immediately, let loop() handle 10-minute timeout
     Serial.println("sendReport: WiFi not connected, skipping...");
@@ -1134,6 +1136,14 @@ int getSeconds() {
   return  seconds ;
 }
 
+void showCurrrentDate() {
+      // struct tm timeinfo;
+      if (getLocalTime(&timeinfo)) {
+          Serial.printf("showCurrrentDate %02d:%02d:%02d  \n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec  );
+      } else {
+          Serial.println("showCurrrentDate");
+      }
+}
 void init_ntp() {
   if (deviceID.length() > 0) {
     Serial.println("Fetching timezone from server...");
@@ -1339,14 +1349,7 @@ void loop()  {
       checkMemory();
       checkTaskStuck();
       checkWiFiConnection();
-       
-      // Log WDT reset (keep inside 1s interval to avoid spamming serial)
-      // struct tm timeinfo;
-      // if (getLocalTime(&timeinfo)) {
-      //     Serial.printf("esp_task_wdt_reset %02d:%02d:%02d gUptimeCounter=%d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec ,gUptimeCounter);
-      // } else {
-      //     Serial.println("esp_task_wdt_reset");
-      // }
+ 
   }
 
   // Kick the dog frequently
