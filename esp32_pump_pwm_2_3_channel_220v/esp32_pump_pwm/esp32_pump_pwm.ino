@@ -1342,12 +1342,12 @@ void loop()  {
       checkWiFiConnection();
        
       // Log WDT reset (keep inside 1s interval to avoid spamming serial)
-      struct tm timeinfo;
-      if (getLocalTime(&timeinfo)) {
-          Serial.printf("esp_task_wdt_reset %02d:%02d:%02d gUptimeCounter=%d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec ,gUptimeCounter);
-      } else {
-          Serial.println("esp_task_wdt_reset");
-      }
+      // struct tm timeinfo;
+      // if (getLocalTime(&timeinfo)) {
+      //     Serial.printf("esp_task_wdt_reset %02d:%02d:%02d gUptimeCounter=%d\n", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec ,gUptimeCounter);
+      // } else {
+      //     Serial.println("esp_task_wdt_reset");
+      // }
   }
 
   // Kick the dog frequently
