@@ -755,6 +755,9 @@ bool sendReport(bool hasReport) {
     } else {
       // extract the values
       JsonArray triggerList = docTrigger.as < JsonArray > ();
+      
+      // OPTIMIZE: Call getSeconds ONCE before the loop to avoid multiple system calls
+      int currentSeconds = getSeconds();
     
       for (JsonObject v: triggerList) {
           int valueStart = v["startTimer"];
@@ -765,10 +768,6 @@ bool sendReport(bool hasReport) {
           //Serial.print("valueStop=");
           //Serial.println(valueStop);
   
-          int currentSeconds= getSeconds();
-          //Serial.print("currentSeconds=");
-          //Serial.println(currentSeconds);
-
           if (currentSeconds == -1) continue; // Skip if time is invalid
           
           // OPTIMIZE: Use const char* instead of String to avoid Heap allocation/fragmentation
@@ -1126,8 +1125,7 @@ int getSeconds() {
   int seconds = 0;
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
-    delay(1000); 
-    restartDevice();
+    // Do not restart immediately on single failure. Return error code -1.
     return -1;
   }
   seconds = timeinfo.tm_hour*(60*60);
