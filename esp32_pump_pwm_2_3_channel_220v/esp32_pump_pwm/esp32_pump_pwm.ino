@@ -1125,8 +1125,8 @@ int getSeconds() {
   int seconds = 0;
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
-    delay(1000); 
-    restartDevice();
+    // delay(1000); // Removed blocking delay
+    // restartDevice(); // Removed to prevent restart on single read failure
     return -1;
   }
   seconds = timeinfo.tm_hour*(60*60);
@@ -1377,6 +1377,7 @@ void task1(void *parameter) {
   // Force immediate report on startup
   unsigned long lastReportTime = millis() - (gPollingTime * 1000);
   unsigned long lastTriggerTime = 0;
+  int timeSyncFailCount = 0; // Biến đếm số lần lỗi thời gian liên tiếp
 
   while (1) {
     unsigned long currentMillis = millis();
@@ -1401,6 +1402,17 @@ void task1(void *parameter) {
         // Use esp_timer_get_time() (microseconds since boot) to calculate True Uptime.
         // This avoids resetting to 0 at midnight and is independent of NTP/Timezone.
         gUptime = (int)(esp_timer_get_time() / 1000000);
+
+        // Kiem tra suc khoe thoi gian: Chi restart neu mat gio qua 10 phut (600s)
+        if (getSeconds() == -1) {
+            timeSyncFailCount++;
+            if (timeSyncFailCount > 600) {
+                Serial.println("Task1: Time sync failed for 10 mins. Restarting...");
+                restartDevice();
+            }
+        } else {
+            timeSyncFailCount = 0; // Reset bo dem neu lay duoc gio
+        }
 
         sendReport(false); 
     }
