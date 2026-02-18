@@ -1398,16 +1398,6 @@ void task1(void *parameter) {
     if (currentMillis - lastTriggerTime >= 1000) {
         lastTriggerTime = currentMillis;
 
-        // Update Uptime here (once per second is enough)
-        int currntEpchoTime = getSeconds();
-        if (currntEpchoTime != -1) {
-            gUptime = currntEpchoTime - startEpchoTime;
-            // Handle midnight reset or time drift
-            if (gUptime < 0) { 
-               startEpchoTime = currntEpchoTime; 
-               gUptime = 0; 
-            }
-        }
         // Use esp_timer_get_time() (microseconds since boot) to calculate True Uptime.
         // This avoids resetting to 0 at midnight and is independent of NTP/Timezone.
         gUptime = (int)(esp_timer_get_time() / 1000000);
