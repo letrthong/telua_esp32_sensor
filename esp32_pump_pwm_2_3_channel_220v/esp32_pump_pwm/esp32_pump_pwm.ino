@@ -768,6 +768,8 @@ bool sendReport(bool hasReport) {
           int currentSeconds= getSeconds();
           //Serial.print("currentSeconds=");
           //Serial.println(currentSeconds);
+
+          if (currentSeconds == -1) continue; // Skip if time is invalid
           
           // OPTIMIZE: Use const char* instead of String to avoid Heap allocation/fragmentation
           const char* action = v["action"];
@@ -775,7 +777,21 @@ bool sendReport(bool hasReport) {
             action = ""; // Safety check
           }
    
-          if (valueStart <= currentSeconds && currentSeconds < valueStop) {
+          // Fix logic for midnight crossing (e.g., 23:00 to 01:00)
+          bool isTimeMatch = false;
+          if (valueStart < valueStop) {
+              // Normal case: 08:00 to 10:00
+              if (valueStart <= currentSeconds && currentSeconds < valueStop) {
+                  isTimeMatch = true;
+              }
+          } else {
+              // Midnight crossing: 23:00 to 01:00
+              if (valueStart <= currentSeconds || currentSeconds < valueStop) {
+                  isTimeMatch = true;
+              }
+          }
+
+          if (isTimeMatch) {
                // Use strstr instead of String.indexOf
                if( strstr(action, "b1") != NULL) {
                  hasBtn0 =  true;
@@ -1112,7 +1128,7 @@ int getSeconds() {
   if (!getLocalTime(&timeinfo)) {
     delay(1000); 
     restartDevice();
-    return seconds;
+    return -1;
   }
   seconds = timeinfo.tm_hour*(60*60);
   seconds = seconds + (timeinfo.tm_min*60);
@@ -1353,7 +1369,10 @@ void task1(void *parameter) {
   init_ntp();
 
   if (startEpchoTime == 0) {
-    startEpchoTime = getSeconds();
+    int tempTime = getSeconds();
+    if (tempTime != -1) {
+        startEpchoTime = tempTime;
+    }
   }
 
   // Force immediate report on startup
@@ -1362,14 +1381,6 @@ void task1(void *parameter) {
 
   while (1) {
     unsigned long currentMillis = millis();
-    
-    // Update Uptime (Gom logic nay ra ngoai de tranh lap lai code)
-    int currntEpchoTime = getSeconds();
-    gUptime = currntEpchoTime - startEpchoTime;
-    if (gUptime < 0) { 
-       startEpchoTime = currntEpchoTime; 
-       gUptime = 0; 
-    }
 
     // 1. Check Report (Priority - every gPollingTime seconds)
     if (currentMillis - lastReportTime >= (gPollingTime * 1000UL)) {
@@ -1387,6 +1398,18 @@ void task1(void *parameter) {
     // 2. Check Triggers (every 1 second, non-blocking)
     if (currentMillis - lastTriggerTime >= 1000) {
         lastTriggerTime = currentMillis;
+
+        // Update Uptime here (once per second is enough)
+        int currntEpchoTime = getSeconds();
+        if (currntEpchoTime != -1) {
+            gUptime = currntEpchoTime - startEpchoTime;
+            // Handle midnight reset or time drift
+            if (gUptime < 0) { 
+               startEpchoTime = currntEpchoTime; 
+               gUptime = 0; 
+            }
+        }
+
         sendReport(false); 
     }
     
