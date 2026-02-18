@@ -1408,6 +1408,9 @@ void task1(void *parameter) {
                gUptime = 0; 
             }
         }
+        // Use esp_timer_get_time() (microseconds since boot) to calculate True Uptime.
+        // This avoids resetting to 0 at midnight and is independent of NTP/Timezone.
+        gUptime = (int)(esp_timer_get_time() / 1000000);
 
         sendReport(false); 
     }
