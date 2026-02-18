@@ -806,7 +806,7 @@ bool sendReport(bool hasReport) {
   
   // Use char array (Stack) instead of String (Heap) to prevent fragmentation
   char localBtnStatus[64] = {0};
-  if(hasBtn0 == true){
+  if (hasBtn0 == true) {
     turnOnRelay("b1On");
     strcat(localBtnStatus, "&b1=on");
   } else {
@@ -814,7 +814,7 @@ bool sendReport(bool hasReport) {
     strcat(localBtnStatus, "&b1=off");
   }
 
-  if(hasBtn1 == true){
+  if (hasBtn1 == true) {
     turnOnRelay("b2On");
     strcat(localBtnStatus, "&b2=on");
   } else {
@@ -822,14 +822,14 @@ bool sendReport(bool hasReport) {
     strcat(localBtnStatus, "&b2=off");
   }
 
-  if(gHas2Channel == false){
-      if(hasAl == true){
-        turnOnRelay("alOn");
-        strcat(localBtnStatus, "&al=on");
-      } else {
-        turnOffRelay("alOff");
-        strcat(localBtnStatus, "&al=off");
-      }
+  if (gHas2Channel == false) {
+    if (hasAl == true) {
+      turnOnRelay("alOn");
+      strcat(localBtnStatus, "&al=on");
+    } else {
+      turnOffRelay("alOff");
+      strcat(localBtnStatus, "&al=off");
+    }
   }
   
 
@@ -1125,7 +1125,8 @@ int getSeconds() {
   int seconds = 0;
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) {
-    // Do not restart immediately on single failure. Return error code -1.
+    delay(1000); 
+    restartDevice();
     return -1;
   }
   seconds = timeinfo.tm_hour*(60*60);
