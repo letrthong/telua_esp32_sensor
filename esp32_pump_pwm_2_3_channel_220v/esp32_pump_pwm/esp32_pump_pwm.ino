@@ -51,7 +51,6 @@ String gSensorName = "Pump";
 int gUptime = 0;
 unsigned long gUptimeCounter = 0;
 int gPreUptime = 0;
-int startEpchoTime = 0;
 
 int EEPROM_ADDRESS_SSID = 0;
 int EEPROM_ADDRESS_PASS = 32;
@@ -174,17 +173,17 @@ bool turnOnRelay(const char* action){
    bool retCode  = false;
    
    if( strcmp(action, "b1On") == 0){
-       Serial.println("turnOnRelay b1On");
+       //Serial.println("turnOnRelay b1On");
        //delay(3000); 
        digitalWrite(ledRelay01, HIGH);
         retCode = true;
    }else  if( strcmp(action, "b2On") == 0){
-      Serial.println("turnOnRelay b2On");
+      //Serial.println("turnOnRelay b2On");
       //delay(3000); 
       digitalWrite(ledRelay02, HIGH);
        retCode = true;
    } else  if( strcmp(action, "alOn") == 0){
-       Serial.println("turnOnRelay alOn");
+      // Serial.println("turnOnRelay alOn");
       // delay(1000); 
        digitalWrite(ledAlarm, HIGH);
        retCode = true;
@@ -1366,13 +1365,6 @@ void task1(void *parameter) {
   Serial.println(xPortGetCoreID());
   
   init_ntp();
-
-  if (startEpchoTime == 0) {
-    int tempTime = getSeconds();
-    if (tempTime != -1) {
-        startEpchoTime = tempTime;
-    }
-  }
 
   // Force immediate report on startup
   unsigned long lastReportTime = millis() - (gPollingTime * 1000);
