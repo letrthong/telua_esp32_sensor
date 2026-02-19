@@ -148,7 +148,8 @@ void turnOffAll(){
     digitalWrite(ledRelay02, LOW);
     digitalWrite(ledAlarm, LOW);
   }
-  
+  // Thêm delay để ổn định nguồn sau khi ngắt tải
+  delay(200);
 }
 
 
@@ -176,16 +177,19 @@ bool turnOnRelay(const char* action){
        //Serial.println("turnOnRelay b1On");
        //delay(3000); 
        digitalWrite(ledRelay01, HIGH);
+       delay(200); // Delay chống nhiễu
         retCode = true;
    }else  if( strcmp(action, "b2On") == 0){
       //Serial.println("turnOnRelay b2On");
       //delay(3000); 
       digitalWrite(ledRelay02, HIGH);
+       delay(200); // Delay chống nhiễu
        retCode = true;
    } else  if( strcmp(action, "alOn") == 0){
       // Serial.println("turnOnRelay alOn");
       // delay(1000); 
        digitalWrite(ledAlarm, HIGH);
+       delay(200); // Delay chống nhiễu
        retCode = true;
    } 
 
@@ -197,10 +201,13 @@ bool turnOffRelay(const char* action){
    bool retCode  = false;
    if( strcmp(action, "b1Off") == 0){
        digitalWrite(ledRelay01, LOW);
+       delay(200); // Delay chống nhiễu
    }else  if( strcmp(action, "b2Off") == 0){
       digitalWrite(ledRelay02, LOW);
+      delay(200); // Delay chống nhiễu
    } else  if( strcmp(action, "alOff") == 0){
        digitalWrite(ledAlarm, LOW);
+       delay(200); // Delay chống nhiễu
    } 
    return retCode;
 }
@@ -1381,16 +1388,21 @@ void task1(void *parameter) {
     unsigned long currentMillis = millis();
 
     // 1. Check Report (Priority - every gPollingTime seconds)
-    if (currentMillis - lastReportTime >= (gPollingTime * 1000UL)) {
-        lastReportTime = currentMillis;
+    unsigned long reportInterval = gPollingTime * 1000UL;
+    if (currentMillis - lastReportTime >= reportInterval) {
+        // FIX: Cộng dồn thời gian để giữ nhịp chính xác (tránh bị trễ dần - drift)
+        lastReportTime += reportInterval;
+
+        // Safety: Nếu bị trễ quá nhiều (ví dụ sau khi mất kết nối lâu), reset lại để tránh gửi liên tục
+        if (currentMillis - lastReportTime > reportInterval) {
+             lastReportTime = currentMillis;
+        }
         
         esp_task_wdt_reset();
         unsigned long start = millis();
         sendReport(true); 
         Serial.printf("sendReport took: %lu ms\n", millis() - start);
         
-        // FIX: Update currentMillis immediately to prevent logic drift after long HTTP call
-        currentMillis = millis();
     }
     
     // 2. Check Triggers (every 1 second, non-blocking)
