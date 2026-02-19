@@ -1416,7 +1416,7 @@ void task1(void *parameter) {
         // Kiem tra suc khoe thoi gian: Chi restart neu mat gio qua 10 phut (600s)
         if (getSeconds() == -1) {
             timeSyncFailCount++;
-            if (timeSyncFailCount > 600) {
+            if (timeSyncFailCount > 300) {
                 Serial.println("Task1: Time sync failed for 10 mins. Restarting...");
                 restartDevice();
             }
