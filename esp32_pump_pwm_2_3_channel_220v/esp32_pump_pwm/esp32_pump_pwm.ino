@@ -836,6 +836,9 @@ bool sendReport(bool hasReport) {
       return ret;
    }
    
+  // FIX: Thêm delay để nguồn điện ổn định sau khi đóng/ngắt Relay (tránh nhiễu EMI làm treo WiFi)
+  delay(500);
+
   showCurrrentDate();
 
   if (WiFi.status() != WL_CONNECTED) {
