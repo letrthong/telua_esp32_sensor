@@ -751,7 +751,7 @@ bool sendReport(bool hasReport) {
 
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
-    StaticJsonDocument<2048> docTrigger;
+    StaticJsonDocument<5120> docTrigger;
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
@@ -898,7 +898,7 @@ bool sendReport(bool hasReport) {
     //        Serial.println(httpResponseCode);
     //https://arduinojson.org/v6/doc/upgrade/
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
-    StaticJsonDocument<2048> doc;
+    StaticJsonDocument<5120> doc;
 
     // FIX: Use getStream() instead of getString() to avoid Heap fragmentation after long uptime
     DeserializationError error = deserializeJson(doc, http.getStream());
@@ -1015,7 +1015,7 @@ bool sendReport(bool hasReport) {
         bool hasScheduler = doc.containsKey("schedulers");
         if (hasScheduler == true) {
             JsonArray schedulerList = doc["schedulers"];
-            char strSchedulers[1024] = {0};
+            char strSchedulers[3072] = {0};
             serializeJson(schedulerList, strSchedulers, sizeof(strSchedulers));
             Serial.print("strSchedulers=");
             Serial.println(strSchedulers);
@@ -1224,7 +1224,7 @@ void setup() {
 
   // Optimize: Reserve memory for global Strings to prevent moving them around in Heap
   configTrigger.reserve(256);
-  configScheduler.reserve(1024);
+  configScheduler.reserve(3072);
   deviceID.reserve(64);
 
   esp_task_wdt_deinit();
@@ -1258,7 +1258,7 @@ void setup() {
   xTaskCreatePinnedToCore(
     task1,       // Task function pointer
     "Task1",     // Task name
-    10000,        // Stack depth in words
+    40960,        // Stack depth in bytes (40KB)
     NULL,        // Task parameter
     2,           // Task priority
     &taskHandle, // Task handle
