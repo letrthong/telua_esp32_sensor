@@ -751,7 +751,7 @@ bool sendReport(bool hasReport) {
 
   if (configScheduler.length() > 1 /*&& hasSensor == true*/) {
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
-    StaticJsonDocument<5120> docTrigger;
+    StaticJsonDocument<8192> docTrigger; // Increased to 8KB to safely handle full scheduler JSON
     // parse a JSON array
     DeserializationError errorTrigger = deserializeJson(docTrigger, configScheduler);
 
@@ -898,7 +898,7 @@ bool sendReport(bool hasReport) {
     //        Serial.println(httpResponseCode);
     //https://arduinojson.org/v6/doc/upgrade/
     // Use StaticJsonDocument because Task1 has large stack (40KB). Avoids Heap fragmentation.
-    StaticJsonDocument<5120> doc;
+    StaticJsonDocument<8192> doc; // Increased to 8KB
 
     // FIX: Use getStream() instead of getString() to avoid Heap fragmentation after long uptime
     DeserializationError error = deserializeJson(doc, http.getStream());
@@ -1349,6 +1349,12 @@ void loop()  {
 
       gUptimeCounter = gUptimeCounter + 1;
   
+      // Fix: Restart every 24h (86400s) to prevent Heap Fragmentation and WiFi stack hang after long uptime (e.g. 60h)
+      if (gUptimeCounter > 86400) {
+          Serial.println("Scheduled Daily Restart...");
+          restartDevice();
+      }
+
       // Prevent overflow: Reset to 300 (not 0) to keep ">= 300" logic active
       // Although unsigned long takes ~136 years to overflow, this is a safe guard.
       if (gUptimeCounter > 2000000000) {
@@ -1390,13 +1396,8 @@ void task1(void *parameter) {
     // 1. Check Report (Priority - every gPollingTime seconds)
     unsigned long reportInterval = gPollingTime * 1000UL;
     if (currentMillis - lastReportTime >= reportInterval) {
-        // FIX: Cộng dồn thời gian để giữ nhịp chính xác (tránh bị trễ dần - drift)
-        lastReportTime += reportInterval;
-
-        // Safety: Nếu bị trễ quá nhiều (ví dụ sau khi mất kết nối lâu), reset lại để tránh gửi liên tục
-        if (currentMillis - lastReportTime > reportInterval) {
-             lastReportTime = currentMillis;
-        }
+        // FIX: Use current time to prevent request bursts/storms if the device was busy/disconnected
+        lastReportTime = currentMillis;
         
         esp_task_wdt_reset();
         unsigned long start = millis();
