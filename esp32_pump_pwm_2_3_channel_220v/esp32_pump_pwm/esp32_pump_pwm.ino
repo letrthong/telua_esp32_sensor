@@ -71,6 +71,7 @@ bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
 volatile bool g_isRestarting = false; // Flag to prevent race conditions during restart
+volatile bool gIsOnline = false; // Co theo doi trang thai Online/Offline
 int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
@@ -851,6 +852,7 @@ bool sendReport(bool hasReport) {
   if (WiFi.status() != WL_CONNECTED) {
     // Do not restart immediately, let loop() handle 10-minute timeout
     Serial.println("sendReport: WiFi not connected, skipping...");
+    gIsOnline = false;
     return false;
   }
 
@@ -893,6 +895,7 @@ bool sendReport(bool hasReport) {
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200) {
+     gIsOnline = true; // Danh dau da ket noi Cloud thanh cong
      digitalWrite(ledWifiStatus, LOW);
     //        Serial.print("HTTP Response code: ");
     //        Serial.println(httpResponseCode);
@@ -1025,11 +1028,14 @@ bool sendReport(bool hasReport) {
     }
     retryTimeout = 0;
   } else {
+     gIsOnline = false; // Danh dau mat ket noi voi Cloud hoac Cloud loi
      Serial.print("Error code: ");
      Serial.println(httpResponseCode);
       time_to_sleep_mode = TIME_TO_SLEEP;
       retryTimeout = retryTimeout + 1;
-      configScheduler  = "";
+      
+      // XÓA: configScheduler = ""; 
+      // Giữ nguyên configScheduler để thiết bị có thể tiếp tục chạy Hẹn giờ (Offline mode)
       //Timeout - https://github.com/esp8266/Arduino/issues/5137
       if(httpResponseCode == -11){
         http.end();
@@ -1046,8 +1052,21 @@ bool sendReport(bool hasReport) {
          } else {
             restartDevice();
          }
+        // KHẮC PHỤC: Xử lý khi Timeout mạng (không có Internet), bỏ qua khởi động lại
+        Serial.println("Network timeout (-11). No Internet. Continuing offline...");
+        retryTimeout = 0; // Đặt lại bộ đếm
+        client.stop(); // Explicitly free TCP socket
+        return ret;
       } else {
-        if(retryTimeout > 4){
+        // KHẮC PHỤC: Nếu server trả về 5xx (500, 502, 503, 504), không khởi động lại thiết bị 
+        if (httpResponseCode >= 500 && httpResponseCode < 600) {
+            Serial.println("Server is unavailable (5xx). Continuing offline...");
+            retryTimeout = 0; // Đặt lại bộ đếm để không bị restart oan
+        } else if (httpResponseCode < 0) {
+            // KHẮC PHỤC: Các mã lỗi âm (-1, -3...) đại diện cho lỗi DNS hoặc TCP do Router không ra được Internet
+            Serial.println("No Internet connection (Code < 0). Continuing offline...");
+            retryTimeout = 0; // Đặt lại bộ đếm để không bị restart
+        } else if(retryTimeout > 4){
           restartDevice();
         }
       }
@@ -1201,6 +1220,8 @@ void init_ntp() {
   if (!timeSynced) {
     Serial.println("All NTP sync attempts failed. Please check Wi-Fi or UDP port 123.");
     restartDevice();
+    // KHẮC PHỤC: Không khởi động lại thiết bị nếu mất mạng lúc boot, tiếp tục để thiết bị vào chế độ offline
+    gIsOnline = false;
   }
 }
 
@@ -1329,6 +1350,18 @@ void checkWiFiConnection() {
 void loop()  {
   static unsigned long previousLoopMillis = 0;
   unsigned long currentMillis = millis();
+
+  // --- Xu ly den LED chi thi trang thai Offline/Online ---
+  // Chop tat moi 500ms khi Offline. Tat han khi Online (chi chop khi gui du lieu).
+  static unsigned long previousBlinkMillis = 0;
+  static bool wifiLedState = false;
+  if (!gIsOnline && !g_isRestarting) {
+      if (currentMillis - previousBlinkMillis >= 500) {
+          previousBlinkMillis = currentMillis;
+          wifiLedState = !wifiLedState;
+          digitalWrite(ledWifiStatus, wifiLedState ? HIGH : LOW);
+      }
+  }
 
   // TEST: Restart Trigger for debugging
   // Uncomment to force restart after ~10 minutes to test stability
