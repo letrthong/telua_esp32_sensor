@@ -25,7 +25,7 @@ String remote_pass = "";
 String serverName = "https://telua.co/service/v1/esp32/scheduler";
 String serverOffset = "https://telua.co/service/v1/esp32/gmtOffset"; 
 // String btnStatus = "&b1=off&b2=off&al=off"; // Removed global String
-String releaseDate = "18-Feb-2026";
+String releaseDate = "01-May-2026";
 String gWifiName = "";
 String gVoltage = "220";
 int gSignalStrength = 0; // Changed to int to avoid heap fragmentation
@@ -36,10 +36,10 @@ bool gIsDefaultWifi = true;
 String gDefaultWifname = "hcmus";
 String gDefaultWifPass = "fetelxxx";
 
-String gDefaultWifname_telua = "telua";
-String gDefaultWifPass_telua = "13572468";
-// String gDefaultWifname_telua = "HO CHI MINH US";
-// String gDefaultWifPass_telua = "12345678";
+// String gDefaultWifname_telua = "telua";
+// String gDefaultWifPass_telua = "13572468";
+String gDefaultWifname_telua = "HO CHI MINH US";
+String gDefaultWifPass_telua = "12345678";
 
 // Timer2Channels or Timer3Channels
 bool gHas2Channel = false;
