@@ -48,18 +48,18 @@ bool gPWM = true;
 // Timer3Channels
 String gSensorName = "Pump";
 
-int gUptime = 0;
+volatile int gUptime = 0;
 unsigned long gUptimeCounter = 0;
 int gPreUptime = 0;
 
-int EEPROM_ADDRESS_SSID = 0;
-int EEPROM_ADDRESS_PASS = 32;
-int EEPROM_ADDRESS_REMOTE_SSID = 48;
-int EEPROM_ADDRESS_REMOTE_PASS = 64;
-int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
-int EEPROM_ADDRESS_DEVICE_ID = 128;
-int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
-int EEPROM_ADDRESS_TRIGGER = 256;
+const int EEPROM_ADDRESS_SSID = 0;
+const int EEPROM_ADDRESS_PASS = 32;
+const int EEPROM_ADDRESS_REMOTE_SSID = 48;
+const int EEPROM_ADDRESS_REMOTE_PASS = 64;
+const int EEPROM_ADDRESS_TIME_TO_SLEEP = 96; 
+const int EEPROM_ADDRESS_DEVICE_ID = 128;
+const int EEPROM_ADDRESS_SERIAL_NUMBER = 192;
+const int EEPROM_ADDRESS_TRIGGER = 256;
 
 bool hasRouter = false;
 RTC_DATA_ATTR int g_encryption_Type = WIFI_AUTH_OPEN;
@@ -70,7 +70,7 @@ RTC_DATA_ATTR int g_remote_encryption_Type = WIFI_AUTH_OPEN;
 bool hasSensor = false;
 bool hasError = true;
 RTC_DATA_ATTR int retryTimeout = 0;
-bool g_isRestarting = false; // Flag to prevent race conditions during restart
+volatile bool g_isRestarting = false; // Flag to prevent race conditions during restart
 int g_count = 60;
 int time_to_sleep_mode = TIME_TO_SLEEP;
  
@@ -1040,6 +1040,7 @@ bool sendReport(bool hasReport) {
             if(retryTimeout > 3){
                 restartDevice();
             } else {
+              client.stop(); // Explicitly free TCP socket before early return
               return ret;
             } 
          } else {
